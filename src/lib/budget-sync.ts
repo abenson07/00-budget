@@ -224,6 +224,44 @@ export async function persistBucketAmounts(
   );
 }
 
+/** Maps app `Bucket` to DB columns for a full row update (metadata + balance). */
+export function bucketToDbUpdate(b: Bucket): Record<string, unknown> {
+  const row: Record<string, unknown> = {
+    name: b.name,
+    type: b.type,
+    sort_order: b.order,
+    amount: b.amount,
+    top_off: b.top_off,
+    percentage: b.percentage,
+  };
+  if (b.type === "essential") {
+    row.essential_subtype = b.essential_subtype;
+    if (b.essential_subtype === "bill") {
+      row.due_date = b.due_date;
+      row.alert_date = b.alert_date;
+    } else {
+      row.due_date = null;
+      row.alert_date = null;
+    }
+  } else {
+    row.essential_subtype = null;
+    row.due_date = null;
+    row.alert_date = null;
+  }
+  return row;
+}
+
+export async function persistBucketUpdate(
+  supabase: SupabaseClient,
+  bucket: Bucket,
+): Promise<void> {
+  const { error } = await supabase
+    .from("buckets")
+    .update(bucketToDbUpdate(bucket))
+    .eq("id", bucket.id);
+  if (error) throw error;
+}
+
 export async function persistTransactionCreate(
   supabase: SupabaseClient,
   tx: Transaction,

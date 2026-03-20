@@ -126,6 +126,37 @@ export function selectTransactionsByBucket(
   );
 }
 
+/**
+ * Move `amount` from `fromId` to `toId`. Total of bucket amounts is unchanged.
+ * @throws If buckets are missing, ids match, amount is not positive, or source would go negative.
+ */
+export function transferBetweenBuckets(
+  buckets: Bucket[],
+  fromId: string,
+  toId: string,
+  amount: number,
+): Bucket[] {
+  if (fromId === toId) {
+    throw new Error("Choose a different destination bucket");
+  }
+  if (!Number.isFinite(amount) || amount <= MONEY_EPSILON) {
+    throw new Error("Transfer amount must be greater than zero");
+  }
+  const from = getBucketById(buckets, fromId);
+  const to = getBucketById(buckets, toId);
+  if (!from || !to) {
+    throw new Error("Unknown bucket");
+  }
+  if (from.amount + MONEY_EPSILON < amount) {
+    throw new Error("Source bucket does not have enough balance");
+  }
+  return buckets.map((b) => {
+    if (b.id === fromId) return { ...b, amount: b.amount - amount };
+    if (b.id === toId) return { ...b, amount: b.amount + amount };
+    return b;
+  });
+}
+
 export function selectAllocationsForBucket(
   transactions: Transaction[],
   bucketId: string,

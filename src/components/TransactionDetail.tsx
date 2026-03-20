@@ -112,13 +112,28 @@ export function TransactionDetail({ transactionId }: Props) {
     }
   }, [draftRows, tx, updateTransaction]);
 
-  const addRow = useCallback(() => {
-    const firstId = sortedBuckets[0]?.id ?? "";
-    setDraftRows((rows) => [
-      ...rows,
-      { bucketId: firstId, amountStr: "0" },
-    ]);
-  }, [sortedBuckets]);
+  const addSplitRow = useCallback(() => {
+    if (!tx) return;
+    setDraftRows((rows) => {
+      if (rows.length === 1) {
+        const [r0] = rows;
+        const total = tx.amount;
+        const half = Math.round((total / 2) * 100) / 100;
+        const rest = Math.round((total - half) * 100) / 100;
+        const other =
+          sortedBuckets.find((b) => b.id !== r0.bucketId) ?? sortedBuckets[0];
+        return [
+          { bucketId: r0.bucketId, amountStr: String(half) },
+          {
+            bucketId: other?.id ?? "",
+            amountStr: String(rest),
+          },
+        ];
+      }
+      const firstId = sortedBuckets[0]?.id ?? "";
+      return [...rows, { bucketId: firstId, amountStr: "0" }];
+    });
+  }, [sortedBuckets, tx]);
 
   const removeRow = useCallback((index: number) => {
     setDraftRows((rows) => {
@@ -176,7 +191,13 @@ export function TransactionDetail({ transactionId }: Props) {
 
       <section className="mt-8 rounded-lg border border-zinc-200 bg-white p-4 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-lg font-medium">Edit allocations</h2>
+          <div>
+            <h2 className="text-lg font-medium">Edit allocations</h2>
+            <p className="mt-1 text-xs text-zinc-500">
+              Split across buckets: add rows so each line&apos;s amount sums to
+              the transaction total.
+            </p>
+          </div>
           <div className="flex items-center gap-2">
             {savedFlash ? (
               <span className="text-xs font-medium text-emerald-700">
@@ -185,10 +206,10 @@ export function TransactionDetail({ transactionId }: Props) {
             ) : null}
             <button
               type="button"
-              onClick={addRow}
+              onClick={addSplitRow}
               className="rounded-md border border-zinc-300 bg-zinc-50 px-2 py-1 text-xs font-medium text-zinc-800 hover:bg-zinc-100"
             >
-              Add bucket
+              Add split
             </button>
             <button
               type="button"
@@ -209,7 +230,7 @@ export function TransactionDetail({ transactionId }: Props) {
         <ul className="mt-4 space-y-3">
           {draftRows.map((row, index) => (
             <li
-              key={`${row.bucketId}-${index}`}
+              key={`split-row-${index}`}
               className="flex flex-col gap-2 sm:flex-row sm:items-end"
             >
               <label className="block flex-1 text-xs font-medium text-zinc-600">

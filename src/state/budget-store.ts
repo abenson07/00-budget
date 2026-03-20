@@ -8,10 +8,14 @@ import {
   reverseDebitFromBuckets,
   selectAllocationsForBucket,
   selectTransactionsByBucket,
+  transferBetweenBuckets,
 } from "@/lib/allocation";
+import type { BucketMetadataInput } from "@/lib/bucket-metadata";
+import { applyBucketMetadata, validateBucketMetadata } from "@/lib/bucket-metadata";
 import {
   fetchBudgetDataset,
   persistBucketAmounts,
+  persistBucketUpdate,
   persistTransactionCreate,
   persistTransactionDelete,
   persistTransactionUpdate,
@@ -30,7 +34,10 @@ export {
   reverseDebitFromBuckets,
   selectAllocationsForBucket,
   selectTransactionsByBucket,
+  transferBetweenBuckets,
 } from "@/lib/allocation";
+
+export type { BucketMetadataInput } from "@/lib/bucket-metadata";
 
 /** @deprecated Use accountBalance from @/lib/allocation or selectAccountBalance */
 export function sumBucketAmounts(buckets: Bucket[]): number {
@@ -72,6 +79,14 @@ type BudgetActions = {
     patch: Partial<Omit<Transaction, "id" | "account_id">>,
   ) => void;
   deleteTransaction: (txId: string) => void;
+
+  transferBetweenBuckets: (
+    fromBucketId: string,
+    toBucketId: string,
+    amount: number,
+  ) => void;
+
+  updateBucketMetadata: (bucketId: string, input: BucketMetadataInput) => void;
 
   /** Load from Supabase; seeds demo if `accounts` is empty. No-op if env missing. */
   syncFromSupabase: () => Promise<void>;
@@ -194,6 +209,52 @@ export const useBudgetStore = create<BudgetState & BudgetActions>((set, get) => 
         await persistBucketAmounts(supabase, get().buckets);
       } catch (e) {
         console.error("deleteTransaction persist failed", e);
+      }
+    })();
+  },
+
+  transferBetweenBuckets: (fromBucketId, toBucketId, amount) => {
+    const { buckets } = get();
+    let next: Bucket[];
+    try {
+      next = transferBetweenBuckets(buckets, fromBucketId, toBucketId, amount);
+    } catch (e) {
+      throw e instanceof Error ? e : new Error(String(e));
+    }
+    set({ buckets: next });
+
+    const supabase = tryCreateSupabase();
+    if (!supabase) return;
+    void (async () => {
+      try {
+        await persistBucketAmounts(supabase, get().buckets);
+      } catch (e) {
+        console.error("transferBetweenBuckets persist failed", e);
+      }
+    })();
+  },
+
+  updateBucketMetadata: (bucketId, input) => {
+    const prev = getBucketById(get().buckets, bucketId);
+    if (!prev) return;
+
+    const errs = validateBucketMetadata(input);
+    if (errs.length > 0) {
+      throw new Error(errs.join("; "));
+    }
+
+    const nextBucket = applyBucketMetadata(prev, input);
+    set({
+      buckets: get().buckets.map((b) => (b.id === bucketId ? nextBucket : b)),
+    });
+
+    const supabase = tryCreateSupabase();
+    if (!supabase) return;
+    void (async () => {
+      try {
+        await persistBucketUpdate(supabase, get().getBucketById(bucketId)!);
+      } catch (e) {
+        console.error("updateBucketMetadata persist failed", e);
       }
     })();
   },
