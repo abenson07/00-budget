@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import {
+  accountBalance,
   applyDebitToBuckets,
   computeSafeToSpendMetrics,
   getEffectiveSplits,
@@ -31,9 +32,9 @@ export {
   selectTransactionsByBucket,
 } from "@/lib/allocation";
 
-/** @deprecated Use computeSafeToSpendMetrics or allocation.safeToSpendPrimary */
+/** @deprecated Use accountBalance from @/lib/allocation or selectAccountBalance */
 export function sumBucketAmounts(buckets: Bucket[]): number {
-  return buckets.reduce((s, b) => s + b.amount, 0);
+  return accountBalance(buckets);
 }
 
 /** @deprecated Use safeToSpendPrimary from @/lib/allocation */
@@ -75,6 +76,18 @@ type BudgetActions = {
   /** Load from Supabase; seeds demo if `accounts` is empty. No-op if env missing. */
   syncFromSupabase: () => Promise<void>;
 };
+
+type BudgetStore = BudgetState & BudgetActions;
+
+/** Dashboard selectors (budget-003): single source with allocation helpers. */
+export const selectAccountBalance = (s: BudgetStore) => accountBalance(s.buckets);
+
+export const selectSafeToSpend = (s: BudgetStore) =>
+  computeSafeToSpendMetrics(s.buckets).primary;
+
+/** Prefer `useBudgetStore(s => s.buckets)` + `useMemo` for sorted order; do not pass this to `useBudgetStore` (new array each call breaks useSyncExternalStore). */
+export const selectSortedBuckets = (s: BudgetStore) =>
+  [...s.buckets].sort((a, b) => a.order - b.order);
 
 const fallbackInitial = createMockDataset();
 

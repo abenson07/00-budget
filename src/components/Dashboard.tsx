@@ -1,55 +1,62 @@
 "use client";
 
+import { useMemo } from "react";
 import Link from "next/link";
+import { BucketCard } from "@/components/BucketCard";
+import { formatUsd } from "@/lib/format";
 import {
-  safeToSpendTotal,
-  sumBucketAmounts,
+  selectAccountBalance,
+  selectSafeToSpend,
   useBudgetStore,
 } from "@/state/budget-store";
 
 export function Dashboard() {
   const account = useBudgetStore((s) => s.account);
+  const balance = useBudgetStore(selectAccountBalance);
+  const safe = useBudgetStore(selectSafeToSpend);
   const buckets = useBudgetStore((s) => s.buckets);
-
-  const sorted = [...buckets].sort((a, b) => a.order - b.order);
-  const balance = sumBucketAmounts(buckets);
-  const safe = safeToSpendTotal(buckets);
+  const sortedBuckets = useMemo(
+    () => [...buckets].sort((a, b) => a.order - b.order),
+    [buckets],
+  );
 
   return (
-    <main className="mx-auto min-h-screen max-w-2xl p-6 font-sans">
-      <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
+    <main className="mx-auto min-h-screen max-w-2xl p-4 pb-10 font-sans sm:p-6">
+      <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">
+        Dashboard
+      </h1>
       <p className="mt-1 text-sm text-zinc-600">
-        Demo data from the budget store (Phase 1 mock).
+        Account snapshot and safe-to-spend from your bucket assignments.
       </p>
 
-      <section className="mt-6 grid gap-4 sm:grid-cols-2">
+      <section className="mt-6 grid gap-3 sm:grid-cols-2 sm:gap-4">
         <div className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm">
           <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
-            Account
+            Account balance
           </p>
-          <p className="mt-1 text-lg font-semibold">{account.name}</p>
-          <p className="mt-2 text-2xl font-semibold tabular-nums">
-            ${balance.toFixed(2)}
+          <p className="mt-1 text-sm font-medium text-zinc-800">{account.name}</p>
+          <p className="mt-2 text-2xl font-semibold tabular-nums text-zinc-950">
+            {formatUsd(balance)}
           </p>
           <p className="mt-1 text-xs text-zinc-500">
-            Sum of bucket assignments
+            Sum of all bucket amounts (matches assigned cash).
           </p>
         </div>
         <div className="rounded-lg border border-emerald-200 bg-emerald-50/80 p-4 shadow-sm">
           <p className="text-xs font-medium uppercase tracking-wide text-emerald-800">
             Safe to spend
           </p>
-          <p className="mt-2 text-2xl font-semibold tabular-nums text-emerald-900">
-            ${safe.toFixed(2)}
+          <p className="mt-2 text-2xl font-semibold tabular-nums text-emerald-950">
+            {formatUsd(safe)}
           </p>
-          <p className="mt-1 text-xs text-emerald-800/80">
-            Discretionary buckets (includes Unassigned)
+          <p className="mt-1 text-xs text-emerald-800/85">
+            Discretionary buckets only — includes Unassigned.
           </p>
         </div>
       </section>
 
-      <div className="mt-8 flex items-center justify-between">
-        <h2 className="text-lg font-medium">Buckets</h2>
+      <div className="mt-8 flex flex-wrap items-center justify-between gap-2">
+        <h2 className="text-lg font-medium text-zinc-900">Buckets</h2>
         <Link
           href="/transactions"
           className="text-sm font-medium text-zinc-700 underline decoration-zinc-300 underline-offset-2 hover:text-zinc-900"
@@ -57,27 +64,14 @@ export function Dashboard() {
           Transactions
         </Link>
       </div>
+      <p className="mt-1 text-xs text-zinc-500">
+        Ordered by priority (lowest first).
+      </p>
 
-      <ul className="mt-3 divide-y rounded-lg border border-zinc-200 bg-white">
-        {sorted.map((b) => (
-          <li
-            key={b.id}
-            className="flex flex-col gap-1 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
-          >
-            <div>
-              <span className="font-medium">{b.name}</span>
-              <span className="mt-0.5 block text-xs text-zinc-500">
-                {b.type === "essential"
-                  ? `essential · ${b.essential_subtype}`
-                  : "discretionary"}
-                {b.type === "essential" && b.essential_subtype === "bill"
-                  ? ` · due ${b.due_date}`
-                  : null}
-              </span>
-            </div>
-            <span className="text-sm tabular-nums text-zinc-700">
-              ${b.amount.toFixed(2)}
-            </span>
+      <ul className="mt-3 flex flex-col gap-2">
+        {sortedBuckets.map((bucket) => (
+          <li key={bucket.id}>
+            <BucketCard bucket={bucket} />
           </li>
         ))}
       </ul>
