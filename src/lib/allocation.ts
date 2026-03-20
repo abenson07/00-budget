@@ -98,6 +98,9 @@ export function applyDebitToBuckets(
   });
 }
 
+/** Alias for {@link applyDebitToBuckets} (split / debit allocation). */
+export const applyDebitAllocation = applyDebitToBuckets;
+
 /** Add split amounts back to each bucket (undo a debit). Immutable. */
 export function reverseDebitFromBuckets(
   buckets: Bucket[],
@@ -116,6 +119,9 @@ export function reverseDebitFromBuckets(
     return { ...b, amount: b.amount + add };
   });
 }
+
+/** Alias for {@link reverseDebitFromBuckets}. */
+export const reverseDebitAllocation = reverseDebitFromBuckets;
 
 export function selectTransactionsByBucket(
   transactions: Transaction[],

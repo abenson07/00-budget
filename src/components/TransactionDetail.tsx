@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getEffectiveSplits } from "@/lib/allocation";
-import type { TransactionSplit } from "@/lib/types";
-import { useBudgetStore } from "@/state/budget-store";
 import { MONEY_EPSILON } from "@/lib/constants";
+import type { Transaction, TransactionSplit } from "@/lib/types";
+import { validateTransactionAllocation } from "@/lib/validation";
+import { useBudgetStore } from "@/state/budget-store";
 
 type Props = { transactionId: string };
 
@@ -30,11 +31,6 @@ export function TransactionDetail({ transactionId }: Props) {
 
   const sortedBuckets = useMemo(
     () => [...buckets].sort((a, b) => a.order - b.order),
-    [buckets],
-  );
-
-  const bucketIdSet = useMemo(
-    () => new Set(buckets.map((b) => b.id)),
     [buckets],
   );
 
@@ -99,21 +95,22 @@ export function TransactionDetail({ transactionId }: Props) {
     tx != null && Math.abs(splitSum - tx.amount) <= MONEY_EPSILON;
 
   const validationMessages = useMemo(() => {
-    const msgs: string[] = [];
-    if (!tx) return msgs;
+    if (!tx) return [];
 
     if (sortedBuckets.length === 0) {
-      msgs.push("No buckets available. Add a bucket before assigning.");
-      return msgs;
+      return ["No buckets available. Add a bucket before assigning."];
     }
 
     if (mode === "reassign") {
       if (!reassignBucketId.trim()) {
-        msgs.push("Pick a bucket.");
-      } else if (!bucketIdSet.has(reassignBucketId)) {
-        msgs.push("Selected bucket no longer exists. Choose another.");
+        return ["Pick a bucket."];
       }
-      return msgs;
+      const draft: Transaction = {
+        ...tx,
+        primary_bucket_id: reassignBucketId,
+        splits: undefined,
+      };
+      return validateTransactionAllocation(draft, buckets);
     }
 
     const parsed = draftRows.map((r) => ({
@@ -122,47 +119,27 @@ export function TransactionDetail({ transactionId }: Props) {
     }));
 
     if (parsed.length === 0) {
-      msgs.push("Add at least one split row.");
-      return msgs;
+      return ["Add at least one split row."];
     }
 
     for (const r of parsed) {
       if (!r.bucketId.trim()) {
-        msgs.push("Pick a bucket for each row.");
-        break;
-      }
-      if (!bucketIdSet.has(r.bucketId)) {
-        msgs.push("One or more rows reference a bucket that no longer exists.");
-        break;
-      }
-      if (!Number.isFinite(r.amount) || r.amount < 0) {
-        msgs.push("Each amount must be a non-negative number.");
-        break;
+        return ["Pick a bucket for each row."];
       }
     }
 
-    const bucketIds = parsed.map((r) => r.bucketId).filter(Boolean);
-    if (new Set(bucketIds).size !== bucketIds.length) {
-      msgs.push("Use each bucket at most once per transaction.");
-    }
+    const splits: TransactionSplit[] = parsed.map((p) => ({
+      bucketId: p.bucketId,
+      amount: p.amount,
+    }));
 
-    if (!splitMatchesTotal) {
-      msgs.push(
-        `Split total must equal $${tx.amount.toFixed(2)} (currently $${splitSum.toFixed(2)}).`,
-      );
-    }
-
-    return msgs;
-  }, [
-    tx,
-    mode,
-    reassignBucketId,
-    draftRows,
-    bucketIdSet,
-    sortedBuckets.length,
-    splitMatchesTotal,
-    splitSum,
-  ]);
+    const draft: Transaction = {
+      ...tx,
+      primary_bucket_id: null,
+      splits,
+    };
+    return validateTransactionAllocation(draft, buckets);
+  }, [tx, mode, reassignBucketId, draftRows, buckets, sortedBuckets.length]);
 
   const canSave = validationMessages.length === 0 && tx != null;
 

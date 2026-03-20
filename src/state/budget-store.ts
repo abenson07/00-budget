@@ -1,11 +1,11 @@
 import { create } from "zustand";
 import {
   accountBalance,
-  applyDebitToBuckets,
+  applyDebitAllocation,
   computeSafeToSpendMetrics,
   getEffectiveSplits,
   getBucketById,
-  reverseDebitFromBuckets,
+  reverseDebitAllocation,
   selectAllocationsForBucket,
   selectTransactionsByBucket,
   transferBetweenBuckets,
@@ -27,10 +27,12 @@ import { validateTransactionAllocation } from "@/lib/validation";
 import { createClient } from "@/utils/supabase/client";
 
 export {
+  applyDebitAllocation,
   applyDebitToBuckets,
   computeSafeToSpendMetrics,
   getBucketById,
   getEffectiveSplits,
+  reverseDebitAllocation,
   reverseDebitFromBuckets,
   selectAllocationsForBucket,
   selectTransactionsByBucket,
@@ -130,7 +132,7 @@ export const useBudgetStore = create<BudgetState & BudgetActions>((set, get) => 
       throw new Error("Transaction account_id does not match current account");
     }
 
-    const nextBuckets = applyDebitToBuckets(buckets, getEffectiveSplits(tx));
+    const nextBuckets = applyDebitAllocation(buckets, getEffectiveSplits(tx));
     set({
       buckets: nextBuckets,
       transactions: [...transactions, tx],
@@ -167,8 +169,8 @@ export const useBudgetStore = create<BudgetState & BudgetActions>((set, get) => 
       throw new Error("Transaction account_id does not match current account");
     }
 
-    let nextBuckets = reverseDebitFromBuckets(buckets, getEffectiveSplits(prev));
-    nextBuckets = applyDebitToBuckets(nextBuckets, getEffectiveSplits(merged));
+    let nextBuckets = reverseDebitAllocation(buckets, getEffectiveSplits(prev));
+    nextBuckets = applyDebitAllocation(nextBuckets, getEffectiveSplits(merged));
 
     set({
       buckets: nextBuckets,
@@ -192,7 +194,7 @@ export const useBudgetStore = create<BudgetState & BudgetActions>((set, get) => 
     const prev = transactions.find((t) => t.id === txId);
     if (!prev) return;
 
-    const nextBuckets = reverseDebitFromBuckets(
+    const nextBuckets = reverseDebitAllocation(
       buckets,
       getEffectiveSplits(prev),
     );
