@@ -50,6 +50,8 @@ export type Transaction = {
   merchant: string;
   date: string;
   spending_type: "debit";
+  /** When set and `splits` is empty, full amount applies to this bucket. */
+  primary_bucket_id?: string | null;
   splits?: TransactionSplit[];
 };
 

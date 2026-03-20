@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { getEffectiveSplits } from "@/lib/allocation";
 import { useBudgetStore } from "@/state/budget-store";
 
 export function TransactionList() {
@@ -22,7 +23,7 @@ export function TransactionList() {
       </div>
       <ul className="mt-6 divide-y rounded-lg border border-zinc-200 bg-white">
         {sorted.map((tx) => {
-          const splitCount = tx.splits?.length ?? 0;
+          const splitCount = getEffectiveSplits(tx).length;
           return (
             <li key={tx.id}>
               <Link

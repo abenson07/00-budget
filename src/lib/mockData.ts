@@ -39,12 +39,13 @@ export function createMockDataset(seed = 42): MockDataset {
   const rng = mulberry32(seed);
   const funNudge = Math.round(rng() * 500) / 100;
 
-  const accountId = "acc-demo";
-  const bucketUnassigned = "bucket-unassigned";
-  const bucketRent = "bucket-rent";
-  const bucketGroceries = "bucket-groceries";
-  const bucketFun = "bucket-fun";
-  const bucketUtilities = "bucket-utilities";
+  /** Stable UUIDs so Supabase seed and local mock stay aligned. */
+  const accountId = "f1000000-0000-4000-8000-000000000001";
+  const bucketUnassigned = "f1000000-0000-4000-8000-000000000011";
+  const bucketRent = "f1000000-0000-4000-8000-000000000012";
+  const bucketUtilities = "f1000000-0000-4000-8000-000000000013";
+  const bucketGroceries = "f1000000-0000-4000-8000-000000000014";
+  const bucketFun = "f1000000-0000-4000-8000-000000000015";
 
   const account = { id: accountId, name: "Main checking" };
 
@@ -111,7 +112,7 @@ export function createMockDataset(seed = 42): MockDataset {
 
   const transactions: MockDataset["transactions"] = [
     {
-      id: "tx-grocery-run",
+      id: "f2000000-0000-4000-8000-000000000001",
       account_id: accountId,
       amount: splitTotal,
       merchant: "Whole Foods",
@@ -120,16 +121,16 @@ export function createMockDataset(seed = 42): MockDataset {
       splits: buildSplits(splitAmounts, splitTotal),
     },
     {
-      id: "tx-coffee",
+      id: "f2000000-0000-4000-8000-000000000002",
       account_id: accountId,
       amount: 6.5,
       merchant: "Daily Grind",
       date: "2025-03-17",
       spending_type: "debit",
-      splits: buildSplits([[bucketFun, 6.5]], 6.5),
+      primary_bucket_id: bucketFun,
     },
     {
-      id: "tx-netflix",
+      id: "f2000000-0000-4000-8000-000000000003",
       account_id: accountId,
       amount: 15.99,
       merchant: "Netflix",

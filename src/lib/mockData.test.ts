@@ -54,9 +54,14 @@ describe("createMockDataset", () => {
 
   it("selectors resolve split allocations by bucket id", () => {
     const { buckets, transactions } = createMockDataset(1);
-    const groceries = getBucketById(buckets, "bucket-groceries")!;
+    const groceries = getBucketById(
+      buckets,
+      "f1000000-0000-4000-8000-000000000014",
+    )!;
     const alloc = selectAllocationsForBucket(transactions, groceries.id);
-    const wholeFoods = alloc.find((a) => a.transaction.id === "tx-grocery-run");
+    const wholeFoods = alloc.find(
+      (a) => a.transaction.id === "f2000000-0000-4000-8000-000000000001",
+    );
     expect(wholeFoods?.amount).toBe(52);
   });
 });
