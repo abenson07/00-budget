@@ -90,7 +90,7 @@ export function TransactionDetail({
               {formatRelativeCalendarDay(tx.date)}
             </p>
           </div>
-          <p className="text-[4.5rem] font-bold leading-[0.95] tracking-tight text-[#1e1e1e]">
+          <p className="text-[48px] font-bold leading-none tracking-tight text-[#1e1e1e]">
             {formatUsd(tx.amount)}
           </p>
         </header>
