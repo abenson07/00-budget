@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { legacyRoutes } from "@/lib/legacy-routes";
+import { appRoutes } from "@/lib/routes";
 import { txAllocationLabel } from "@/lib/tx-allocation-label";
 import type { Bucket, Transaction } from "@/lib/types";
 import { TransactionCard } from "./TransactionCard";
@@ -17,7 +17,7 @@ export function TransactionListCondensed({
   return (
     <section className="flex flex-col gap-3.5">
       <Link
-        href={legacyRoutes.transactions}
+        href={appRoutes.transactions}
         className="flex items-center justify-between px-4"
       >
         <span className="text-xs font-bold tracking-wide text-black">
@@ -30,14 +30,13 @@ export function TransactionListCondensed({
 
       {transactions.length === 0 ? (
         <p className="px-4 text-sm text-[#1e0403]/60">
-          No transactions. Add some from the{" "}
+          No transactions yet.{" "}
           <Link
-            href={legacyRoutes.transactions}
+            href={appRoutes.transactions}
             className="font-medium text-[#1e0403] underline underline-offset-2"
           >
-            legacy list
+            Transactions
           </Link>
-          .
         </p>
       ) : (
         <ul className="flex flex-col">
