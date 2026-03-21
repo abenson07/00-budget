@@ -53,7 +53,7 @@ export function BucketDetailHero({ bucket }: BucketDetailHeroProps) {
           {bucket.name}
         </h1>
         <div className="flex w-full flex-col gap-1 leading-none">
-          <p className="text-5xl font-bold leading-none tracking-tight">
+          <p className="text-[48px] font-bold leading-none tracking-tight">
             {formatUsd(bucket.amount)}
           </p>
           <div className="flex w-full items-start justify-between gap-3 pt-1 text-base font-normal opacity-80">

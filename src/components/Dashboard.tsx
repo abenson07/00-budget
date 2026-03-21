@@ -36,7 +36,7 @@ export function Dashboard() {
             Account balance
           </p>
           <p className="mt-1 text-sm font-medium text-zinc-800">{account.name}</p>
-          <p className="mt-2 text-2xl font-semibold tabular-nums text-zinc-950">
+          <p className="mt-2 text-[48px] font-bold leading-none tracking-tight tabular-nums text-zinc-950">
             {formatUsd(balance)}
           </p>
           <p className="mt-1 text-xs text-zinc-500">
@@ -47,7 +47,7 @@ export function Dashboard() {
           <p className="text-xs font-medium uppercase tracking-wide text-emerald-800">
             Safe to spend
           </p>
-          <p className="mt-2 text-2xl font-semibold tabular-nums text-emerald-950">
+          <p className="mt-2 text-[48px] font-bold leading-none tracking-tight tabular-nums text-emerald-950">
             {formatUsd(safe)}
           </p>
           <p className="mt-1 text-xs text-emerald-800/85">
