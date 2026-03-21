@@ -41,7 +41,13 @@ export function TopCard({
         Safe to spend
       </p>
       <div>
-        <p className="text-[2.75rem] font-bold leading-none tracking-tight sm:text-[4.5rem]">
+        <p
+          className={
+            plain
+              ? "text-[48px] font-bold leading-none tracking-tight"
+              : "text-[2.75rem] font-bold leading-none tracking-tight sm:text-[4.5rem]"
+          }
+        >
           {formattedSafe}
         </p>
         {balanceAlert}
