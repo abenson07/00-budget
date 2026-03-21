@@ -126,7 +126,7 @@ export function BucketTransferForm({ bucketId: originBucketId }: BucketTransferF
     !!toBucket;
 
   return (
-    <div className="flex h-full flex-col gap-6">
+    <div className="flex min-h-0 flex-1 flex-col gap-6">
       <header className="flex items-center justify-between gap-2">
         <Link
           href={appRoutes.bucket(originBucketId)}
@@ -147,7 +147,7 @@ export function BucketTransferForm({ bucketId: originBucketId }: BucketTransferF
         </Link>
       </header>
 
-      <div className="flex h-full flex-col items-center gap-1 px-1">
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-1 px-1">
         <p className="text-[2.5rem] font-bold leading-none tracking-tight tabular-nums text-[#1b1b1b]">
           {formatUsd(amountUsd)}
         </p>

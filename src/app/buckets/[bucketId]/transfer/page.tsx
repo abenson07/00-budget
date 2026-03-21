@@ -18,8 +18,8 @@ export default function BucketTransferPage() {
   const bucket = getBucketById(buckets, bucketId);
 
   return (
-    <div className="min-h-screen bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
-      <div className="mx-auto flex h-full w-full max-w-md flex-col px-4 pb-10 pt-6">
+    <div className="flex min-h-screen flex-col bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
+      <div className="mx-auto flex min-h-0 w-full max-w-md flex-1 flex-col px-4 pb-10 pt-6">
         {!bucket ? (
           <div className="rounded-lg border border-amber-200 bg-amber-50/90 p-4 text-amber-950">
             <h1 className="text-lg font-semibold">Bucket not found</h1>
