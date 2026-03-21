@@ -46,16 +46,16 @@ export function EssentialBucketCard({ bucket }: EssentialBucketCardProps) {
   return (
     <Link
       href={appRoutes.bucket(bucket.id)}
-      className="relative flex h-[88px] w-full min-w-0 items-stretch gap-2 overflow-hidden rounded-lg border border-solid border-[#bbb] bg-[#efeeea] pl-[152px] pr-4 py-4 outline-offset-2 transition-opacity active:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#1e0403]/40"
+      className="relative flex h-[88px] w-full min-w-0 items-stretch gap-2 overflow-hidden rounded-lg border border-solid border-[#bbb] bg-[#efeeea] pl-[110px] pr-4 py-4 outline-offset-2 transition-opacity active:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#1e0403]/40"
       style={{ backgroundColor: CARD_BG }}
     >
-      <div className="absolute bottom-0 left-0 top-0 w-[140px] overflow-hidden rounded-l-md">
+      <div className="absolute bottom-0 left-0 top-0 w-[98px] overflow-hidden rounded-l-md">
         <div className="relative h-full w-full">
           <Image
             src={imageSrc}
             alt=""
             fill
-            sizes="140px"
+            sizes="98px"
             className="object-cover"
           />
           <div

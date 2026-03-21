@@ -41,8 +41,8 @@ export type BucketListCardRowProps = {
 };
 
 /**
- * Figma BucketCard list variant: full-width `#efeeea` tile, fixed 88px height, 140px-wide image
- * + gradient into card fill, `pl-[152px]` body row (name | amount+meta | chevron).
+ * Figma BucketCard list variant: full-width `#efeeea` tile, fixed 88px height, ~98px-wide image
+ * + gradient into card fill, `pl-[110px]` body row (name | amount+meta | chevron).
  */
 export function BucketListCardRow({
   href,
@@ -62,16 +62,16 @@ export function BucketListCardRow({
   return (
     <Link
       href={href}
-      className="relative flex h-[88px] w-full items-center gap-2 overflow-hidden rounded-lg border border-solid border-[#bbb] bg-[#efeeea] pl-[152px] pr-4 outline-offset-2 transition-opacity active:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#1e0403]/40"
+      className="relative flex h-[88px] w-full items-center gap-2 overflow-hidden rounded-lg border border-solid border-[#bbb] bg-[#efeeea] pl-[110px] pr-4 outline-offset-2 transition-opacity active:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#1e0403]/40"
       style={{ backgroundColor: CARD_BG }}
     >
-      <div className="absolute bottom-0 left-0 top-0 w-[140px] overflow-hidden rounded-l-md">
+      <div className="absolute bottom-0 left-0 top-0 w-[98px] overflow-hidden rounded-l-md">
         <div className="relative h-full w-full">
           <Image
             src={imageSrc}
             alt=""
             fill
-            sizes="140px"
+            sizes="98px"
             className={imageClassName ? `object-cover ${imageClassName}` : "object-cover"}
           />
           <div

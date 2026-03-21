@@ -13,7 +13,7 @@ export function BucketCardCondensed({ bucket }: { bucket: Bucket }) {
       <p className="font-mono text-xs font-medium uppercase tracking-wide text-[#1e0403]">
         {bucket.name}
       </p>
-      <p className="mt-1 text-3xl font-bold leading-tight tracking-tight text-[#1b1b1b] sm:text-[2.5rem]">
+      <p className="mt-1 text-[1.75rem] font-bold leading-tight tracking-tight text-[#1b1b1b] sm:text-[2.25rem]">
         {formatUsd(bucket.amount)}
       </p>
       <p className="mt-auto pt-2 font-mono text-xs text-[#1e0403]/50">
