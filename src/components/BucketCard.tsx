@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { appRoutes } from "@/lib/routes";
+import { isUnassignedBucket } from "@/lib/unassigned-bucket";
 import type { Bucket } from "@/lib/types";
 import { formatUsd } from "@/lib/format";
 
 export type BucketKindTag = "Unassigned" | "Essential" | "Discretionary";
 
 export function bucketKindTag(bucket: Bucket): BucketKindTag {
-  if (bucket.name === "Unassigned") return "Unassigned";
+  if (isUnassignedBucket(bucket)) return "Unassigned";
   if (bucket.type === "essential") return "Essential";
   return "Discretionary";
 }

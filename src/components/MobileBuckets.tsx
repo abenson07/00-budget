@@ -11,6 +11,7 @@ import {
 } from "@/components/home";
 import { formatUsd } from "@/lib/format";
 import { appRoutes } from "@/lib/routes";
+import { isUnassignedBucket } from "@/lib/unassigned-bucket";
 import {
   selectSafeToSpend,
   useBudgetStore,
@@ -25,7 +26,10 @@ export function MobileBuckets() {
     [buckets],
   );
   const discretionary = useMemo(
-    () => sortedBuckets.filter((b) => b.type === "discretionary"),
+    () =>
+      sortedBuckets.filter(
+        (b) => b.type === "discretionary" && !isUnassignedBucket(b),
+      ),
     [sortedBuckets],
   );
   const essentialBuckets = useMemo(

@@ -12,6 +12,7 @@ import {
 } from "@/components/home";
 import { formatUsd } from "@/lib/format";
 import { legacyRoutes } from "@/lib/legacy-routes";
+import { isUnassignedBucket } from "@/lib/unassigned-bucket";
 import {
   selectSafeToSpend,
   useBudgetStore,
@@ -27,7 +28,11 @@ export function MobileHome() {
     () => [...buckets].sort((a, b) => a.order - b.order),
     [buckets],
   );
-  const previewBuckets = sortedBuckets.slice(0, 2);
+  const listBuckets = useMemo(
+    () => sortedBuckets.filter((b) => !isUnassignedBucket(b)),
+    [sortedBuckets],
+  );
+  const previewBuckets = listBuckets.slice(0, 2);
   const essentialBuckets = useMemo(
     () => sortedBuckets.filter((b) => b.type === "essential"),
     [sortedBuckets],

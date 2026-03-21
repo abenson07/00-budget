@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import Link from "next/link";
 import { BucketCard } from "@/components/BucketCard";
 import { formatUsd } from "@/lib/format";
+import { isUnassignedBucket } from "@/lib/unassigned-bucket";
 import { appRoutes } from "@/lib/routes";
 import {
   selectAccountBalance,
@@ -17,7 +18,10 @@ export function Dashboard() {
   const safe = useBudgetStore(selectSafeToSpend);
   const buckets = useBudgetStore((s) => s.buckets);
   const sortedBuckets = useMemo(
-    () => [...buckets].sort((a, b) => a.order - b.order),
+    () =>
+      [...buckets]
+        .sort((a, b) => a.order - b.order)
+        .filter((b) => !isUnassignedBucket(b)),
     [buckets],
   );
 
