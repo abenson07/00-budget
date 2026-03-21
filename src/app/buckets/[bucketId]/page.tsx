@@ -43,7 +43,7 @@ export default function BucketDetailPage() {
 
   return (
     <div className="min-h-screen bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-8 px-4 pb-10 pt-[4.5rem]">
+      <div className="mx-auto flex w-full max-w-md flex-col gap-8 px-4 pb-10 pt-8">
         <nav>
           <Link
             href={appRoutes.buckets}

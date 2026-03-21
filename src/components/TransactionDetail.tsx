@@ -52,7 +52,7 @@ export function TransactionDetail({
   if (!tx) {
     return (
       <div className="min-h-screen bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
-        <div className="mx-auto max-w-md px-4 pb-10 pt-[4.5rem]">
+        <div className="mx-auto max-w-md px-4 pb-10 pt-8">
           <p className="text-[#1e0403]/70">Transaction not found.</p>
           <Link
             href={routes.transactionsList}
@@ -71,7 +71,7 @@ export function TransactionDetail({
 
   return (
     <div className="min-h-screen bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-12 px-4 pb-10 pt-[4.5rem]">
+      <div className="mx-auto flex w-full max-w-md flex-col gap-12 px-4 pb-10 pt-8">
         <nav>
           <Link
             href={routes.transactionsList}

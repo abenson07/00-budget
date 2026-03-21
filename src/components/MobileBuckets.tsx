@@ -10,6 +10,7 @@ import {
   TopCard,
 } from "@/components/home";
 import { formatUsd } from "@/lib/format";
+import { appRoutes } from "@/lib/routes";
 import {
   selectSafeToSpend,
   useBudgetStore,
@@ -34,13 +35,19 @@ export function MobileBuckets() {
 
   return (
     <div className="min-h-screen bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 pb-10 pt-[4.5rem]">
-        <nav>
+      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 pb-10 pt-8">
+        <nav className="flex items-center justify-between gap-3">
           <Link
             href="/"
             className="font-mono text-xs font-medium text-[#1e0403]/70 underline decoration-[#1e0403]/25 underline-offset-2 transition-colors hover:text-[#1b1b1b]"
           >
             ← Home
+          </Link>
+          <Link
+            href={appRoutes.bucketNew}
+            className="shrink-0 rounded-lg bg-[#1e1e1e] px-3 py-1.5 font-mono text-xs font-medium text-white transition-opacity active:opacity-90"
+          >
+            New bucket
           </Link>
         </nav>
 

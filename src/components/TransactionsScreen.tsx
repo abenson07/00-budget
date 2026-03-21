@@ -27,7 +27,7 @@ export function TransactionsScreen() {
 
   return (
     <div className="min-h-screen bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-12 px-4 pb-10 pt-[4.5rem]">
+      <div className="mx-auto flex w-full max-w-md flex-col gap-12 px-4 pb-10 pt-8">
         <section className="flex flex-col gap-4 text-[#1e1e1e]">
           <p className="font-[family-name:var(--font-instrument-serif)] text-2xl leading-tight">
             Transactions
