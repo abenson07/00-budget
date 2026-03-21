@@ -1,8 +1,9 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
+import { resolveSupabasePublishableKey } from "@/utils/supabase/publishable-key";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
+const supabaseKey = resolveSupabasePublishableKey();
 
 /**
  * Refreshes the user's auth session. Must be called from Next.js middleware.
