@@ -11,6 +11,8 @@ export type BucketMetadataInput = {
   top_off: number | null;
   /** Fraction 0–1 (e.g. 0.12 = 12%). */
   percentage: number | null;
+  /** Discretionary savings goal target; stored as DB `due_date`. */
+  goal_target_date: string;
 };
 
 export function applyBucketMetadata(
@@ -27,7 +29,12 @@ export function applyBucketMetadata(
   };
 
   if (input.type === "discretionary") {
-    return { ...base, type: "discretionary" as const };
+    const g = input.goal_target_date.trim();
+    return {
+      ...base,
+      type: "discretionary" as const,
+      goal_target_date: g !== "" ? g : null,
+    };
   }
 
   if (input.essential_subtype === "bill") {
@@ -74,6 +81,10 @@ export function validateBucketMetadata(input: BucketMetadataInput): string[] {
     if (!Number.isFinite(input.percentage) || input.percentage < 0 || input.percentage > 1) {
       errors.push("Percentage must be between 0% and 100%");
     }
+  }
+  if (input.type === "discretionary" && input.goal_target_date.trim()) {
+    const ms = parseIsoLocalMs(input.goal_target_date.trim());
+    if (ms == null) errors.push("Goal target date is not a valid calendar date");
   }
   return errors;
 }

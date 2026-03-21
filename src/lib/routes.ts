@@ -4,6 +4,7 @@ import { legacyRoutes } from "./legacy-routes";
 export const appRoutes = {
   home: "/",
   buckets: "/buckets",
+  bucketNew: "/buckets/new",
   bucket: (id: string) => `/buckets/${encodeURIComponent(id)}`,
   bucketSettings: (id: string) =>
     `/buckets/${encodeURIComponent(id)}/settings`,

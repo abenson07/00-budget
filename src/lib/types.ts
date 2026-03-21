@@ -27,6 +27,10 @@ export type EssentialSpendingBucket = BucketBase & {
 
 export type DiscretionaryBucket = BucketBase & {
   type: "discretionary";
+  /**
+   * Savings-style goal target date; persisted as `due_date` in DB for discretionary rows.
+   */
+  goal_target_date: string | null;
 };
 
 export type Bucket =

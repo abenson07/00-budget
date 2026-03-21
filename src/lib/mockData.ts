@@ -58,6 +58,7 @@ export function createMockDataset(seed = 42): MockDataset {
       amount: 120.5 + funNudge * 0.1,
       top_off: null,
       percentage: null,
+      goal_target_date: null,
     },
     {
       id: bucketRent,
@@ -101,6 +102,7 @@ export function createMockDataset(seed = 42): MockDataset {
       amount: 95 + funNudge,
       top_off: 150,
       percentage: null,
+      goal_target_date: null,
     },
   ];
 

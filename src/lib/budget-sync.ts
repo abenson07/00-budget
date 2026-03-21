@@ -50,7 +50,13 @@ export function rowToBucket(row: BucketRow): Bucket {
   };
 
   if (row.type === "discretionary") {
-    return { ...base, type: "discretionary" as const };
+    const gtd = row.due_date;
+    return {
+      ...base,
+      type: "discretionary" as const,
+      goal_target_date:
+        typeof gtd === "string" && gtd.trim() !== "" ? gtd.trim() : null,
+    };
   }
 
   const sub = row.essential_subtype ?? "essential_spending";
@@ -213,6 +219,37 @@ export async function seedDemoIfEmpty(
   return true;
 }
 
+export async function persistBucketCreate(
+  supabase: SupabaseClient,
+  accountId: string,
+  bucket: Bucket,
+): Promise<void> {
+  const row: Record<string, unknown> = {
+    id: bucket.id,
+    account_id: accountId,
+    name: bucket.name,
+    type: bucket.type,
+    essential_subtype:
+      bucket.type === "essential" ? bucket.essential_subtype : null,
+    amount: bucket.amount,
+    sort_order: bucket.order,
+    top_off: bucket.top_off,
+    percentage: bucket.percentage,
+  };
+  if (bucket.type === "essential" && bucket.essential_subtype === "bill") {
+    row.due_date = bucket.due_date;
+    row.alert_date = bucket.alert_date;
+  } else if (bucket.type === "discretionary") {
+    row.due_date = bucket.goal_target_date;
+    row.alert_date = null;
+  } else {
+    row.due_date = null;
+    row.alert_date = null;
+  }
+  const { error } = await supabase.from("buckets").insert(row);
+  if (error) throw error;
+}
+
 export async function persistBucketAmounts(
   supabase: SupabaseClient,
   buckets: Bucket[],
@@ -245,7 +282,7 @@ export function bucketToDbUpdate(b: Bucket): Record<string, unknown> {
     }
   } else {
     row.essential_subtype = null;
-    row.due_date = null;
+    row.due_date = b.goal_target_date;
     row.alert_date = null;
   }
   return row;

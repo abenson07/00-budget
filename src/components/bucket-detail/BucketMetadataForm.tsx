@@ -28,6 +28,7 @@ function bucketToFormState(b: Bucket): {
   alert_date: string;
   top_off: string;
   percentagePct: string;
+  goal_target_date: string;
 } {
   return {
     name: b.name,
@@ -41,6 +42,8 @@ function bucketToFormState(b: Bucket): {
     top_off: b.top_off != null ? String(b.top_off) : "",
     percentagePct:
       b.percentage != null ? String(Math.round(b.percentage * 100000) / 1000) : "",
+    goal_target_date:
+      b.type === "discretionary" ? (b.goal_target_date ?? "") : "",
   };
 }
 
@@ -68,6 +71,7 @@ export function BucketMetadataForm({ bucketId, bucket }: BucketMetadataFormProps
   const [editAlert, setEditAlert] = useState("");
   const [editTopOff, setEditTopOff] = useState("");
   const [editPct, setEditPct] = useState("");
+  const [editGoalTarget, setEditGoalTarget] = useState("");
   const [editError, setEditError] = useState<string | null>(null);
   const [editOk, setEditOk] = useState(false);
 
@@ -81,6 +85,7 @@ export function BucketMetadataForm({ bucketId, bucket }: BucketMetadataFormProps
     setEditAlert(f.alert_date);
     setEditTopOff(f.top_off);
     setEditPct(f.percentagePct);
+    setEditGoalTarget(f.goal_target_date);
   }, []);
 
   useEffect(() => {
@@ -117,6 +122,7 @@ export function BucketMetadataForm({ bucketId, bucket }: BucketMetadataFormProps
       top_off: topOff == null || Number.isNaN(topOff) ? null : topOff,
       percentage:
         pctRaw == null || Number.isNaN(pctRaw) ? null : pctRaw / 100,
+      goal_target_date: editGoalTarget,
     };
 
     try {
@@ -251,6 +257,20 @@ export function BucketMetadataForm({ bucketId, bucket }: BucketMetadataFormProps
               Changing the due date sets the alert to five days before. You can
               adjust the alert separately; it must stay before the due date.
             </p>
+          </div>
+        ) : null}
+        {editType === "discretionary" ? (
+          <div>
+            <label htmlFor="edit-goal-target" className={labelClass()}>
+              Goal target date (optional)
+            </label>
+            <input
+              id="edit-goal-target"
+              type="date"
+              className={inputClass()}
+              value={editGoalTarget}
+              onChange={(e) => setEditGoalTarget(e.target.value)}
+            />
           </div>
         ) : null}
         <div>

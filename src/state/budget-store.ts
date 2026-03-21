@@ -15,12 +15,18 @@ import { applyBucketMetadata, validateBucketMetadata } from "@/lib/bucket-metada
 import {
   fetchBudgetDataset,
   persistBucketAmounts,
+  persistBucketCreate,
   persistBucketUpdate,
   persistTransactionCreate,
   persistTransactionDelete,
   persistTransactionUpdate,
   seedDemoIfEmpty,
 } from "@/lib/budget-sync";
+import {
+  buildNewBucketFromCategory,
+  nextBucketSortOrder,
+  type NewBucketCategoryId,
+} from "@/lib/new-bucket-from-category";
 import { createMockDataset } from "@/lib/mockData";
 import type { Account, Bucket, Transaction } from "@/lib/types";
 import { validateTransactionAllocation } from "@/lib/validation";
@@ -89,6 +95,10 @@ type BudgetActions = {
   ) => void;
 
   updateBucketMetadata: (bucketId: string, input: BucketMetadataInput) => void;
+
+  createBucketFromCategory: (category: NewBucketCategoryId) => string;
+
+  appendBucket: (bucket: Bucket) => void;
 
   /** Load from Supabase; seeds demo if `accounts` is empty. No-op if env missing. */
   syncFromSupabase: () => Promise<void>;
@@ -257,6 +267,39 @@ export const useBudgetStore = create<BudgetState & BudgetActions>((set, get) => 
         await persistBucketUpdate(supabase, get().getBucketById(bucketId)!);
       } catch (e) {
         console.error("updateBucketMetadata persist failed", e);
+      }
+    })();
+  },
+
+  createBucketFromCategory: (category) => {
+    const { account, buckets } = get();
+    const order = nextBucketSortOrder(buckets);
+    const bucket = buildNewBucketFromCategory(category, order);
+    set({ buckets: [...buckets, bucket] });
+
+    const supabase = tryCreateSupabase();
+    if (!supabase) return bucket.id;
+    void (async () => {
+      try {
+        await persistBucketCreate(supabase, account.id, bucket);
+      } catch (e) {
+        console.error("createBucketFromCategory persist failed", e);
+      }
+    })();
+    return bucket.id;
+  },
+
+  appendBucket: (bucket) => {
+    const { account, buckets } = get();
+    set({ buckets: [...buckets, bucket] });
+
+    const supabase = tryCreateSupabase();
+    if (!supabase) return;
+    void (async () => {
+      try {
+        await persistBucketCreate(supabase, account.id, bucket);
+      } catch (e) {
+        console.error("appendBucket persist failed", e);
       }
     })();
   },
