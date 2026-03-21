@@ -1,13 +1,12 @@
 import Link from "next/link";
 import { formatUsd } from "@/lib/format";
-import { legacyRoutes } from "@/lib/legacy-routes";
 import type { Bucket } from "@/lib/types";
 
 /** Two-up preview tile on mobile home (Figma: BucketCard / Condensed). */
 export function BucketCardCondensed({ bucket }: { bucket: Bucket }) {
   return (
     <Link
-      href={legacyRoutes.bucket(bucket.id)}
+      href="/buckets"
       className="flex min-h-[140px] flex-col rounded-lg border border-[#bbb] bg-[#efeeea] p-4 transition-opacity active:opacity-90"
     >
       <p className="font-mono text-xs font-medium uppercase tracking-wide text-[#1e0403]">

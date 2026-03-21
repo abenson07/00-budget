@@ -68,8 +68,8 @@ export function createMockDataset(seed = 42): MockDataset {
       amount: 1800,
       top_off: 1800,
       percentage: null,
-      due_date: "2025-04-01",
-      alert_date: "2025-03-28",
+      due_date: "2026-03-22",
+      alert_date: "2026-03-19",
     },
     {
       id: bucketUtilities,
@@ -80,8 +80,8 @@ export function createMockDataset(seed = 42): MockDataset {
       amount: 185.33,
       top_off: 220,
       percentage: null,
-      due_date: "2025-04-15",
-      alert_date: "2025-04-10",
+      due_date: "2026-04-15",
+      alert_date: "2026-04-10",
     },
     {
       id: bucketGroceries,

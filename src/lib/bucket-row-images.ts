@@ -18,3 +18,19 @@ export function discretionaryImageForBucketId(id: string): string {
 /** Cover art for the aggregated essentials row on the buckets list. */
 export const ESSENTIALS_LIST_IMAGE =
   "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=720&q=80";
+
+const ESSENTIAL_ROW_IMAGES = [
+  "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=720&q=80",
+  "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=720&q=80",
+  "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=720&q=80",
+  "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=720&q=80",
+  "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=720&q=80",
+] as const;
+
+export function essentialImageForBucketId(id: string): string {
+  let h = 0;
+  for (let i = 0; i < id.length; i++) {
+    h = (h * 31 + id.charCodeAt(i)) >>> 0;
+  }
+  return ESSENTIAL_ROW_IMAGES[h % ESSENTIAL_ROW_IMAGES.length];
+}

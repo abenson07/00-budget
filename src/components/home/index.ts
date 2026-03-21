@@ -3,6 +3,7 @@ export { BalanceAlert } from "./BalanceAlert";
 export { BucketCardCondensed } from "./BucketCardCondensed";
 export { BucketListCardRow } from "./BucketListCardRow";
 export { DiscretionaryBucketRow } from "./DiscretionaryBucketRow";
+export { EssentialBucketCard } from "./EssentialBucketCard";
 export { EssentialsSummaryRow } from "./EssentialsSummaryRow";
 export { EssentialsStatus } from "./EssentialsStatus";
 export { TopCard } from "./TopCard";
