@@ -1,6 +1,9 @@
 export { AllBucketsButton } from "./AllBucketsButton";
 export { BalanceAlert } from "./BalanceAlert";
 export { BucketCardCondensed } from "./BucketCardCondensed";
+export { BucketListCardRow } from "./BucketListCardRow";
+export { DiscretionaryBucketRow } from "./DiscretionaryBucketRow";
+export { EssentialsSummaryRow } from "./EssentialsSummaryRow";
 export { EssentialsStatus } from "./EssentialsStatus";
 export { TopCard } from "./TopCard";
 export { TransactionCard } from "./TransactionCard";

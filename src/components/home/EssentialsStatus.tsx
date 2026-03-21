@@ -85,12 +85,18 @@ function CheckBadge() {
   );
 }
 
+type EssentialsTone = "onDark" | "onLight";
+
 /** Expandable essentials list + “All essentials on track” (Figma: EssentialsStatus / On Track). */
 export function EssentialsStatus({
   essentialBuckets,
+  tone = "onDark",
 }: {
   essentialBuckets: Bucket[];
+  /** `onLight` for plain TopCard / cream page backgrounds. */
+  tone?: EssentialsTone;
 }) {
+  const onLight = tone === "onLight";
   const prefersReducedMotion = usePrefersReducedMotion();
   const [essentialsExposed, setEssentialsExposed] = useState(false);
   const listShellRef = useRef<HTMLDivElement>(null);
@@ -202,7 +208,13 @@ export function EssentialsStatus({
 
   if (essentialBuckets.length === 0) {
     return (
-      <div className="flex items-center gap-2 text-xs text-[#f9f8f4]">
+      <div
+        className={
+          onLight
+            ? "flex items-center gap-2 text-xs text-[#1b1b1b]"
+            : "flex items-center gap-2 text-xs text-[#f9f8f4]"
+        }
+      >
         <CheckBadge />
         <span>All essentials on track</span>
       </div>
@@ -213,7 +225,11 @@ export function EssentialsStatus({
     <div data-essential-animate className="flex justify-center pt-1">
       <Link
         href={legacyRoutes.home}
-        className="rounded-full border border-[#f9f8f4]/90 px-6 py-2 font-mono text-xs font-medium text-[#f9f8f4] transition-opacity active:opacity-85"
+        className={
+          onLight
+            ? "rounded-full border border-[#1e0403]/35 px-6 py-2 font-mono text-xs font-medium text-[#1b1b1b] transition-opacity active:opacity-85"
+            : "rounded-full border border-[#f9f8f4]/90 px-6 py-2 font-mono text-xs font-medium text-[#f9f8f4] transition-opacity active:opacity-85"
+        }
       >
         Add an essential
       </Link>
@@ -224,11 +240,23 @@ export function EssentialsStatus({
     const sub = essentialRowSubtitle(b);
     return (
       <div key={b.id} data-essential-animate>
-        <div className="flex items-start justify-between gap-3 text-[#faf9f6]">
+        <div
+          className={
+            onLight
+              ? "flex items-start justify-between gap-3 text-[#1b1b1b]"
+              : "flex items-start justify-between gap-3 text-[#faf9f6]"
+          }
+        >
           <div className="min-w-0 flex-1">
             <p className="text-lg font-medium leading-tight">{b.name}</p>
             {sub ? (
-              <p className="mt-0.5 text-sm font-medium leading-tight text-[#faf9f6]/50">
+              <p
+                className={
+                  onLight
+                    ? "mt-0.5 text-sm font-medium leading-tight text-[#1e0403]/55"
+                    : "mt-0.5 text-sm font-medium leading-tight text-[#faf9f6]/50"
+                }
+              >
                 {sub}
               </p>
             ) : null}
@@ -245,7 +273,11 @@ export function EssentialsStatus({
     <>
       <button
         type="button"
-        className="flex w-full cursor-pointer items-center gap-2 rounded-sm text-left text-xs text-[#f9f8f4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f9f8f4]/80"
+        className={
+          onLight
+            ? "flex w-full cursor-pointer items-center gap-2 rounded-sm text-left text-xs text-[#1b1b1b] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1e0403]/50"
+            : "flex w-full cursor-pointer items-center gap-2 rounded-sm text-left text-xs text-[#f9f8f4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f9f8f4]/80"
+        }
         onClick={handleToggle}
         aria-expanded={essentialsExposed}
         aria-controls={
