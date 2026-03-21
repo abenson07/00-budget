@@ -1,3 +1,5 @@
+import type { Bucket } from "./types";
+
 /** Unsplash stills for discretionary row art (varied per bucket id). */
 const DISCRETIONARY_IMAGES = [
   "https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=720&q=80",
@@ -33,4 +35,12 @@ export function essentialImageForBucketId(id: string): string {
     h = (h * 31 + id.charCodeAt(i)) >>> 0;
   }
   return ESSENTIAL_ROW_IMAGES[h % ESSENTIAL_ROW_IMAGES.length];
+}
+
+/** Row cover image for any bucket (essential vs discretionary art). */
+export function imageForBucket(bucket: Bucket): string {
+  if (bucket.type === "essential") {
+    return essentialImageForBucketId(bucket.id);
+  }
+  return discretionaryImageForBucketId(bucket.id);
 }

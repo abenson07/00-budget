@@ -4,5 +4,7 @@ export const legacyRoutes = {
   transactions: "/test/transactions",
   transaction: (id: string) =>
     `/test/transactions/${encodeURIComponent(id)}`,
+  transactionSplit: (id: string) =>
+    `/test/transactions/${encodeURIComponent(id)}/split`,
   bucket: (id: string) => `/test/buckets/${encodeURIComponent(id)}`,
 } as const;

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { formatUsd } from "@/lib/format";
-import { legacyRoutes } from "@/lib/legacy-routes";
+import { appRoutes } from "@/lib/routes";
 import type { Transaction } from "@/lib/types";
 
 type TransactionCardProps = {
@@ -15,7 +15,7 @@ export function TransactionCard({
 }: TransactionCardProps) {
   return (
     <Link
-      href={legacyRoutes.transaction(tx.id)}
+      href={appRoutes.transaction(tx.id)}
       className="flex items-start justify-between gap-3 rounded-lg px-4 py-3 transition-colors active:bg-black/[0.04]"
     >
       <div className="min-w-0 flex-1">
