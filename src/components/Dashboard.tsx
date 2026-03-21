@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import Link from "next/link";
 import { BucketCard } from "@/components/BucketCard";
 import { formatUsd } from "@/lib/format";
+import { legacyRoutes } from "@/lib/legacy-routes";
 import {
   selectAccountBalance,
   selectSafeToSpend,
@@ -58,7 +59,7 @@ export function Dashboard() {
       <div className="mt-8 flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-lg font-medium text-zinc-900">Buckets</h2>
         <Link
-          href="/transactions"
+          href={legacyRoutes.transactions}
           className="text-sm font-medium text-zinc-700 underline decoration-zinc-300 underline-offset-2 hover:text-zinc-900"
         >
           Transactions

@@ -11,7 +11,7 @@ Goal: implement the transaction editor where a user can reassign a transaction t
 - Works with Phase 1 transaction model (`spending_type=debit`)
 
 ## Implementation steps (agent)
-1. Implement Transaction Detail page (`src/app/transactions/[transactionId]/page.tsx`)
+1. Implement Transaction Detail page (`src/app/test/transactions/[transactionId]/page.tsx`)
    - Display:
      - merchant, date, amount
      - current split allocations (bucket + amount)

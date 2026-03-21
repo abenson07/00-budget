@@ -15,7 +15,7 @@ Goal: implement the bucket detail screen where users can inspect a bucket, see i
   - For rules: edit `top_off` and/or `percentage`
 
 ## Implementation steps (agent)
-1. Implement Bucket Detail page (`src/app/buckets/[bucketId]/page.tsx`)
+1. Implement Bucket Detail page (`src/app/test/buckets/[bucketId]/page.tsx`)
    - Fetch bucket by id from store.
    - Show:
      - bucket name
@@ -25,7 +25,7 @@ Goal: implement the bucket detail screen where users can inspect a bucket, see i
      - due/alert dates for `bill` subtype
 2. Assigned transactions list
    - Render a list/table of transactions that include this bucket in their splits.
-   - Provide a link to each transaction detail route (`/transactions/[transactionId]`).
+   - Provide a link to each transaction detail route (`/test/transactions/[transactionId]`).
 3. Manual bucket transfer UI + action wiring
    - UI:
      - pick destination bucket

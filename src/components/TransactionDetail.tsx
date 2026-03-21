@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { legacyRoutes } from "@/lib/legacy-routes";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getEffectiveSplits } from "@/lib/allocation";
 import { MONEY_EPSILON } from "@/lib/constants";
@@ -260,7 +261,7 @@ export function TransactionDetail({ transactionId }: Props) {
       <main className="mx-auto min-h-screen max-w-2xl p-6 font-sans">
         <p className="text-zinc-600">Transaction not found.</p>
         <Link
-          href="/transactions"
+          href={legacyRoutes.transactions}
           className="mt-4 inline-block text-sm font-medium text-zinc-700 underline"
         >
           Back to list
@@ -274,7 +275,7 @@ export function TransactionDetail({ transactionId }: Props) {
   return (
     <main className="mx-auto min-h-screen max-w-2xl p-6 font-sans">
       <Link
-        href="/transactions"
+        href={legacyRoutes.transactions}
         className="text-sm font-medium text-zinc-700 underline decoration-zinc-300 underline-offset-2 hover:text-zinc-900"
       >
         ← Transactions

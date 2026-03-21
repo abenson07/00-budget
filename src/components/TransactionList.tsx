@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { getEffectiveSplits } from "@/lib/allocation";
+import { legacyRoutes } from "@/lib/legacy-routes";
 import { useBudgetStore } from "@/state/budget-store";
 
 export function TransactionList() {
@@ -15,7 +16,7 @@ export function TransactionList() {
       <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-semibold tracking-tight">Transactions</h1>
         <Link
-          href="/"
+          href={legacyRoutes.home}
           className="text-sm font-medium text-zinc-700 underline decoration-zinc-300 underline-offset-2 hover:text-zinc-900"
         >
           Dashboard
@@ -27,7 +28,7 @@ export function TransactionList() {
           return (
             <li key={tx.id}>
               <Link
-                href={`/transactions/${tx.id}`}
+                href={legacyRoutes.transaction(tx.id)}
                 className="flex flex-col gap-1 px-4 py-3 transition-colors hover:bg-zinc-50 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div>

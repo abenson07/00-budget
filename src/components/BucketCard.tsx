@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { legacyRoutes } from "@/lib/legacy-routes";
 import type { Bucket } from "@/lib/types";
 import { formatUsd } from "@/lib/format";
 
@@ -34,7 +35,7 @@ export function BucketCard({ bucket }: { bucket: Bucket }) {
 
   return (
     <Link
-      href={`/buckets/${bucket.id}`}
+      href={legacyRoutes.bucket(bucket.id)}
       className="block rounded-lg border border-zinc-200 bg-white p-4 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50/80 active:bg-zinc-50"
     >
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">

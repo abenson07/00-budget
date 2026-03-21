@@ -14,6 +14,7 @@ import { bucketKindTag } from "@/components/BucketCard";
 import { getBucketById, selectAllocationsForBucket } from "@/lib/allocation";
 import { addDaysToIsoLocal } from "@/lib/dates";
 import { formatUsd } from "@/lib/format";
+import { legacyRoutes } from "@/lib/legacy-routes";
 import type { BucketMetadataInput } from "@/lib/bucket-metadata";
 import type { Bucket } from "@/lib/types";
 import { useBudgetStore } from "@/state/budget-store";
@@ -207,7 +208,7 @@ export default function BucketDetailPage() {
     <main className="mx-auto min-h-screen max-w-2xl p-4 pb-10 font-sans sm:p-6">
       <nav className="text-sm">
         <Link
-          href="/"
+          href={legacyRoutes.home}
           className="font-medium text-zinc-700 underline decoration-zinc-300 underline-offset-2 hover:text-zinc-900"
         >
           ← Dashboard
@@ -324,7 +325,7 @@ export default function BucketDetailPage() {
                               </td>
                               <td className="px-3 py-2">
                                 <Link
-                                  href={`/transactions/${tx.id}`}
+                                  href={legacyRoutes.transaction(tx.id)}
                                   className="font-medium text-sky-800 underline decoration-sky-200 underline-offset-2 hover:text-sky-950"
                                 >
                                   {tx.merchant || "—"}

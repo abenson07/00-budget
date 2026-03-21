@@ -41,9 +41,9 @@ Goal: create the baseline app structure so we can start implementing Buckets/Saf
      - `src/lib/repositories/budgetRepo.ts`
      - Provide placeholder methods: `loadDemoAccount()`, `upsertBuckets()`, `upsertTransactions()`, etc.
 7. Add route skeletons (Phase 1 screens)
-   - `src/app/page.tsx` (Dashboard)
-   - `src/app/buckets/[bucketId]/page.tsx` (Bucket Detail)
-   - `src/app/transactions/[transactionId]/page.tsx` (Transaction Detail)
+   - `src/app/page.tsx` (mobile home; legacy dashboard lives under `/test`)
+   - `src/app/test/buckets/[bucketId]/page.tsx` (Bucket Detail)
+   - `src/app/test/transactions/[transactionId]/page.tsx` (Transaction Detail)
    - `src/app/simulate/page.tsx` (Paycheck Simulator)
    - `src/app/alerts/page.tsx` (Alerts)
 8. Add minimal navigation + page shells
