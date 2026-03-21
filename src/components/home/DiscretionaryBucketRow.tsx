@@ -1,6 +1,6 @@
 import { discretionaryImageForBucketId } from "@/lib/bucket-row-images";
 import { formatUsd } from "@/lib/format";
-import { legacyRoutes } from "@/lib/legacy-routes";
+import { appRoutes } from "@/lib/routes";
 import type { Bucket } from "@/lib/types";
 import { BucketListCardRow } from "./BucketListCardRow";
 
@@ -14,7 +14,7 @@ export function DiscretionaryBucketRow({ bucket }: DiscretionaryBucketRowProps) 
 
   return (
     <BucketListCardRow
-      href={legacyRoutes.bucket(bucket.id)}
+      href={appRoutes.bucket(bucket.id)}
       imageSrc={src}
       title={bucket.name}
       primaryRight={formatUsd(bucket.amount)}

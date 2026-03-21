@@ -6,7 +6,7 @@ import { useMemo } from "react";
 import { essentialImageForBucketId } from "@/lib/bucket-row-images";
 import { dueLabelForBill } from "@/lib/essentials-dates";
 import { formatUsd } from "@/lib/format";
-import { legacyRoutes } from "@/lib/legacy-routes";
+import { appRoutes } from "@/lib/routes";
 import type { Bucket } from "@/lib/types";
 
 const CARD_BG = "#efeeea";
@@ -45,7 +45,7 @@ export function EssentialBucketCard({ bucket }: EssentialBucketCardProps) {
 
   return (
     <Link
-      href={legacyRoutes.bucket(bucket.id)}
+      href={appRoutes.bucket(bucket.id)}
       className="relative flex h-[88px] w-full min-w-0 items-stretch gap-2 overflow-hidden rounded-lg border border-solid border-[#bbb] bg-[#efeeea] pl-[152px] pr-4 py-4 outline-offset-2 transition-opacity active:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#1e0403]/40"
       style={{ backgroundColor: CARD_BG }}
     >
