@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
-  BucketAllocationTransactionRow,
-  BucketDetailHero,
-} from "@/components/bucket-detail";
-import { getBucketById, selectAllocationsForBucket } from "@/lib/allocation";
+  BucketBill,
+  BucketMonthlySpending,
+  BucketSpendingMoney,
+  BucketSpendingMoneyLocked,
+  BucketTransaction,
+} from "@/components/figma-buckets";
 import { appRoutes } from "@/lib/routes";
 import { useBudgetStore } from "@/state/budget-store";
 
@@ -21,30 +23,19 @@ export default function BucketDetailPage() {
         : "";
 
   const buckets = useBudgetStore((s) => s.buckets);
-  const transactions = useBudgetStore((s) => s.transactions);
-  const bucket = getBucketById(buckets, bucketId);
-  const allocations = useMemo(
-    () => selectAllocationsForBucket(transactions, bucketId),
-    [transactions, bucketId],
-  );
-
-  const sortedAllocations = useMemo(
-    () =>
-      [...allocations].sort(
-        (a, b) =>
-          new Date(b.transaction.date).getTime() -
-          new Date(a.transaction.date).getTime(),
-      ),
-    [allocations],
-  );
+  const transactions = useBudgetStore((s) => s.transactions.slice(0, 6));
+  const bucket = useMemo(() => buckets.find((b) => b.id === bucketId), [buckets, bucketId]);
+  const [riskState, setRiskState] = useState<"safe" | "atRisk">("safe");
+  const [bucketType, setBucketType] = useState<"monthly" | "bill" | "spending" | "spendingLocked">("monthly");
+  const atRisk = riskState === "atRisk";
 
   return (
-    <div className="min-h-screen bg-[var(--budget-page-bg)] font-[family-name:var(--font-instrument-sans)] text-[var(--budget-ink)]">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-8 px-4 pb-10 pt-8">
+    <div className="min-h-screen bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
+      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 pb-10 pt-8">
         <nav>
           <Link
             href={appRoutes.buckets}
-            className="text-xs font-medium text-[var(--budget-ink-soft)] underline decoration-[var(--budget-card-border)] underline-offset-2 transition-colors hover:text-[var(--budget-ink)]"
+            className="text-xs font-medium text-[#222]/55 underline decoration-[#222]/20 underline-offset-2 transition-colors hover:text-[#1b1b1b]"
           >
             ← Buckets
           </Link>
@@ -60,17 +51,75 @@ export default function BucketDetailPage() {
           </div>
         ) : (
           <>
-            <div className="flex flex-col gap-4">
-              <BucketDetailHero bucket={bucket} />
-              <div className="flex justify-center px-2">
-                <Link
-                  href={appRoutes.bucketSettings(bucketId)}
-                  className="rounded-[var(--radius-card)] border border-[var(--budget-card-border)] bg-white px-6 py-2.5 text-sm font-semibold text-[var(--budget-forest)] transition-opacity active:opacity-90"
+            <h1 className="font-display text-[44px] leading-none">
+              Bucket - {bucketType === "spendingLocked" ? "Spending money" : bucketType}
+            </h1>
+
+            <section className="rounded-lg border border-[#222]/10 bg-white/70 p-3">
+              <p className="text-xs font-semibold text-[#222]/70">State controller</p>
+              <div className="mt-2 flex gap-2">
+                <button
+                  type="button"
+                  className={`rounded px-2 py-1 text-xs ${riskState === "safe" ? "bg-[#1c3812] text-white" : "bg-[#e6e8dd]"}`}
+                  onClick={() => setRiskState("safe")}
                 >
-                  Change bucket settings
-                </Link>
+                  Safe
+                </button>
+                <button
+                  type="button"
+                  className={`rounded px-2 py-1 text-xs ${riskState === "atRisk" ? "bg-[#f35226] text-white" : "bg-[#e6e8dd]"}`}
+                  onClick={() => setRiskState("atRisk")}
+                >
+                  At risk
+                </button>
               </div>
-            </div>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {(["monthly", "bill", "spending", "spendingLocked"] as const).map((type) => (
+                  <button
+                    key={type}
+                    type="button"
+                    className={`rounded px-2 py-1 text-xs ${bucketType === type ? "bg-[#1b1b1b] text-white" : "bg-[#e6e8dd]"}`}
+                    onClick={() => setBucketType(type)}
+                  >
+                    {type}
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            {bucketType === "bill" ? (
+              <BucketBill
+                title={bucket.name}
+                balanceLabel={`$${Math.max(bucket.amount, 0).toFixed(0)}`}
+                cadenceLabel={`$${Math.max(bucket.top_off ?? 0, 0).toFixed(0)} per paycheck`}
+                atRisk={atRisk}
+                percentLabel={atRisk ? "20% " : "100% "}
+              />
+            ) : bucketType === "spending" ? (
+              <BucketSpendingMoney
+                title={bucket.name}
+                balanceLabel={`$${Math.max(bucket.amount, 0).toFixed(0)}`}
+                cadenceLabel={`$${Math.max(bucket.top_off ?? 0, 0).toFixed(0)} per paycheck`}
+                atRisk={atRisk}
+                percentLabel={atRisk ? "20% " : "100% "}
+              />
+            ) : bucketType === "spendingLocked" ? (
+              <BucketSpendingMoneyLocked
+                title={bucket.name}
+                balanceLabel={`$${Math.max(bucket.amount, 0).toFixed(0)}`}
+                cadenceLabel={`$${Math.max(bucket.top_off ?? 0, 0).toFixed(0)} per paycheck`}
+                atRisk={atRisk}
+                percentLabel={atRisk ? "20% " : "100% "}
+              />
+            ) : (
+              <BucketMonthlySpending
+                title={bucket.name}
+                balanceLabel={`$${Math.max(bucket.amount, 0).toFixed(0)}`}
+                cadenceLabel={`Top off to $${Math.max(bucket.top_off ?? 0, 0).toFixed(0)}`}
+                atRisk={atRisk}
+                percentLabel={atRisk ? "20% " : "100% "}
+              />
+            )}
 
             <section className="flex flex-col gap-3.5">
               <h2 className="font-display px-1 text-lg text-[var(--budget-ink)]">
@@ -88,23 +137,26 @@ export default function BucketDetailPage() {
                 </span>
               </Link>
 
-              {sortedAllocations.length === 0 ? (
-                <p className="px-1 text-sm text-[var(--budget-ink-soft)]">
-                  No transactions allocate to this bucket yet.
-                </p>
-              ) : (
-                <ul className="flex flex-col divide-y divide-[var(--budget-card-border)] border-y border-[var(--budget-card-border)] bg-white/40">
-                  {sortedAllocations.map(({ transaction: tx, amount }) => (
-                    <li key={tx.id}>
-                      <BucketAllocationTransactionRow
-                        transaction={tx}
-                        bucketAmount={amount}
+              <ul className="flex flex-col divide-y divide-[#222]/10 border-y border-[#222]/10">
+                {transactions.map((tx) => (
+                  <li key={tx.id}>
+                    <Link href={appRoutes.transaction(tx.id)}>
+                      <BucketTransaction
+                        title={tx.merchant || "Target"}
+                        amountLabel={`$${tx.amount.toFixed(0)}`}
+                        className="rounded-none bg-transparent px-0"
                       />
-                    </li>
-                  ))}
-                </ul>
-              )}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </section>
+            <Link
+              href={appRoutes.bucketSettings(bucketId)}
+              className="mx-auto rounded-lg bg-[#e6e8dd] px-4 py-2 text-sm font-semibold text-[#1c3812]"
+            >
+              Change bucket settings
+            </Link>
           </>
         )}
       </div>
