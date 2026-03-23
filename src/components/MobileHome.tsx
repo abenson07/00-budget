@@ -12,7 +12,8 @@ import { appRoutes } from "@/lib/routes";
 import { useBudgetStore } from "@/state/budget-store";
 
 export function MobileHome() {
-  const transactions = useBudgetStore((s) => s.transactions.slice(0, 6));
+  const transactionsAll = useBudgetStore((s) => s.transactions);
+  const transactions = useMemo(() => transactionsAll.slice(0, 6), [transactionsAll]);
   const [essentialsOpen, setEssentialsOpen] = useState(false);
   const homeBuckets = useMemo(
     () => [

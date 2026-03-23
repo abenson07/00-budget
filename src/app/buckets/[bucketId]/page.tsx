@@ -23,7 +23,8 @@ export default function BucketDetailPage() {
         : "";
 
   const buckets = useBudgetStore((s) => s.buckets);
-  const transactions = useBudgetStore((s) => s.transactions.slice(0, 6));
+  const transactionsAll = useBudgetStore((s) => s.transactions);
+  const transactions = useMemo(() => transactionsAll.slice(0, 6), [transactionsAll]);
   const bucket = useMemo(() => buckets.find((b) => b.id === bucketId), [buckets, bucketId]);
   const [riskState, setRiskState] = useState<"safe" | "atRisk">("safe");
   const [bucketType, setBucketType] = useState<"monthly" | "bill" | "spending" | "spendingLocked">("monthly");
