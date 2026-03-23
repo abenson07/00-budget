@@ -3,16 +3,17 @@
 import Link from "next/link";
 import { useMemo } from "react";
 import {
-  BucketTransaction,
   TOP_CARD_TRANSACTION_REFERENCE,
   TopCardTransaction,
 } from "@/components/figma-buckets";
+import { getEffectiveSplits } from "@/lib/allocation";
 import { appRoutes } from "@/lib/routes";
 import { useBudgetStore } from "@/state/budget-store";
 
 /** Full transactions list (Figma: Transactions / mobile screen). */
 export function TransactionsScreen() {
   const transactions = useBudgetStore((s) => s.transactions);
+  const buckets = useBudgetStore((s) => s.buckets);
   const sorted = useMemo(
     () =>
       [...transactions].sort(
@@ -33,18 +34,46 @@ export function TransactionsScreen() {
           {sorted.length === 0 ? (
             <p className="px-1 text-sm text-[#222]/60">No transactions yet.</p>
           ) : (
-            <ul className="flex flex-col divide-y divide-[#222]/10 border-y border-[#222]/10">
-              {sorted.map((tx) => (
-                <li key={tx.id}>
-                  <Link href={appRoutes.transaction(tx.id)}>
-                    <BucketTransaction
-                      title={tx.merchant || "Target"}
-                      amountLabel={`$${tx.amount.toFixed(0)}`}
-                      className="rounded-none bg-transparent px-0"
-                    />
-                  </Link>
-                </li>
-              ))}
+            <ul className="border-y border-[#222]/10">
+              {sorted.map((tx, index) => {
+                const firstSplit = getEffectiveSplits(tx)[0];
+                const bucket = firstSplit
+                  ? buckets.find((item) => item.id === firstSplit.bucketId)
+                  : undefined;
+                const bucketName = bucket?.name ?? "Unassigned";
+                const bucketHref = firstSplit
+                  ? appRoutes.bucket(firstSplit.bucketId)
+                  : appRoutes.buckets;
+                return (
+                  <li
+                    key={tx.id}
+                    className={index < sorted.length - 1 ? "border-b border-[#222]/10" : ""}
+                  >
+                    <div className="flex items-center justify-between py-4">
+                      <div className="flex flex-col gap-1">
+                        <Link
+                          href={appRoutes.transaction(tx.id)}
+                          className="w-fit text-[18px] font-semibold text-[#222] underline-offset-2 hover:underline"
+                        >
+                          {tx.merchant || "Target"}
+                        </Link>
+                        <Link
+                          href={bucketHref}
+                          className="w-fit text-[12px] font-medium text-[#1e0403]/50 underline-offset-2 hover:underline"
+                        >
+                          {bucketName}
+                        </Link>
+                      </div>
+                      <Link
+                        href={appRoutes.transaction(tx.id)}
+                        className="text-[18px] font-semibold text-[#222] underline-offset-2 hover:underline"
+                      >
+                        ${Math.round(tx.amount)}
+                      </Link>
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </section>

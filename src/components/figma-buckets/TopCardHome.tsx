@@ -2,6 +2,7 @@
 
 import gsap from "gsap";
 import {
+  type KeyboardEvent,
   useCallback,
   useId,
   useLayoutEffect,
@@ -87,6 +88,7 @@ export type TopCardHomeProps = {
   expanded?: boolean;
   onExpandedChange?: (next: boolean) => void;
   showToggleButton?: boolean;
+  toggleOnBannerClick?: boolean;
   /** Static expanded layout without GSAP (e.g. gallery snapshot). */
   disableAnimation?: boolean;
   className?: string;
@@ -109,6 +111,7 @@ export function TopCardHome({
   expanded: expandedControlled,
   onExpandedChange,
   showToggleButton,
+  toggleOnBannerClick = true,
   disableAnimation = false,
   className,
 }: TopCardHomeProps) {
@@ -233,6 +236,20 @@ export function TopCardHome({
     }
   };
 
+  const bannerButtonProps = toggleOnBannerClick
+    ? {
+        role: "button" as const,
+        tabIndex: 0,
+        onClick: handleToggle,
+        onKeyDown: (event: KeyboardEvent<HTMLDivElement>) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            handleToggle();
+          }
+        },
+      }
+    : {};
+
   const greenCard = (
     <div
       className="relative z-[2] mb-[-13px] flex h-[245px] w-full max-w-[408px] shrink-0 flex-col items-start justify-between rounded-xl bg-[#1c3812] px-6 py-8 not-italic leading-normal shadow-[0px_12px_20px_0px_rgba(0,0,0,0.15)]"
@@ -256,8 +273,16 @@ export function TopCardHome({
 
   const defaultSage = (
     <div
-      className="relative z-[1] mb-[-13px] flex w-full min-w-0 max-w-[408px] shrink-0 items-center justify-between gap-3 rounded-lg bg-[#cae0b9] px-4 pb-4 pt-[26px]"
+      className={[
+        "relative z-[1] mb-[-13px] flex w-full min-w-0 max-w-[408px] shrink-0 items-center justify-between gap-3 rounded-lg bg-[#cae0b9] px-4 pb-4 pt-[26px]",
+        toggleOnBannerClick ? "cursor-pointer" : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
       data-figma-node="28:5067"
+      aria-expanded={expanded}
+      aria-controls={`figma-top-card-essentials-${expandRegionId}`}
+      {...bannerButtonProps}
     >
       <div className="min-w-0 flex-1">
         <p className="truncate text-[20px] font-bold leading-normal text-[#1b1b1b] not-italic">
@@ -274,7 +299,17 @@ export function TopCardHome({
   );
 
   const expandedHeader = (
-    <div className="flex h-[19px] w-full min-w-0 max-w-[376px] shrink-0 items-center justify-between gap-3">
+    <div
+      className={[
+        "flex h-[19px] w-full min-w-0 max-w-[376px] shrink-0 items-center justify-between gap-3",
+        toggleOnBannerClick ? "cursor-pointer" : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+      aria-expanded={expanded}
+      aria-controls={`figma-top-card-essentials-${expandRegionId}`}
+      {...bannerButtonProps}
+    >
       <div className="min-w-0 flex-1">
         <p className="truncate text-[20px] font-bold leading-normal text-[#1b1b1b] not-italic">
           {essentialsLabel}
