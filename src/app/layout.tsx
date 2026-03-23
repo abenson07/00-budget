@@ -25,6 +25,12 @@ const instrumentSans = Instrument_Sans({
   subsets: ["latin"],
 });
 
+const instrumentSansCondensed = Instrument_Sans({
+  variable: "--font-instrument-sans-condensed",
+  subsets: ["latin"],
+  axes: ["wdth"],
+});
+
 export const metadata: Metadata = {
   title: "Budget",
   description: "Mobile-first budget overview",
@@ -38,7 +44,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable} ${instrumentSans.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable} ${instrumentSans.variable} ${instrumentSansCondensed.variable} h-full antialiased`}
     >
       <head>
         <link

@@ -77,6 +77,11 @@ body {
   font-family: var(--font-instrument-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
+.font-sans-condensed {
+  font-family: var(--font-instrument-sans-condensed), ui-sans-serif, system-ui, sans-serif;
+  font-variation-settings: "wdth" 77;
+}
+
 .font-display {
   font-family: var(--font-instrument-serif), ui-serif, Georgia, serif;
 }
