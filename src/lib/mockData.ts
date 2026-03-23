@@ -59,6 +59,7 @@ export function createMockDataset(seed = 42): MockDataset {
       top_off: null,
       percentage: null,
       goal_target_date: null,
+      locked: false,
     },
     {
       id: bucketRent,
@@ -103,6 +104,7 @@ export function createMockDataset(seed = 42): MockDataset {
       top_off: 150,
       percentage: null,
       goal_target_date: null,
+      locked: false,
     },
   ];
 
@@ -130,6 +132,7 @@ export function createMockDataset(seed = 42): MockDataset {
       date: "2025-03-17",
       spending_type: "debit",
       primary_bucket_id: bucketFun,
+      status: "pending",
     },
     {
       id: "f2000000-0000-4000-8000-000000000003",

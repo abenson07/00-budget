@@ -92,7 +92,7 @@ function WizardModal({
       aria-modal="true"
       aria-labelledby="wizard-modal-title"
     >
-      <div className="max-h-[90vh] w-full max-w-md overflow-auto rounded-t-2xl bg-[#faf9f6] p-6 shadow-xl sm:rounded-2xl">
+      <div className="max-h-[90vh] w-full max-w-md overflow-auto rounded-t-2xl bg-[var(--budget-page-bg)] p-6 shadow-xl sm:rounded-2xl">
         <div className="mb-4 flex items-center justify-between gap-3">
           <h2
             id="wizard-modal-title"
@@ -322,7 +322,7 @@ export function NewBucketWizard() {
                     ) : null}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-base font-semibold text-[#1b1b1b]">
+                    <span className="block text-base font-semibold text-[var(--budget-ink)]">
                       {c.title}
                     </span>
                     <span className="mt-1 block text-sm leading-snug text-[#1e0403]/60">
@@ -414,9 +414,9 @@ export function NewBucketWizard() {
                       <button
                         type="button"
                         onClick={() => onSelectTransaction(tx)}
-                        className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm transition-colors hover:bg-[#faf9f6]"
+                        className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm transition-colors hover:bg-[var(--budget-page-bg)]"
                       >
-                        <span className="min-w-0 font-medium text-[#1b1b1b]">
+                        <span className="min-w-0 font-medium text-[var(--budget-ink)]">
                           {tx.merchant || "Transaction"}
                         </span>
                         <span className="shrink-0 tabular-nums text-[#1e0403]">
@@ -443,7 +443,7 @@ export function NewBucketWizard() {
               {w.billTransactionId ? (
                 <div className="rounded-xl border border-[#bbb] bg-[#efeeea] px-4 py-3 text-sm">
                   <p className="text-[#1e0403]/65">Amount (from transaction)</p>
-                  <p className="mt-1 font-semibold tabular-nums text-[#1b1b1b]">
+                  <p className="mt-1 font-semibold tabular-nums text-[var(--budget-ink)]">
                     {formatUsd(
                       transactions.find((t) => t.id === w.billTransactionId)
                         ?.amount ?? 0,
@@ -452,7 +452,7 @@ export function NewBucketWizard() {
                 </div>
               ) : (
                 <div>
-                  <p className="mb-2 text-sm font-medium text-[#1b1b1b]">
+                  <p className="mb-2 text-sm font-medium text-[var(--budget-ink)]">
                     Bill amount
                   </p>
                   <AmountKeypad
@@ -515,7 +515,7 @@ export function NewBucketWizard() {
               </label>
               {w.paycheckMode === "both" ? (
                 <div>
-                  <div className="flex justify-between text-sm text-[#1b1b1b]">
+                  <div className="flex justify-between text-sm text-[var(--budget-ink)]">
                     <span>Paycheck 1</span>
                     <span>Paycheck 2</span>
                   </div>
@@ -569,7 +569,7 @@ export function NewBucketWizard() {
                     patchWizard({ subcategoryLabel: label });
                     setStep(3);
                   }}
-                  className="rounded-xl border border-[#bbb] bg-white px-4 py-3.5 text-left text-sm font-semibold text-[#1b1b1b] transition-colors hover:bg-[#faf9f6]"
+                  className="rounded-xl border border-[#bbb] bg-white px-4 py-3.5 text-left text-sm font-semibold text-[var(--budget-ink)] transition-colors hover:bg-[var(--budget-page-bg)]"
                 >
                   {label}
                 </button>
@@ -694,7 +694,7 @@ export function NewBucketWizard() {
               />
             </label>
             {futureBreakdown ? (
-              <div className="mt-6 rounded-xl border border-[#bbb] bg-[#efeeea] p-4 text-sm text-[#1b1b1b]">
+              <div className="mt-6 rounded-xl border border-[#bbb] bg-[#efeeea] p-4 text-sm text-[var(--budget-ink)]">
                 <p className="font-medium text-[#1e0403]">
                   Bi-weekly paycheck plan
                 </p>
@@ -743,7 +743,7 @@ export function NewBucketWizard() {
                 key={label}
                 type="button"
                 onClick={() => onBillPreset(label)}
-                className="rounded-xl border border-[#bbb] bg-white px-4 py-3 text-left text-sm font-medium text-[#1b1b1b] hover:bg-[#faf9f6]"
+                className="rounded-xl border border-[#bbb] bg-white px-4 py-3 text-left text-sm font-medium text-[var(--budget-ink)] hover:bg-[var(--budget-page-bg)]"
               >
                 {label}
               </button>

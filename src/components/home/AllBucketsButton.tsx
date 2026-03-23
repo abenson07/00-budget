@@ -5,7 +5,7 @@ export function AllBucketsButton() {
   return (
     <Link
       href="/buckets"
-      className="mx-auto rounded-lg bg-[#dbdad6] px-6 py-2 font-mono text-xs font-medium text-[#010101]"
+      className="mx-auto rounded-full bg-[var(--budget-forest)] px-8 py-2.5 text-sm font-semibold text-white transition-opacity active:opacity-90"
     >
       All Buckets →
     </Link>

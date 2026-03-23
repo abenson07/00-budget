@@ -1,5 +1,7 @@
 "use client";
 
+/* eslint-disable react-hooks/set-state-in-effect, react-hooks/preserve-manual-memoization -- split editor draft sync / validation memo */
+
 import Link from "next/link";
 import {
   transactionRoutesApp,
@@ -266,7 +268,7 @@ export function TransactionSplitEditor({
 
   if (!tx) {
     return (
-      <div className="min-h-screen bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
+      <div className="min-h-screen bg-[var(--budget-page-bg)] font-[family-name:var(--font-instrument-sans)] text-[var(--budget-ink)]">
         <div className="mx-auto max-w-md px-4 pb-10 pt-8">
           <p className="text-[#1e0403]/70">Transaction not found.</p>
           <Link
@@ -281,7 +283,7 @@ export function TransactionSplitEditor({
   }
 
   return (
-    <div className="min-h-screen bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
+    <div className="min-h-screen bg-[var(--budget-page-bg)] font-[family-name:var(--font-instrument-sans)] text-[var(--budget-ink)]">
       <div className="mx-auto max-w-md px-4 pb-10 pt-8">
         <nav>
           <Link

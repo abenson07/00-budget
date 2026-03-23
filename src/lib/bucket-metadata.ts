@@ -13,6 +13,8 @@ export type BucketMetadataInput = {
   percentage: number | null;
   /** Discretionary savings goal target; stored as DB `due_date`. */
   goal_target_date: string;
+  /** Discretionary only: exclude from safe-to-spend when true. */
+  locked?: boolean;
 };
 
 export function applyBucketMetadata(
@@ -34,6 +36,7 @@ export function applyBucketMetadata(
       ...base,
       type: "discretionary" as const,
       goal_target_date: g !== "" ? g : null,
+      locked: input.locked === true,
     };
   }
 

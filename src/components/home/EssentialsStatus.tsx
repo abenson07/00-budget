@@ -9,10 +9,9 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
-import { parseIsoLocalMs } from "@/lib/dates";
-import { formatUsd } from "@/lib/format";
 import { legacyRoutes } from "@/lib/legacy-routes";
 import type { Bucket } from "@/lib/types";
+import { EssentialBucketCard } from "./EssentialBucketCard";
 
 const ESSENTIALS_LIST_ID = "mobile-home-essentials-list";
 /** Start times of staggered row tweens span this window along the chosen `from` axis. */
@@ -39,28 +38,6 @@ function usePrefersReducedMotion(): boolean {
     prefersReducedMotionSnapshot,
     () => false,
   );
-}
-
-function startOfTodayMs(): number {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  return d.getTime();
-}
-
-function essentialRowSubtitle(bucket: Bucket): string | null {
-  if (bucket.type !== "essential") return null;
-  if (bucket.essential_subtype === "bill") {
-    const dueMs = parseIsoLocalMs(bucket.due_date);
-    if (dueMs == null) return null;
-    const days = Math.round((dueMs - startOfTodayMs()) / 86_400_000);
-    if (days === 0) return "Due today";
-    if (days === 1) return "Due in 1 day";
-    if (days > 1) return `Due in ${days} days`;
-    if (days === -1) return "Due 1 day ago";
-    return `Due ${Math.abs(days)} days ago`;
-  }
-  if (bucket.top_off != null) return `Goal: ${formatUsd(bucket.top_off)}`;
-  return null;
 }
 
 function CheckBadge() {
@@ -236,38 +213,11 @@ export function EssentialsStatus({
     </div>
   );
 
-  const essentialRows = essentialBuckets.map((b) => {
-    const sub = essentialRowSubtitle(b);
-    return (
-      <div key={b.id} data-essential-animate>
-        <div
-          className={
-            onLight
-              ? "flex items-start justify-between gap-3 text-[#1b1b1b]"
-              : "flex items-start justify-between gap-3 text-[#faf9f6]"
-          }
-        >
-          <div className="min-w-0 flex-1">
-            <p className="text-lg font-medium leading-tight">{b.name}</p>
-            {sub ? (
-              <p
-                className={
-                  onLight
-                    ? "mt-0.5 text-sm font-medium leading-tight text-[#1e0403]/55"
-                    : "mt-0.5 text-sm font-medium leading-tight text-[#faf9f6]/50"
-                }
-              >
-                {sub}
-              </p>
-            ) : null}
-          </div>
-          <p className="shrink-0 text-2xl font-semibold leading-tight">
-            {formatUsd(b.amount)}
-          </p>
-        </div>
-      </div>
-    );
-  });
+  const essentialRows = essentialBuckets.map((b) => (
+    <div key={b.id} data-essential-animate>
+      <EssentialBucketCard bucket={b} showChevron={false} />
+    </div>
+  ));
 
   return (
     <>

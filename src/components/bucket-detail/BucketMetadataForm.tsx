@@ -29,6 +29,7 @@ function bucketToFormState(b: Bucket): {
   top_off: string;
   percentagePct: string;
   goal_target_date: string;
+  locked: boolean;
 } {
   return {
     name: b.name,
@@ -44,6 +45,7 @@ function bucketToFormState(b: Bucket): {
       b.percentage != null ? String(Math.round(b.percentage * 100000) / 1000) : "",
     goal_target_date:
       b.type === "discretionary" ? (b.goal_target_date ?? "") : "",
+    locked: b.type === "discretionary" && b.locked === true,
   };
 }
 
@@ -72,6 +74,7 @@ export function BucketMetadataForm({ bucketId, bucket }: BucketMetadataFormProps
   const [editTopOff, setEditTopOff] = useState("");
   const [editPct, setEditPct] = useState("");
   const [editGoalTarget, setEditGoalTarget] = useState("");
+  const [editLocked, setEditLocked] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
   const [editOk, setEditOk] = useState(false);
 
@@ -86,13 +89,16 @@ export function BucketMetadataForm({ bucketId, bucket }: BucketMetadataFormProps
     setEditTopOff(f.top_off);
     setEditPct(f.percentagePct);
     setEditGoalTarget(f.goal_target_date);
+    setEditLocked(f.locked);
   }, []);
 
+  /* eslint-disable react-hooks/set-state-in-effect -- reset form fields when bucket changes */
   useEffect(() => {
     syncFormFromBucket(bucket);
     setEditError(null);
     setEditOk(false);
   }, [bucketId, bucket, syncFormFromBucket]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const onSaveMetadata = (e: FormEvent) => {
     e.preventDefault();
@@ -123,6 +129,7 @@ export function BucketMetadataForm({ bucketId, bucket }: BucketMetadataFormProps
       percentage:
         pctRaw == null || Number.isNaN(pctRaw) ? null : pctRaw / 100,
       goal_target_date: editGoalTarget,
+      locked: editType === "discretionary" ? editLocked : undefined,
     };
 
     try {
@@ -260,18 +267,28 @@ export function BucketMetadataForm({ bucketId, bucket }: BucketMetadataFormProps
           </div>
         ) : null}
         {editType === "discretionary" ? (
-          <div>
-            <label htmlFor="edit-goal-target" className={labelClass()}>
-              Goal target date (optional)
+          <>
+            <div>
+              <label htmlFor="edit-goal-target" className={labelClass()}>
+                Goal target date (optional)
+              </label>
+              <input
+                id="edit-goal-target"
+                type="date"
+                className={inputClass()}
+                value={editGoalTarget}
+                onChange={(e) => setEditGoalTarget(e.target.value)}
+              />
+            </div>
+            <label className="flex cursor-pointer items-center gap-2 text-sm text-[#222]">
+              <input
+                type="checkbox"
+                checked={editLocked}
+                onChange={(e) => setEditLocked(e.target.checked)}
+              />
+              Locked spending money (hidden from safe to spend)
             </label>
-            <input
-              id="edit-goal-target"
-              type="date"
-              className={inputClass()}
-              value={editGoalTarget}
-              onChange={(e) => setEditGoalTarget(e.target.value)}
-            />
-          </div>
+          </>
         ) : null}
         <div>
           <label htmlFor="edit-topoff" className={labelClass()}>

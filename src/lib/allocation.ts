@@ -31,17 +31,17 @@ export function sumEssentialBucketAmounts(buckets: Bucket[]): number {
     .reduce((s, b) => s + b.amount, 0);
 }
 
-/** Sum of discretionary buckets (includes Unassigned when it is discretionary). */
+/** Sum of discretionary buckets (includes Unassigned when it is discretionary). Excludes locked. */
 export function safeToSpendPrimary(buckets: Bucket[]): number {
   return buckets
-    .filter((b) => b.type === "discretionary")
+    .filter((b) => b.type === "discretionary" && !b.locked)
     .reduce((s, b) => s + b.amount, 0);
 }
 
 export type SafeToSpendMetrics = {
   accountBalance: number;
   primary: number;
-  /** Should match `primary` when every bucket is essential or discretionary. */
+  /** Non-essential bucket total (`accountBalance − essential`); includes locked discretionary. */
   sanityCheck: number;
 };
 

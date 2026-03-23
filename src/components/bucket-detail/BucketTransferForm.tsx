@@ -256,7 +256,7 @@ export function BucketTransferForm({ bucketId: originBucketId }: BucketTransferF
             aria-label="Dismiss"
             onClick={() => setPicker(null)}
           />
-          <div className="relative z-[1] w-full max-w-md overflow-hidden rounded-2xl bg-[#faf9f6] shadow-xl">
+          <div className="relative z-[1] w-full max-w-md overflow-hidden rounded-2xl bg-[var(--budget-page-bg)] shadow-xl">
             <div className="flex items-center justify-between border-b border-[#e5e4e0] px-4 py-3">
               <span className="text-sm font-semibold text-[#1b1b1b]">
                 {picker === "from" ? "Transfer from" : "Transfer to"}

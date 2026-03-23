@@ -22,21 +22,34 @@ function bucketAmounts(buckets: { id: string; amount: number }[]) {
 }
 
 describe("computeSafeToSpendMetrics", () => {
-  it("primary matches discretionary sum and sanity check matches balance − essential", () => {
+  it("primary matches unlocked discretionary; sanity check is balance − essential", () => {
     const { buckets } = createMockDataset(42);
     const m = computeSafeToSpendMetrics(buckets);
-    const disc = buckets
-      .filter((b) => b.type === "discretionary")
+    const discUnlocked = buckets
+      .filter((b) => b.type === "discretionary" && !b.locked)
       .reduce((s, b) => s + b.amount, 0);
     const essential = buckets
       .filter((b) => b.type === "essential")
       .reduce((s, b) => s + b.amount, 0);
     const balance = buckets.reduce((s, b) => s + b.amount, 0);
 
-    expect(m.primary).toBeCloseTo(disc, 5);
+    expect(m.primary).toBeCloseTo(discUnlocked, 5);
     expect(m.accountBalance).toBeCloseTo(balance, 5);
     expect(m.sanityCheck).toBeCloseTo(balance - essential, 5);
-    expect(m.primary).toBeCloseTo(m.sanityCheck, 5);
+  });
+
+  it("excludes locked discretionary from primary only", () => {
+    const { buckets } = createMockDataset(42);
+    const next = buckets.map((b) =>
+      b.type === "discretionary" && b.name === "Fun"
+        ? { ...b, locked: true }
+        : b,
+    );
+    const m = computeSafeToSpendMetrics(next);
+    const unlocked = next
+      .filter((b) => b.type === "discretionary" && !b.locked)
+      .reduce((s, b) => s + b.amount, 0);
+    expect(m.primary).toBeCloseTo(unlocked, 5);
   });
 });
 

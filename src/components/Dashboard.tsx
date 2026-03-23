@@ -2,7 +2,10 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
-import { BucketCard } from "@/components/BucketCard";
+import {
+  DiscretionaryBucketRow,
+  EssentialBucketCard,
+} from "@/components/home";
 import { formatUsd } from "@/lib/format";
 import { isUnassignedBucket } from "@/lib/unassigned-bucket";
 import { appRoutes } from "@/lib/routes";
@@ -55,7 +58,8 @@ export function Dashboard() {
             {formatUsd(safe)}
           </p>
           <p className="mt-1 text-xs text-emerald-800/85">
-            Discretionary buckets only — includes Unassigned.
+            Unlocked discretionary only (essentials and locked buckets
+            excluded).
           </p>
         </div>
       </section>
@@ -76,7 +80,11 @@ export function Dashboard() {
       <ul className="mt-3 flex flex-col gap-2">
         {sortedBuckets.map((bucket) => (
           <li key={bucket.id}>
-            <BucketCard bucket={bucket} />
+            {bucket.type === "essential" ? (
+              <EssentialBucketCard bucket={bucket} />
+            ) : (
+              <DiscretionaryBucketRow bucket={bucket} />
+            )}
           </li>
         ))}
       </ul>

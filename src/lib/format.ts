@@ -54,3 +54,26 @@ export function formatLongCalendarDay(dateStr: string): string {
     year: "numeric",
   }).format(then);
 }
+
+function ordinalDay(d: number): string {
+  const rem10 = d % 10;
+  const rem100 = d % 100;
+  if (rem100 >= 11 && rem100 <= 13) return `${d}th`;
+  if (rem10 === 1) return `${d}st`;
+  if (rem10 === 2) return `${d}nd`;
+  if (rem10 === 3) return `${d}rd`;
+  return `${d}th`;
+}
+
+/** e.g. "March 2nd, 2025" for transaction headers (date-only; no time in model). */
+export function formatOrdinalLongDate(dateStr: string): string {
+  const parts = dateStr.split("-");
+  if (parts.length !== 3) return dateStr;
+  const y = Number(parts[0]);
+  const m = Number(parts[1]);
+  const d = Number(parts[2]);
+  if (!y || !m || !d) return dateStr;
+  const then = new Date(y, m - 1, d);
+  const month = new Intl.DateTimeFormat("en-US", { month: "long" }).format(then);
+  return `${month} ${ordinalDay(d)}, ${y}`;
+}

@@ -6,6 +6,13 @@ export { DiscretionaryBucketRow } from "./DiscretionaryBucketRow";
 export { EssentialBucketCard } from "./EssentialBucketCard";
 export { EssentialsSummaryRow } from "./EssentialsSummaryRow";
 export { EssentialsStatus } from "./EssentialsStatus";
-export { TopCard } from "./TopCard";
+export { HomeEssentialsPanel } from "./HomeEssentialsPanel";
+export {
+  TopCard,
+  TopCardForest,
+  TopCardSpentThisWeek,
+  TopCardEssentialsDue,
+  formatShortfallPill,
+} from "./TopCard";
 export { TransactionCard } from "./TransactionCard";
 export { TransactionListCondensed } from "./TransactionListCondensed";

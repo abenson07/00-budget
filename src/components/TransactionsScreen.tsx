@@ -1,17 +1,21 @@
 "use client";
 
 import { useMemo } from "react";
-import { TransactionCard } from "@/components/home/TransactionCard";
+import {
+  TopCardSpentThisWeek,
+  TransactionCard,
+} from "@/components/home";
 import { formatUsd } from "@/lib/format";
-import { sumSpentThisCalendarWeek } from "@/lib/spent-this-week";
-import { txAllocationLabel } from "@/lib/tx-allocation-label";
+import {
+  sumSpentOnEssentialBucketsThisCalendarWeek,
+  sumSpentThisCalendarWeek,
+} from "@/lib/spent-this-week";
 import { useBudgetStore } from "@/state/budget-store";
 
 /** Full transactions list (Figma: Transactions / mobile screen). */
 export function TransactionsScreen() {
   const transactions = useBudgetStore((s) => s.transactions);
-  const getBucketById = useBudgetStore((s) => s.getBucketById);
-
+  const buckets = useBudgetStore((s) => s.buckets);
   const sorted = useMemo(
     () =>
       [...transactions].sort(
@@ -25,43 +29,37 @@ export function TransactionsScreen() {
     [transactions],
   );
 
-  return (
-    <div className="min-h-screen bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-12 px-4 pb-10 pt-8">
-        <section className="flex flex-col gap-4 text-[#1e1e1e]">
-          <p className="font-[family-name:var(--font-instrument-serif)] text-2xl leading-tight">
-            Transactions
-          </p>
-          <div className="flex flex-col gap-0">
-            <p className="text-[48px] font-bold leading-none tracking-tight">
-              {formatUsd(spentThisWeek)}
-            </p>
-            <p className="text-base text-[#1e1e1e]/80">spent this week</p>
-          </div>
-        </section>
+  const billsSpent = useMemo(
+    () => sumSpentOnEssentialBucketsThisCalendarWeek(transactions, buckets),
+    [transactions, buckets],
+  );
 
-        <section className="flex flex-col gap-3.5">
-          <div className="flex items-center justify-between px-4">
-            <span className="text-xs font-bold tracking-wide text-black">
-              Transactions
-            </span>
-            <span aria-hidden className="text-lg text-[#222]">
-              →
-            </span>
-          </div>
+  return (
+    <div className="min-h-screen bg-[var(--budget-page-bg)] font-[family-name:var(--font-instrument-sans)] text-[var(--budget-ink)]">
+      <div className="mx-auto flex w-full max-w-md flex-col gap-10 px-4 pb-10 pt-8">
+        <h1 className="font-display text-2xl leading-tight text-[var(--budget-forest)]">
+          Transactions
+        </h1>
+
+        <TopCardSpentThisWeek
+          spentFormatted={formatUsd(spentThisWeek)}
+          billsSpentFormatted={formatUsd(billsSpent)}
+        />
+
+        <section className="flex flex-col gap-4">
+          <h2 className="font-display px-1 text-xl text-[var(--budget-ink)]">
+            Money spent
+          </h2>
 
           {sorted.length === 0 ? (
-            <p className="px-4 text-sm text-[#1e0403]/60">
+            <p className="px-1 text-sm text-[var(--budget-ink-soft)]">
               No transactions yet.
             </p>
           ) : (
-            <ul className="flex flex-col">
+            <ul className="flex flex-col divide-y divide-[var(--budget-card-border)] border-y border-[var(--budget-card-border)] bg-white/40">
               {sorted.map((tx) => (
                 <li key={tx.id}>
-                  <TransactionCard
-                    transaction={tx}
-                    allocationLabel={txAllocationLabel(tx, getBucketById)}
-                  />
+                  <TransactionCard transaction={tx} />
                 </li>
               ))}
             </ul>

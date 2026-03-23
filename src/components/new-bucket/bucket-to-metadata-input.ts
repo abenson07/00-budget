@@ -39,5 +39,6 @@ export function bucketToMetadataInput(b: Bucket): BucketMetadataInput {
     top_off: b.top_off,
     percentage: b.percentage,
     goal_target_date: b.goal_target_date ?? "",
+    locked: b.locked === true,
   };
 }

@@ -33,6 +33,7 @@ create table if not exists public.buckets (
   percentage numeric(9, 6),
   due_date date,
   alert_date date,
+  locked boolean not null default false,
   -- Phase 2: loan bucket fields (nullable when not a loan)
   loan_debt numeric(14, 2),
   minimum_payment numeric(14, 2),
@@ -56,6 +57,8 @@ create table if not exists public.transactions (
   date date not null default (current_date),
   spending_type text not null default 'debit'
     check (spending_type in ('debit', 'credit_card')),
+  status text not null default 'cleared'
+    check (status in ('cleared', 'pending')),
   primary_bucket_id uuid references public.buckets (id) on delete set null,
   created_at timestamptz not null default now()
 );

@@ -1,24 +1,36 @@
+"use client";
+
 import Link from "next/link";
+import { useMemo } from "react";
+import { PercentageTag } from "@/components/design-system/PercentageTag";
+import { percentageTagForBucket } from "@/lib/bucket-percentage-tag";
 import { formatUsd } from "@/lib/format";
 import { appRoutes } from "@/lib/routes";
 import type { Bucket } from "@/lib/types";
 
-/** Two-up preview tile on mobile home (Figma: BucketCard / Condensed). */
+/** Home carousel tile (Figma: Bucket – Home). */
 export function BucketCardCondensed({ bucket }: { bucket: Bucket }) {
+  const now = useMemo(() => new Date(), []);
+  const tag = percentageTagForBucket(bucket, now);
+
   return (
     <Link
       href={appRoutes.bucket(bucket.id)}
-      className="flex min-h-[140px] flex-col rounded-lg border border-[#bbb] bg-[#efeeea] p-4 transition-opacity active:opacity-90"
+      className="flex min-h-[132px] flex-col rounded-[var(--radius-card)] border border-[var(--budget-card-border)] bg-[var(--budget-sage-panel)] p-4 transition-opacity active:opacity-90"
     >
-      <p className="font-mono text-xs font-medium uppercase tracking-wide text-[#1e0403]">
+      <p className="text-xs font-semibold leading-tight text-[var(--budget-ink)]">
         {bucket.name}
       </p>
-      <p className="mt-1 text-[1.75rem] font-bold leading-tight tracking-tight text-[#1b1b1b] sm:text-[2.25rem]">
+      <p className="mt-2 text-2xl font-bold leading-none tracking-tight text-[var(--budget-ink)]">
         {formatUsd(bucket.amount)}
       </p>
-      <p className="mt-auto pt-2 font-mono text-xs text-[#1e0403]/50">
-        Tap for details
-      </p>
+      <div className="mt-auto flex items-center justify-end pt-3">
+        {tag ? (
+          <PercentageTag variant={tag.variant}>{tag.label}</PercentageTag>
+        ) : (
+          <span className="text-xs text-[var(--budget-ink-soft)]">—</span>
+        )}
+      </div>
     </Link>
   );
 }

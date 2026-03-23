@@ -1,40 +1,48 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useMemo } from "react";
+import { PercentageTag } from "@/components/design-system/PercentageTag";
 import { imageForBucket } from "@/lib/bucket-row-images";
+import { percentageTagForBucket } from "@/lib/bucket-percentage-tag";
 import { dueLabelForBill } from "@/lib/essentials-dates";
 import { formatUsd } from "@/lib/format";
+import { appRoutes } from "@/lib/routes";
 import type { Bucket } from "@/lib/types";
 
-const CARD_GRADIENT =
-  "linear-gradient(44.2deg, rgb(0, 0, 0) 12.7%, rgb(149, 16, 11) 65%, rgb(199, 86, 12) 84.3%, rgb(217, 195, 171) 98.9%)";
-
-const LEFT_VEIL =
-  "linear-gradient(60deg, rgb(0, 0, 0) 3.8%, rgba(0, 0, 0, 0.2) 96.8%)";
-
 type BucketDetailHeroProps = { bucket: Bucket };
+
+function categoryLabel(bucket: Bucket): string {
+  if (bucket.type === "essential" && bucket.essential_subtype === "bill") {
+    return "Bill";
+  }
+  if (bucket.type === "essential") return "Monthly spending";
+  return "Spending money";
+}
 
 export function BucketDetailHero({ bucket }: BucketDetailHeroProps) {
   const now = useMemo(() => new Date(), []);
   const cover = imageForBucket(bucket);
+  const tag = percentageTagForBucket(bucket, now);
+  const isBill =
+    bucket.type === "essential" && bucket.essential_subtype === "bill";
+  const dueLine = isBill ? dueLabelForBill(bucket.due_date, now) : null;
+  const billAtRisk = isBill && tag?.variant === "atRisk";
+  const transferHref = appRoutes.bucketTransfer(bucket.id);
 
-  const goalLine =
-    bucket.top_off != null ? `Goal: ${formatUsd(bucket.top_off)}` : "—";
-
-  const statusLine =
-    bucket.type === "essential" && bucket.essential_subtype === "bill"
-      ? dueLabelForBill(bucket.due_date, now)
-      : bucket.percentage != null
-        ? `${(bucket.percentage * 100).toFixed(1)}% of income`
-        : null;
+  const leftOfGoal =
+    bucket.top_off != null
+      ? Math.max(0, bucket.top_off - bucket.amount)
+      : null;
+  const metaRight =
+    leftOfGoal != null && bucket.top_off != null
+      ? `${categoryLabel(bucket)}, ${formatUsd(leftOfGoal)} left of ${formatUsd(bucket.top_off)}`
+      : categoryLabel(bucket);
 
   return (
-    <div
-      className="relative isolate overflow-hidden rounded-xl px-6 pb-10 pt-8"
-      style={{ backgroundImage: CARD_GRADIENT }}
-    >
-      <div className="pointer-events-none absolute inset-0 -translate-y-[10%] scale-110 opacity-55">
+    <div className="relative -mx-4">
+      <div className="relative h-44 w-full overflow-hidden bg-[var(--budget-card)]">
         <Image
           src={cover}
           alt=""
@@ -44,24 +52,58 @@ export function BucketDetailHero({ bucket }: BucketDetailHeroProps) {
           priority
         />
       </div>
-      <div
-        className="pointer-events-none absolute bottom-0 left-0 top-0 w-[min(100%,408px)]"
-        style={{ background: LEFT_VEIL }}
-      />
-      <div className="relative z-[1] flex flex-col gap-4 text-[#efeeea]">
-        <h1 className="max-w-[18rem] font-[family-name:var(--font-instrument-serif)] text-2xl leading-tight text-[#efeeea]">
+      <div className="relative z-[1] -mt-5 rounded-t-[var(--radius-card)] border border-b-0 border-[var(--budget-card-border)] bg-white px-5 pb-0 pt-5 shadow-sm">
+        <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--budget-ink-soft)]">
+          {categoryLabel(bucket)}
+        </p>
+        <p className="mt-0.5 font-display text-lg font-semibold leading-tight text-[var(--budget-ink)]">
           {bucket.name}
-        </h1>
-        <div className="flex w-full flex-col gap-1 leading-none">
-          <p className="text-[48px] font-bold leading-none tracking-tight">
+        </p>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <p className="text-3xl font-bold tabular-nums leading-none text-[var(--budget-ink)]">
             {formatUsd(bucket.amount)}
           </p>
-          <div className="flex w-full items-start justify-between gap-3 pt-1 text-base font-normal opacity-80">
-            <p className="min-w-0 shrink">{goalLine}</p>
-            <p className="shrink-0 text-right whitespace-nowrap">
-              {statusLine ?? "\u00a0"}
-            </p>
-          </div>
+          {tag ? (
+            <PercentageTag variant={tag.variant}>{tag.label}</PercentageTag>
+          ) : null}
+        </div>
+        <p className="mt-2 text-right text-xs text-[var(--budget-ink-soft)]">
+          {metaRight}
+        </p>
+
+        <div className="mt-4 -mx-5 border-t border-[var(--budget-card-border)]">
+          {!isBill ? (
+            <Link
+              href={transferHref}
+              className="flex w-full items-center justify-center bg-[var(--budget-forest)] py-3.5 text-center text-sm font-semibold text-white transition-opacity active:opacity-90"
+            >
+              Transfer money to bucket
+            </Link>
+          ) : billAtRisk ? (
+            <div className="flex w-full bg-[var(--budget-danger-bar)] text-sm font-semibold text-white">
+              <span className="flex flex-1 items-center px-4 py-3.5">
+                {dueLine ?? "Due soon"}
+              </span>
+              <Link
+                href={transferHref}
+                className="flex flex-1 items-center justify-end px-4 py-3.5 text-right underline-offset-2 hover:underline"
+              >
+                Top off now
+              </Link>
+            </div>
+          ) : (
+            <div className="flex w-full text-sm font-semibold text-white">
+              <span className="flex flex-[0.45] items-center bg-[var(--budget-forest)] px-4 py-3.5">
+                {dueLine ?? "—"}
+              </span>
+              <Link
+                href={transferHref}
+                className="flex flex-1 items-center justify-center bg-[var(--budget-sage-deep)] px-4 py-3.5 text-center transition-opacity active:opacity-90"
+              >
+                Transfer money to bucket
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </div>

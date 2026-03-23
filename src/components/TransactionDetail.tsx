@@ -5,11 +5,7 @@ import {
   discretionaryImageForBucketId,
   imageForBucket,
 } from "@/lib/bucket-row-images";
-import {
-  formatLongCalendarDay,
-  formatRelativeCalendarDay,
-  formatUsd,
-} from "@/lib/format";
+import { formatLongCalendarDay, formatUsd } from "@/lib/format";
 import {
   bucketRoutesApp,
   transactionRoutesApp,
@@ -17,27 +13,43 @@ import {
   type TransactionViewRoutes,
 } from "@/lib/routes";
 import { getEffectiveSplits } from "@/lib/allocation";
-import { useBudgetStore } from "@/state/budget-store";
 import { BucketListCardRow } from "@/components/home/BucketListCardRow";
+import { TransactionHeader } from "@/components/transactions/TransactionHeader";
+import { useBudgetStore } from "@/state/budget-store";
 
 type Props = {
   transactionId: string;
-  /** Defaults to `/transaction/...` tree; pass `transactionRoutesLegacy` on `/test` pages. */
   routes?: TransactionViewRoutes;
-  /** Defaults to `/buckets/...`; pass `bucketRoutesLegacy` on `/test` pages. */
   bucketRoutes?: BucketViewRoutes;
 };
 
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-col gap-0.5 text-base text-[#1e1e1e]">
-      <p className="text-[#1e1e1e]/80">{label}</p>
+    <div className="flex flex-col gap-0.5 text-sm text-[var(--budget-ink)]">
+      <p className="text-[var(--budget-ink-soft)]">{label}</p>
       <p className="font-medium">{value}</p>
     </div>
   );
 }
 
-/** Mobile transaction screen (Figma: single-bucket vs split summary). */
+function ScanReceiptStub() {
+  return (
+    <span
+      className="inline-flex cursor-not-allowed items-center gap-1.5 text-sm font-medium text-[var(--budget-ink-soft)] opacity-60"
+      aria-disabled
+    >
+      <svg width={16} height={16} viewBox="0 0 24 24" aria-hidden>
+        <path
+          fill="currentColor"
+          d="M6 4h12v16H6V4zm2 2v12h8V6H8zm2 2h4v2h-4V8zm0 4h4v2h-4v-2z"
+        />
+      </svg>
+      Scan receipt
+    </span>
+  );
+}
+
+/** Mobile transaction screen (single-bucket vs split). */
 export function TransactionDetail({
   transactionId,
   routes = transactionRoutesApp,
@@ -51,12 +63,12 @@ export function TransactionDetail({
 
   if (!tx) {
     return (
-      <div className="min-h-screen bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
+      <div className="min-h-screen bg-[var(--budget-page-bg)] font-[family-name:var(--font-instrument-sans)] text-[var(--budget-ink)]">
         <div className="mx-auto max-w-md px-4 pb-10 pt-8">
-          <p className="text-[#1e0403]/70">Transaction not found.</p>
+          <p className="text-[var(--budget-ink-soft)]">Transaction not found.</p>
           <Link
             href={routes.transactionsList}
-            className="mt-4 inline-block font-mono text-xs font-medium text-[#1e0403]/70 underline decoration-[#1e0403]/25 underline-offset-2"
+            className="mt-4 inline-block text-xs font-medium text-[var(--budget-forest)] underline underline-offset-2"
           >
             Back to list
           </Link>
@@ -68,40 +80,34 @@ export function TransactionDetail({
   const liveSplits = getEffectiveSplits(tx);
   const isSplit = liveSplits.length > 1;
   const splitHref = routes.transactionSplit(tx.id);
+  const pending = tx.status === "pending";
 
   return (
-    <div className="min-h-screen bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-12 px-4 pb-10 pt-8">
+    <div className="min-h-screen bg-[var(--budget-page-bg)] font-[family-name:var(--font-instrument-sans)] text-[var(--budget-ink)]">
+      <div className="mx-auto flex w-full max-w-md flex-col gap-10 px-4 pb-10 pt-8">
         <nav>
           <Link
             href={routes.transactionsList}
-            className="font-mono text-xs font-medium text-[#1e0403]/70 underline decoration-[#1e0403]/25 underline-offset-2 transition-colors hover:text-[#1b1b1b]"
+            className="text-xs font-medium text-[var(--budget-ink-soft)] underline decoration-[var(--budget-card-border)] underline-offset-2 transition-colors hover:text-[var(--budget-ink)]"
           >
             ← Transactions
           </Link>
         </nav>
 
-        <header className="flex flex-col gap-4">
-          <div>
-            <h1 className="font-[family-name:var(--font-instrument-serif)] text-2xl leading-tight text-[#1e1e1e]">
-              {tx.merchant || "—"}
-            </h1>
-            <p className="mt-1 text-base text-[#1e1e1e]/80">
-              {formatRelativeCalendarDay(tx.date)}
-            </p>
-          </div>
-          <p className="text-[48px] font-bold leading-none tracking-tight text-[#1e1e1e]">
-            {formatUsd(tx.amount)}
-          </p>
-        </header>
+        <TransactionHeader
+          merchant={tx.merchant || "—"}
+          amountFormatted={formatUsd(tx.amount)}
+          dateStr={tx.date}
+          pending={pending}
+        />
 
-        <section className="flex flex-col gap-2">
-          <h2 className="font-[family-name:var(--font-instrument-serif)] text-xl text-[#1e1e1e]">
+        <section className="flex flex-col gap-3">
+          <h2 className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--budget-ink-soft)]">
             Bucket
           </h2>
 
           {liveSplits.length === 0 ? (
-            <p className="text-sm font-medium text-[#1e0403]/55">
+            <p className="text-sm text-[var(--budget-ink-soft)]">
               No bucket assigned yet.
             </p>
           ) : isSplit ? (
@@ -123,7 +129,7 @@ export function TransactionDetail({
                       imageSrc={img}
                       title={title}
                       primaryRight={formatUsd(row.amount)}
-                      secondaryRight={`${pct}%`}
+                      subtitleLeft={`${pct}% of transaction`}
                       showChevron={false}
                     />
                   </li>
@@ -156,26 +162,29 @@ export function TransactionDetail({
             })()
           )}
 
-          <div className="flex justify-center pt-2">
+          <div className="flex flex-wrap items-center justify-center gap-8 pt-2">
             <Link
               href={splitHref}
-              className="rounded-lg bg-[#dbdad6] px-6 py-2 font-mono text-base font-medium text-[#010101] transition-opacity active:opacity-90"
+              className="text-sm font-semibold text-[var(--budget-forest)] underline-offset-2 hover:underline"
             >
-              {isSplit ? "Manage Split" : "Add a split"}
+              {isSplit ? "Manage split" : "Add split"}
             </Link>
+            <ScanReceiptStub />
           </div>
         </section>
 
-        <section className="flex flex-col gap-4 text-[#1e1e1e]">
-          <h2 className="font-[family-name:var(--font-instrument-serif)] text-xl">
-            Details
+        <section className="flex flex-col gap-4">
+          <h2 className="font-display text-lg text-[var(--budget-ink)]">
+            Extra details
           </h2>
-          <DetailRow label="Amount" value={formatUsd(tx.amount)} />
-          <DetailRow label="Date" value={formatLongCalendarDay(tx.date)} />
+          <DetailRow label="Merchant name" value={tx.merchant?.trim() ? tx.merchant : "—"} />
+          <DetailRow label="Description / memo" value="—" />
+          <DetailRow label="Transaction ID" value={tx.id} />
           <DetailRow
-            label="Merchant"
-            value={tx.merchant?.trim() ? tx.merchant : "—"}
+            label="Status"
+            value={pending ? "Pending" : "Cleared"}
           />
+          <DetailRow label="Date" value={formatLongCalendarDay(tx.date)} />
           <DetailRow label="Account" value={account.name} />
         </section>
       </div>

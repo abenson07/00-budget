@@ -15,6 +15,7 @@ type BucketRow = {
   percentage: string | number | null;
   due_date: string | null;
   alert_date: string | null;
+  locked?: boolean | null;
 };
 
 type TxRow = {
@@ -25,6 +26,7 @@ type TxRow = {
   date: string;
   spending_type: string;
   primary_bucket_id: string | null;
+  status?: string | null;
   transaction_splits?: SplitRow[] | null;
 };
 
@@ -56,6 +58,7 @@ export function rowToBucket(row: BucketRow): Bucket {
       type: "discretionary" as const,
       goal_target_date:
         typeof gtd === "string" && gtd.trim() !== "" ? gtd.trim() : null,
+      locked: row.locked === true,
     };
   }
 
@@ -94,6 +97,8 @@ export function rowToTransaction(row: TxRow): Transaction {
       ? row.date.slice(0, 10)
       : String(row.date).slice(0, 10);
 
+  const pending = row.status?.toLowerCase() === "pending";
+
   return {
     id: row.id,
     account_id: row.account_id,
@@ -103,6 +108,7 @@ export function rowToTransaction(row: TxRow): Transaction {
     spending_type: "debit",
     primary_bucket_id: row.primary_bucket_id,
     splits,
+    ...(pending ? { status: "pending" as const } : {}),
   };
 }
 
@@ -136,7 +142,7 @@ export async function fetchBudgetDataset(
     .from("transactions")
     .select(
       `
-      id, account_id, amount, merchant, date, spending_type, primary_bucket_id,
+      id, account_id, amount, merchant, date, spending_type, primary_bucket_id, status,
       transaction_splits ( bucket_id, amount, percentage )
     `,
     )
@@ -183,6 +189,7 @@ export async function seedDemoIfEmpty(
       sort_order: b.order,
       top_off: b.top_off,
       percentage: b.percentage,
+      locked: b.type === "discretionary" ? (b.locked === true) : null,
     };
     if (b.type === "essential" && b.essential_subtype === "bill") {
       row.due_date = b.due_date;
@@ -201,6 +208,7 @@ export async function seedDemoIfEmpty(
       date: tx.date,
       spending_type: tx.spending_type,
       primary_bucket_id: tx.primary_bucket_id ?? null,
+      status: tx.status === "pending" ? "pending" : "cleared",
     });
     if (txErr) return false;
 
@@ -235,6 +243,7 @@ export async function persistBucketCreate(
     sort_order: bucket.order,
     top_off: bucket.top_off,
     percentage: bucket.percentage,
+    locked: bucket.type === "discretionary" ? bucket.locked === true : null,
   };
   if (bucket.type === "essential" && bucket.essential_subtype === "bill") {
     row.due_date = bucket.due_date;
@@ -273,6 +282,7 @@ export function bucketToDbUpdate(b: Bucket): Record<string, unknown> {
   };
   if (b.type === "essential") {
     row.essential_subtype = b.essential_subtype;
+    row.locked = null;
     if (b.essential_subtype === "bill") {
       row.due_date = b.due_date;
       row.alert_date = b.alert_date;
@@ -284,6 +294,7 @@ export function bucketToDbUpdate(b: Bucket): Record<string, unknown> {
     row.essential_subtype = null;
     row.due_date = b.goal_target_date;
     row.alert_date = null;
+    row.locked = b.locked === true;
   }
   return row;
 }
@@ -313,6 +324,7 @@ export async function persistTransactionCreate(
     date: tx.date,
     spending_type: tx.spending_type,
     primary_bucket_id: tx.primary_bucket_id ?? null,
+    status: tx.status === "pending" ? "pending" : "cleared",
   });
   if (tErr) throw tErr;
 
@@ -341,6 +353,7 @@ export async function persistTransactionUpdate(
       date: tx.date,
       spending_type: tx.spending_type,
       primary_bucket_id: tx.primary_bucket_id ?? null,
+      status: tx.status === "pending" ? "pending" : "cleared",
     })
     .eq("id", tx.id);
   if (uErr) throw uErr;

@@ -1,26 +1,82 @@
 @import "tailwindcss";
 
+/* Budget app — design tokens (align with Figma “Apps”; Instrument = display/body) */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: var(--budget-page-bg);
+  --foreground: var(--budget-ink);
+
+  --budget-page-bg: #f9f8f3;
+  --budget-ink: #1b1b1b;
+  --budget-ink-muted: #1e0403;
+  --budget-ink-soft: color-mix(in srgb, var(--budget-ink-muted) 55%, transparent);
+
+  --budget-forest: #1e3d32;
+  --budget-forest-700: #163329;
+  --budget-mint: #b8d4c4;
+  --budget-mint-bright: #d4eadc;
+
+  --budget-sage: #c5dcc0;
+  --budget-sage-panel: #dce8d8;
+  --budget-sage-deep: #a8c9a2;
+
+  --budget-card: #efeeea;
+  --budget-card-border: #c8c6c0;
+
+  --budget-tag-safe-bg: #d4eadc;
+  --budget-tag-safe-fg: #1e3d32;
+  --budget-tag-safe-inverse-bg: #1e3d32;
+  --budget-tag-safe-inverse-fg: #d4eadc;
+
+  --budget-tag-risk-bg: #fcd9c9;
+  --budget-tag-risk-fg: #9a3412;
+  --budget-tag-risk-inverse-bg: #9a3412;
+  --budget-tag-risk-inverse-fg: #fcd9c9;
+
+  --budget-tag-neutral-bg: #e5e4e0;
+  --budget-tag-neutral-fg: #4b5563;
+
+  --budget-alert-bg: #fde8dc;
+  --budget-alert-ink: #c2410c;
+  --budget-danger-bar: #ea580c;
+
+  --budget-scrim: rgb(0 0 0 / 0.35);
+
+  --radius-card: 1rem;
+  --radius-pill: 624.9375rem;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+
+  --font-sans: var(--font-instrument-sans);
   --font-mono: var(--font-geist-mono);
+
+  --color-budget-page: var(--budget-page-bg);
+  --color-budget-ink: var(--budget-ink);
+  --color-budget-forest: var(--budget-forest);
+  --color-budget-forest-700: var(--budget-forest-700);
+  --color-budget-mint: var(--budget-mint);
+  --color-budget-mint-bright: var(--budget-mint-bright);
+  --color-budget-sage: var(--budget-sage);
+  --color-budget-sage-panel: var(--budget-sage-panel);
+  --color-budget-card: var(--budget-card);
+  --color-budget-card-border: var(--budget-card-border);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: var(--budget-page-bg);
+    --foreground: var(--budget-ink);
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--budget-page-bg);
+  color: var(--budget-ink);
+  font-family: var(--font-instrument-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-instrument-serif), ui-serif, Georgia, serif;
 }

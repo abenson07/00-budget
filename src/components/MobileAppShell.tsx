@@ -6,6 +6,7 @@ import { MobileBottomNav } from "@/components/MobileBottomNav";
 
 function shouldShowMobileNav(pathname: string) {
   if (pathname.startsWith("/test")) return false;
+  if (pathname.startsWith("/components")) return false;
   if (pathname === "/") return true;
   if (pathname.startsWith("/buckets")) return true;
   if (

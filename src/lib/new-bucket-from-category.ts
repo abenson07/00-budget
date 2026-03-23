@@ -53,6 +53,7 @@ export function buildNewBucketFromCategory(
         name: "Future planning",
         type: "discretionary",
         goal_target_date: null,
+        locked: false,
       };
     case "spending_money":
       return {
@@ -60,6 +61,7 @@ export function buildNewBucketFromCategory(
         name: "Spending money",
         type: "discretionary",
         goal_target_date: null,
+        locked: false,
       };
   }
 }

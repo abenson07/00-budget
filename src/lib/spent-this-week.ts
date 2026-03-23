@@ -1,4 +1,5 @@
-import type { Transaction } from "@/lib/types";
+import { getEffectiveSplits } from "@/lib/allocation";
+import type { Bucket, Transaction } from "@/lib/types";
 
 function parseLocalDay(dateStr: string): Date | null {
   const parts = dateStr.split("-");
@@ -42,4 +43,40 @@ export function sumSpentThisCalendarWeek(
     sum += tx.amount;
   }
   return sum;
+}
+
+/** Sum of split amounts for transactions in the current calendar week allocated to buckets in `bucketIdSet`. */
+export function sumAllocatedToBucketsThisCalendarWeek(
+  transactions: readonly Transaction[],
+  bucketIdSet: ReadonlySet<string>,
+  now = new Date(),
+): number {
+  const weekStart = startOfCalendarWeekSunday(now);
+  const todayStart = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+  );
+  let sum = 0;
+  for (const tx of transactions) {
+    if (tx.spending_type !== "debit") continue;
+    const day = parseLocalDay(tx.date);
+    if (!day) continue;
+    if (day < weekStart || day > todayStart) continue;
+    for (const row of getEffectiveSplits(tx)) {
+      if (bucketIdSet.has(row.bucketId)) sum += row.amount;
+    }
+  }
+  return sum;
+}
+
+export function sumSpentOnEssentialBucketsThisCalendarWeek(
+  transactions: readonly Transaction[],
+  buckets: readonly Bucket[],
+  now = new Date(),
+): number {
+  const essentialIds = new Set(
+    buckets.filter((b) => b.type === "essential").map((b) => b.id),
+  );
+  return sumAllocatedToBucketsThisCalendarWeek(transactions, essentialIds, now);
 }

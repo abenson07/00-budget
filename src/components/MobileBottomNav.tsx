@@ -23,7 +23,7 @@ function TabIcon({
       style={{
         fontVariationSettings:
           "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24",
-        color: active ? "#141414" : "rgba(255,255,255,0.55)",
+        color: active ? "var(--budget-forest)" : "rgba(255,255,255,0.55)",
       }}
       aria-hidden
     >
@@ -138,11 +138,11 @@ export function MobileBottomNav() {
       <div className="pointer-events-auto w-full max-w-md px-5 pb-1.5">
         <div
           ref={barRef}
-          className="relative flex items-center rounded-full border border-white/[0.1] bg-[#1a1a1a]/[0.88] px-1.5 py-1.5 shadow-[0_12px_48px_-8px_rgba(0,0,0,0.45),0_4px_20px_-6px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-2xl backdrop-saturate-150"
+          className="relative flex items-center rounded-full border border-white/[0.12] bg-[var(--budget-forest)]/92 px-1.5 py-1.5 shadow-[0_12px_48px_-8px_rgba(0,0,0,0.35),0_4px_20px_-6px_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-2xl backdrop-saturate-150"
         >
           <div
             className={[
-              "pointer-events-none absolute z-0 rounded-full bg-[#e8e8e8] shadow-[inset_0_1px_0_rgba(255,255,255,0.65)] motion-reduce:transition-none",
+              "pointer-events-none absolute z-0 rounded-full bg-[var(--budget-mint-bright)] shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] motion-reduce:transition-none",
               transitionOn
                 ? "transition-[left,top,width,height] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]"
                 : "transition-none",

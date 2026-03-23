@@ -31,6 +31,10 @@ export type DiscretionaryBucket = BucketBase & {
    * Savings-style goal target date; persisted as `due_date` in DB for discretionary rows.
    */
   goal_target_date: string | null;
+  /**
+   * Locked spending money: still listed with discretionary buckets but excluded from safe-to-spend.
+   */
+  locked?: boolean;
 };
 
 export type Bucket =
@@ -57,6 +61,8 @@ export type Transaction = {
   /** When set and `splits` is empty, full amount applies to this bucket. */
   primary_bucket_id?: string | null;
   splits?: TransactionSplit[];
+  /** Cleared vs pending; defaults to cleared when omitted (DB / older rows). */
+  status?: "cleared" | "pending";
 };
 
 export type MockDataset = {
