@@ -6,6 +6,7 @@ import {
   BucketSpendingMoneyLocked,
   BucketTransaction,
   BucketTransactionSplit,
+  BUCKET_REFERENCE,
   FigmaPercentageTag,
   PERCENTAGE_TAG_REFERENCE,
   TOP_CARD_ESSENTIALS_REFERENCE,
@@ -29,83 +30,53 @@ export default function ComponentsShowcasePage() {
 
       <section className="mb-12 space-y-3">
         <h2 className="text-xs font-bold uppercase tracking-wider text-[#1c3812] opacity-60">
-          Bucket — Home
+          Bucket — variant home — state default
         </h2>
         <div className="w-44">
-          <BucketHome amountLabel="$232" percentLabel="20% " title="Eating out" />
+          <BucketHome {...BUCKET_REFERENCE.home} />
         </div>
       </section>
 
       <section className="mb-12 space-y-3">
         <h2 className="text-xs font-bold uppercase tracking-wider text-[#1c3812] opacity-60">
-          Bucket — Spending Money (locked=false, atRisk=false)
+          Bucket — variant spendingMoney — state default
         </h2>
-        <BucketSpendingMoney
-          atRisk={false}
-          balanceLabel="$41"
-          cadenceLabel="$200 per paycheck"
-          locked={false}
-          percentLabel="40% "
-          title="Eating out"
-        />
+        <BucketSpendingMoney {...BUCKET_REFERENCE.spendingMoney} />
       </section>
 
       <section className="mb-12 space-y-3">
         <h2 className="text-xs font-bold uppercase tracking-wider text-[#1c3812] opacity-60">
-          Bucket — Spending Money (locked=true, atRisk=true)
+          Bucket — variant spendingMoney — state locked
         </h2>
-        <BucketSpendingMoneyLocked
-          atRisk
-          balanceLabel="$100"
-          cadenceLabel="$400 per paycheck"
-          percentLabel="20% "
-          title="Date night"
-        />
+        <BucketSpendingMoneyLocked {...BUCKET_REFERENCE.spendingMoneyLocked} />
       </section>
 
       <section className="mb-12 space-y-3">
         <h2 className="text-xs font-bold uppercase tracking-wider text-[#1c3812] opacity-60">
-          Bucket — Monthly Spending (atRisk=true)
+          Bucket — variant monthlySpending — state default
         </h2>
-        <BucketMonthlySpending
-          atRisk
-          balanceLabel="$100"
-          cadenceLabel="$400 per paycheck"
-          percentLabel="20% "
-          title="Groceries"
-        />
+        <BucketMonthlySpending {...BUCKET_REFERENCE.monthlySpending} />
       </section>
 
       <section className="mb-12 space-y-3">
         <h2 className="text-xs font-bold uppercase tracking-wider text-[#1c3812] opacity-60">
-          Bucket — Bill (atRisk=true)
+          Bucket — variant bill — state default
         </h2>
-        <BucketBill
-          atRisk
-          balanceLabel="$840"
-          cadenceLabel="$495 per paycheck"
-          dueLabel="Due in 3 days"
-          percentLabel="20% "
-          title="Rent"
-        />
+        <BucketBill {...BUCKET_REFERENCE.bill} />
       </section>
 
       <section className="mb-12 space-y-3">
         <h2 className="text-xs font-bold uppercase tracking-wider text-[#1c3812] opacity-60">
-          Bucket — Transaction (split=false)
+          Bucket — variant transaction — state default
         </h2>
-        <BucketTransaction amountLabel="$45.23" split={false} title="Groceries" />
+        <BucketTransaction {...BUCKET_REFERENCE.transaction} />
       </section>
 
       <section className="mb-12 space-y-3">
         <h2 className="text-xs font-bold uppercase tracking-wider text-[#1c3812] opacity-60">
-          Bucket — Transaction (split=true)
+          Bucket — variant transaction — state split
         </h2>
-        <BucketTransactionSplit
-          amountLabel="$45.23"
-          splitLabel="12% of transaction"
-          title="Shopping"
-        />
+        <BucketTransactionSplit {...BUCKET_REFERENCE.transactionSplit} />
       </section>
 
       <section className="mb-12 space-y-3">

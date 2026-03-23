@@ -1,4 +1,5 @@
 import { FIGMA_BUCKET_IMG_SPENDING } from "./assets";
+import type { BucketTransactionState, BucketVariant } from "./bucket-types";
 
 type BucketTransactionBaseProps = {
   imageSrc?: string;
@@ -19,18 +20,26 @@ type BucketTransactionSplitState = {
 
 export type BucketTransactionProps = BucketTransactionBaseProps &
   (BucketTransactionDefaultState | BucketTransactionSplitState);
+export type BucketTransactionPropsWithState = BucketTransactionProps & {
+  variant?: Extract<BucketVariant, "transaction">;
+  state?: BucketTransactionState;
+};
 
 /**
  * Figma: Bucket — Transaction (node 28:5675)
  */
 export function BucketTransaction({
+  variant = "transaction",
+  state,
   imageSrc = FIGMA_BUCKET_IMG_SPENDING,
   title = "Groceries",
   amountLabel = "$45.23",
   split = false,
   splitLabel = "12% of transaction",
   className,
-}: BucketTransactionProps) {
+}: BucketTransactionPropsWithState) {
+  const resolvedState: BucketTransactionState = state ?? (split ? "split" : "default");
+  const showSplit = resolvedState === "split";
   return (
     <div
       className={[
@@ -40,6 +49,8 @@ export function BucketTransaction({
         .filter(Boolean)
         .join(" ")}
       data-figma-node="28:5675"
+      data-bucket-variant={variant}
+      data-bucket-state={resolvedState}
     >
       <div className="relative flex h-full shrink-0 items-center p-0.5">
         <div className="relative aspect-[4/3] h-full shrink-0 rounded-[5px]">
@@ -56,7 +67,7 @@ export function BucketTransaction({
             <p className="relative shrink-0 whitespace-nowrap text-[24px] font-bold leading-normal text-[#1b1b1b]">
               {title}
             </p>
-            {split ? (
+            {showSplit ? (
               <p className="relative shrink-0 text-[12px] font-bold text-[#1c3812] opacity-50">
                 {splitLabel}
               </p>

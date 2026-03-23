@@ -1,4 +1,8 @@
+import type { BucketHomeState, BucketVariant } from "./bucket-types";
+
 export type BucketHomeProps = {
+  variant?: Extract<BucketVariant, "home">;
+  state?: BucketHomeState;
   title?: string;
   amountLabel?: string;
   percentLabel?: string;
@@ -9,6 +13,8 @@ export type BucketHomeProps = {
  * Figma: Bucket — Home (node 28:5533)
  */
 export function BucketHome({
+  variant = "home",
+  state = "default",
   title = "Eating out",
   amountLabel = "$232",
   percentLabel = "20% ",
@@ -23,6 +29,8 @@ export function BucketHome({
         .filter(Boolean)
         .join(" ")}
       data-figma-node="28:5533"
+      data-bucket-variant={variant}
+      data-bucket-state={state}
     >
       <div className="flex w-full shrink-0 flex-col items-start">
         <p className="w-full text-[12px] font-bold leading-normal text-[#1c3812] opacity-80">

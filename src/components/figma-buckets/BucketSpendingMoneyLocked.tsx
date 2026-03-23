@@ -30,6 +30,7 @@ export function BucketSpendingMoneyLocked({
       imageSrc={imageSrc}
       lockIconSrc={lockIconSrc}
       locked
+      state="locked"
       percentLabel={percentLabel}
       title={title}
     />

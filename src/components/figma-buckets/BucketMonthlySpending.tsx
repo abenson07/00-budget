@@ -1,7 +1,10 @@
 import { FIGMA_BUCKET_IMG_GROCERIES } from "./assets";
+import type { BucketMonthlySpendingState, BucketVariant } from "./bucket-types";
 import { FigmaPercentageTag } from "./FigmaPercentageTag";
 
 export type BucketMonthlySpendingProps = {
+  variant?: Extract<BucketVariant, "monthlySpending">;
+  state?: BucketMonthlySpendingState;
   imageSrc?: string;
   title?: string;
   cadenceLabel?: string;
@@ -15,6 +18,8 @@ export type BucketMonthlySpendingProps = {
  * Figma: Bucket — Monthly Spending (node 28:5582)
  */
 export function BucketMonthlySpending({
+  variant = "monthlySpending",
+  state = "default",
   imageSrc = FIGMA_BUCKET_IMG_GROCERIES,
   title = "Groceries",
   cadenceLabel = "$400 per paycheck",
@@ -32,6 +37,8 @@ export function BucketMonthlySpending({
         .filter(Boolean)
         .join(" ")}
       data-figma-node="28:5582"
+      data-bucket-variant={variant}
+      data-bucket-state={state}
     >
       <div className="flex h-full flex-row items-center self-stretch">
         <div className="flex h-full shrink-0 items-center p-0.5">
@@ -59,7 +66,7 @@ export function BucketMonthlySpending({
           <p className="relative shrink-0 whitespace-nowrap text-[24px] font-bold leading-normal text-[#1b1b1b]">
             {balanceLabel}
           </p>
-          <FigmaPercentageTag variant={atRisk ? "at-risk-default" : "safe-default"}>
+          <FigmaPercentageTag inverse={false} variant={atRisk ? "atRisk" : "safe"}>
             {percentLabel}
           </FigmaPercentageTag>
         </div>

@@ -1,9 +1,12 @@
 import { FIGMA_BUCKET_IMG_SPENDING } from "./assets";
-import { BucketTransaction, type BucketTransactionProps } from "./BucketTransaction";
+import {
+  BucketTransaction,
+  type BucketTransactionPropsWithState,
+} from "./BucketTransaction";
 
 export type BucketTransactionSplitProps = Omit<
-  BucketTransactionProps,
-  "split" | "splitLabel"
+  BucketTransactionPropsWithState,
+  "split" | "splitLabel" | "state"
 > & {
   splitLabel?: string;
 };
@@ -23,6 +26,7 @@ export function BucketTransactionSplit({
       className={className}
       imageSrc={imageSrc}
       split
+      state="split"
       splitLabel={splitLabel}
     />
   );

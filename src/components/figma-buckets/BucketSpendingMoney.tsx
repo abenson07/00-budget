@@ -1,7 +1,10 @@
 import { FIGMA_BUCKET_IMG_SPENDING, FIGMA_BUCKET_LOCK_ICON } from "./assets";
+import type { BucketSpendingMoneyState, BucketVariant } from "./bucket-types";
 import { FigmaPercentageTag } from "./FigmaPercentageTag";
 
 export type BucketSpendingMoneyProps = {
+  variant?: Extract<BucketVariant, "spendingMoney">;
+  state?: BucketSpendingMoneyState;
   imageSrc?: string;
   lockIconSrc?: string;
   title?: string;
@@ -17,6 +20,8 @@ export type BucketSpendingMoneyProps = {
  * Figma: Bucket — Spending Money (node 28:5541)
  */
 export function BucketSpendingMoney({
+  variant = "spendingMoney",
+  state,
   imageSrc = FIGMA_BUCKET_IMG_SPENDING,
   lockIconSrc = FIGMA_BUCKET_LOCK_ICON,
   title = "Eating out",
@@ -27,6 +32,8 @@ export function BucketSpendingMoney({
   atRisk = false,
   className,
 }: BucketSpendingMoneyProps) {
+  const resolvedState: BucketSpendingMoneyState = state ?? (locked ? "locked" : "default");
+  const showLock = resolvedState === "locked";
   return (
     <div
       className={[
@@ -36,6 +43,8 @@ export function BucketSpendingMoney({
         .filter(Boolean)
         .join(" ")}
       data-figma-node="28:5541"
+      data-bucket-variant={variant}
+      data-bucket-state={resolvedState}
     >
       <div className="flex h-full flex-row items-center self-stretch">
         <div className="flex h-full shrink-0 items-center p-0.5">
@@ -55,7 +64,7 @@ export function BucketSpendingMoney({
               <p className="relative shrink-0 text-[24px] font-bold text-[#1b1b1b]">
                 {title}
               </p>
-              {locked ? (
+              {showLock ? (
                 <img
                   alt=""
                   className="size-4 shrink-0"
@@ -72,7 +81,7 @@ export function BucketSpendingMoney({
           <p className="relative shrink-0 whitespace-nowrap text-[24px] font-bold leading-normal text-[#1b1b1b]">
             {balanceLabel}
           </p>
-          <FigmaPercentageTag variant={atRisk ? "at-risk-default" : "safe-default"}>
+          <FigmaPercentageTag inverse={false} variant={atRisk ? "atRisk" : "safe"}>
             {percentLabel}
           </FigmaPercentageTag>
         </div>

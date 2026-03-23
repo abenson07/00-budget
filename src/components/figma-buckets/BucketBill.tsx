@@ -1,7 +1,10 @@
 import { FIGMA_BUCKET_IMG_RENT } from "./assets";
+import type { BucketBillState, BucketVariant } from "./bucket-types";
 import { FigmaPercentageTag } from "./FigmaPercentageTag";
 
 export type BucketBillProps = {
+  variant?: Extract<BucketVariant, "bill">;
+  state?: BucketBillState;
   imageSrc?: string;
   title?: string;
   cadenceLabel?: string;
@@ -16,6 +19,8 @@ export type BucketBillProps = {
  * Figma: Bucket — Bill (node 28:5552)
  */
 export function BucketBill({
+  variant = "bill",
+  state = "default",
   imageSrc = FIGMA_BUCKET_IMG_RENT,
   title = "Rent",
   cadenceLabel = "$495 per paycheck",
@@ -34,6 +39,8 @@ export function BucketBill({
         .filter(Boolean)
         .join(" ")}
       data-figma-node="28:5552"
+      data-bucket-variant={variant}
+      data-bucket-state={state}
     >
       <div className="flex h-full flex-row items-center self-stretch">
         <div className="flex h-full shrink-0 items-center p-0.5">
@@ -62,7 +69,7 @@ export function BucketBill({
             <p className="relative shrink-0 whitespace-nowrap text-[24px] font-bold leading-normal text-[#1b1b1b]">
               {balanceLabel}
             </p>
-            <FigmaPercentageTag variant={atRisk ? "at-risk-default" : "safe-default"}>
+            <FigmaPercentageTag inverse={false} variant={atRisk ? "atRisk" : "safe"}>
               {percentLabel}
             </FigmaPercentageTag>
           </div>

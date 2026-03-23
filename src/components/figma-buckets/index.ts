@@ -10,9 +10,21 @@ export type { BucketSpendingMoneyProps } from "./BucketSpendingMoney";
 export { BucketSpendingMoneyLocked } from "./BucketSpendingMoneyLocked";
 export type { BucketSpendingMoneyLockedProps } from "./BucketSpendingMoneyLocked";
 export { BucketTransaction } from "./BucketTransaction";
-export type { BucketTransactionProps } from "./BucketTransaction";
+export type {
+  BucketTransactionProps,
+  BucketTransactionPropsWithState,
+} from "./BucketTransaction";
 export { BucketTransactionSplit } from "./BucketTransactionSplit";
 export type { BucketTransactionSplitProps } from "./BucketTransactionSplit";
+export { BUCKET_REFERENCE } from "./bucket-presets";
+export type {
+  BucketBillState,
+  BucketHomeState,
+  BucketMonthlySpendingState,
+  BucketSpendingMoneyState,
+  BucketTransactionState,
+  BucketVariant,
+} from "./bucket-types";
 export { TransactionHeader } from "./TransactionHeader";
 export type {
   TransactionHeaderProps,
