@@ -46,7 +46,7 @@ export function MobileHome() {
         />
 
         <section className="flex flex-col gap-2">
-          <div className="grid grid-cols-[1fr_1fr_auto] gap-2">
+          <div className="grid grid-cols-3 gap-2">
             {homeBuckets.map((bucket) => (
               <Link key={bucket.id} href={appRoutes.bucket(bucket.id)}>
                 <BucketHome {...bucket} />
@@ -54,7 +54,7 @@ export function MobileHome() {
             ))}
             <Link
               href={appRoutes.buckets}
-              className="flex min-h-[7.5rem] items-end rounded-lg bg-[#e6e8dd] p-3 text-center text-[12px] font-bold text-[#1c3812] opacity-80"
+              className="flex min-h-[7.5rem] w-full items-end justify-start rounded-lg bg-[#e6e8dd] p-3 text-left text-[12px] font-bold text-[#1c3812] opacity-80"
             >
               See all buckets
             </Link>
@@ -71,7 +71,7 @@ export function MobileHome() {
             essentialsOpen ? "opacity-40" : "opacity-100"
           }`}
         >
-          <h2 className="font-display text-[36px] leading-none">Transactions</h2>
+          <h2 className="font-display text-[24px] leading-none">Transactions</h2>
           {transactions.length === 0 ? (
             <p className="text-sm text-[#222]/60">No transactions yet.</p>
           ) : (

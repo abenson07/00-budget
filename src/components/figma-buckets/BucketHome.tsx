@@ -42,7 +42,7 @@ export function BucketHome({
       </div>
       <div className="flex w-full shrink-0 flex-col items-center justify-end">
         <div className="flex w-full shrink-0 items-end justify-between">
-          <p className="min-h-px min-w-px flex-1 text-[32px] font-bold leading-normal text-[#1b1b1b]">
+          <p className="font-sans-condensed min-h-px min-w-px flex-1 text-[32px] font-bold leading-normal text-[#1b1b1b]">
             {amountLabel}
           </p>
           <FigmaPercentageTag inverse={false} variant={atRisk ? "atRisk" : "safe"}>

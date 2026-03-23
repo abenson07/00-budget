@@ -47,7 +47,7 @@ function EssentialRow({ line }: { line: TopCardHomeEssentialLine }) {
     >
       <div className="relative flex shrink-0 flex-col items-start">
         <div className="flex h-9 shrink-0 flex-col items-start gap-1 whitespace-nowrap leading-normal not-italic">
-          <p className="relative shrink-0 text-[24px] font-bold text-[#1b1b1b]">
+          <p className="font-sans-condensed relative shrink-0 text-[24px] font-bold text-[#1b1b1b]">
             {line.title}
           </p>
           <p className={`relative shrink-0 text-[12px] font-bold ${sub}`}>
@@ -56,7 +56,7 @@ function EssentialRow({ line }: { line: TopCardHomeEssentialLine }) {
         </div>
       </div>
       <div className="relative flex shrink-0 items-center justify-center gap-1.5">
-        <p className="relative shrink-0 whitespace-nowrap text-[24px] font-bold leading-normal text-[#1b1b1b] not-italic">
+        <p className="font-sans-condensed relative shrink-0 whitespace-nowrap text-[24px] font-bold leading-normal text-[#1b1b1b] not-italic">
           {line.amount}
         </p>
         <FigmaPercentageTag
@@ -263,7 +263,9 @@ export function TopCardHome({
         className="relative flex w-full shrink-0 flex-col items-start text-[#f9f8f4]"
         data-name="Balance"
       >
-        <p className="relative w-full shrink-0 text-[72px] font-bold">{amount}</p>
+        <p className="font-sans-condensed relative w-full shrink-0 text-[72px] font-bold">
+          {amount}
+        </p>
         <p className="relative w-full shrink-0 text-[12px] opacity-80">
           {paycheckLine}
         </p>
@@ -285,14 +287,14 @@ export function TopCardHome({
       {...bannerButtonProps}
     >
       <div className="min-w-0 flex-1">
-        <p className="truncate text-[20px] font-bold leading-normal text-[#1b1b1b] not-italic">
+        <p className="font-sans-condensed truncate text-[20px] font-bold leading-normal text-[#1b1b1b] not-italic">
           {essentialsLabel}
         </p>
       </div>
       <div className="flex shrink-0 flex-col items-end justify-center">
         <div className="flex items-center justify-end gap-2 rounded-lg bg-[#cae0b9] px-2 py-0.5 text-left text-[12px] font-bold leading-normal text-[#1c3812] not-italic">
-          <p className="shrink-0 whitespace-nowrap">{dueThisWeekShort}</p>
-          <p className="shrink-0 whitespace-nowrap">{monthlyStatusLine}</p>
+          <p className="font-sans-condensed shrink-0 whitespace-nowrap">{dueThisWeekShort}</p>
+          <p className="font-sans-condensed shrink-0 whitespace-nowrap">{monthlyStatusLine}</p>
         </div>
       </div>
     </div>
@@ -311,16 +313,16 @@ export function TopCardHome({
       {...bannerButtonProps}
     >
       <div className="min-w-0 flex-1">
-        <p className="truncate text-[20px] font-bold leading-normal text-[#1b1b1b] not-italic">
+        <p className="font-sans-condensed truncate text-[20px] font-bold leading-normal text-[#1b1b1b] not-italic">
           {essentialsLabel}
         </p>
       </div>
       <div className="flex shrink-0 flex-col items-end justify-center">
         <div className="flex items-center justify-end gap-2 rounded-lg bg-[#cae0b9] px-2 py-0.5 text-[12px] font-bold leading-normal text-[#1c3812] not-italic">
-          <p className="pointer-events-none shrink-0 select-none whitespace-nowrap opacity-0" aria-hidden>
+          <p className="font-sans-condensed pointer-events-none shrink-0 select-none whitespace-nowrap opacity-0" aria-hidden>
             {dueThisWeekShort}
           </p>
-          <p className="shrink-0 whitespace-nowrap">{monthlyStatusLine}</p>
+          <p className="font-sans-condensed shrink-0 whitespace-nowrap">{monthlyStatusLine}</p>
         </div>
       </div>
     </div>
@@ -339,7 +341,7 @@ export function TopCardHome({
         className="relative flex w-full shrink-0 items-center justify-center rounded-lg bg-[#1c3812] py-2"
         data-topcard-home-animate
       >
-        <p className="relative shrink-0 whitespace-nowrap text-[14px] font-bold leading-normal text-[#cae0b9] not-italic">
+        <p className="font-sans-condensed relative shrink-0 whitespace-nowrap text-[14px] font-bold leading-normal text-[#cae0b9] not-italic">
           {expandedFooterLine}
         </p>
       </div>
