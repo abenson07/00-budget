@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import {
-  discretionaryImageForBucketId,
-  imageForBucket,
-} from "@/lib/bucket-row-images";
-import { formatLongCalendarDay, formatUsd } from "@/lib/format";
+  BucketTransaction,
+  BucketTransactionSplit,
+  TransactionHeader as FigmaTransactionHeader,
+  TRANSACTION_HEADER_REFERENCE,
+} from "@/components/figma-buckets";
 import {
   bucketRoutesApp,
   transactionRoutesApp,
@@ -13,8 +14,6 @@ import {
   type TransactionViewRoutes,
 } from "@/lib/routes";
 import { getEffectiveSplits } from "@/lib/allocation";
-import { BucketListCardRow } from "@/components/home/BucketListCardRow";
-import { TransactionHeader } from "@/components/transactions/TransactionHeader";
 import { useBudgetStore } from "@/state/budget-store";
 
 type Props = {
@@ -25,8 +24,8 @@ type Props = {
 
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-col gap-0.5 text-sm text-[var(--budget-ink)]">
-      <p className="text-[var(--budget-ink-soft)]">{label}</p>
+    <div className="flex flex-col gap-0.5 text-sm text-[#1b1b1b]">
+      <p className="text-[#222]/55">{label}</p>
       <p className="font-medium">{value}</p>
     </div>
   );
@@ -65,10 +64,10 @@ export function TransactionDetail({
     return (
       <div className="min-h-screen bg-[var(--budget-page-bg)] font-[family-name:var(--font-instrument-sans)] text-[var(--budget-ink)]">
         <div className="mx-auto max-w-md px-4 pb-10 pt-8">
-          <p className="text-[var(--budget-ink-soft)]">Transaction not found.</p>
+          <p className="text-[#222]/55">Transaction not found.</p>
           <Link
             href={routes.transactionsList}
-            className="mt-4 inline-block text-xs font-medium text-[var(--budget-forest)] underline underline-offset-2"
+            className="mt-4 inline-block text-xs font-medium text-[#1c3812] underline underline-offset-2"
           >
             Back to list
           </Link>
@@ -81,35 +80,34 @@ export function TransactionDetail({
   const isSplit = liveSplits.length > 1;
   const splitHref = routes.transactionSplit(tx.id);
   const pending = tx.status === "pending";
+  const amountLabel = `$${tx.amount.toFixed(2)}`;
 
   return (
-    <div className="min-h-screen bg-[var(--budget-page-bg)] font-[family-name:var(--font-instrument-sans)] text-[var(--budget-ink)]">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-10 px-4 pb-10 pt-8">
+    <div className="min-h-screen bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
+      <div className="mx-auto flex w-full max-w-md flex-col gap-8 px-4 pb-10 pt-8">
         <nav>
           <Link
             href={routes.transactionsList}
-            className="text-xs font-medium text-[var(--budget-ink-soft)] underline decoration-[var(--budget-card-border)] underline-offset-2 transition-colors hover:text-[var(--budget-ink)]"
+            className="text-xs font-medium text-[#222]/55 underline decoration-[#222]/20 underline-offset-2 transition-colors hover:text-[#1b1b1b]"
           >
             ← Transactions
           </Link>
         </nav>
 
-        <TransactionHeader
-          merchant={tx.merchant || "—"}
-          amountFormatted={formatUsd(tx.amount)}
-          dateStr={tx.date}
+        <FigmaTransactionHeader
+          {...TRANSACTION_HEADER_REFERENCE.default}
+          merchantLabel={tx.merchant || "Target"}
+          amountLabel={amountLabel}
           pending={pending}
+          dateLabel="March 2nd, 2025"
+          timeLabel="3:02pm"
         />
 
         <section className="flex flex-col gap-3">
-          <h2 className="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--budget-ink-soft)]">
-            Bucket
-          </h2>
+          <h2 className="text-[12px] font-semibold text-[#222]">Bucket</h2>
 
           {liveSplits.length === 0 ? (
-            <p className="text-sm text-[var(--budget-ink-soft)]">
-              No bucket assigned yet.
-            </p>
+            <p className="text-sm text-[#222]/55">No bucket assigned yet.</p>
           ) : isSplit ? (
             <ul className="flex flex-col gap-2">
               {liveSplits.map((row, index) => {
@@ -119,19 +117,15 @@ export function TransactionDetail({
                   tx.amount > 0
                     ? Math.round((row.amount / tx.amount) * 100)
                     : 0;
-                const img = bucket
-                  ? imageForBucket(bucket)
-                  : discretionaryImageForBucketId(row.bucketId);
                 return (
                   <li key={`${row.bucketId}-${index}`}>
-                    <BucketListCardRow
-                      href={bucketRoutes.bucket(row.bucketId)}
-                      imageSrc={img}
-                      title={title}
-                      primaryRight={formatUsd(row.amount)}
-                      subtitleLeft={`${pct}% of transaction`}
-                      showChevron={false}
-                    />
+                    <Link href={bucketRoutes.bucket(row.bucketId)}>
+                      <BucketTransactionSplit
+                        title={title}
+                        amountLabel={`$${row.amount.toFixed(2)}`}
+                        splitLabel={`${pct}% of transaction`}
+                      />
+                    </Link>
                   </li>
                 );
               })}
@@ -141,23 +135,13 @@ export function TransactionDetail({
               const row = liveSplits[0]!;
               const bucket = getBucketById(row.bucketId);
               const title = bucket?.name ?? row.bucketId;
-              const img = bucket
-                ? imageForBucket(bucket)
-                : discretionaryImageForBucketId(row.bucketId);
-              const goalLine =
-                bucket?.top_off != null
-                  ? `Goal: ${formatUsd(bucket.top_off)}`
-                  : undefined;
-              const balance = bucket?.amount ?? row.amount;
               return (
-                <BucketListCardRow
-                  href={bucketRoutes.bucket(row.bucketId)}
-                  imageSrc={img}
-                  title={title}
-                  primaryRight={formatUsd(balance)}
-                  secondaryRight={goalLine}
-                  showChevron={false}
-                />
+                <Link href={bucketRoutes.bucket(row.bucketId)}>
+                  <BucketTransaction
+                    title={title}
+                    amountLabel={`$${row.amount.toFixed(2)}`}
+                  />
+                </Link>
               );
             })()
           )}
@@ -165,7 +149,7 @@ export function TransactionDetail({
           <div className="flex flex-wrap items-center justify-center gap-8 pt-2">
             <Link
               href={splitHref}
-              className="text-sm font-semibold text-[var(--budget-forest)] underline-offset-2 hover:underline"
+              className="text-sm font-semibold text-[#1c3812] underline-offset-2 hover:underline"
             >
               {isSplit ? "Manage split" : "Add split"}
             </Link>
@@ -174,17 +158,15 @@ export function TransactionDetail({
         </section>
 
         <section className="flex flex-col gap-4">
-          <h2 className="font-display text-lg text-[var(--budget-ink)]">
-            Extra details
-          </h2>
+          <h2 className="font-display text-[36px] leading-none">Extra details</h2>
           <DetailRow label="Merchant name" value={tx.merchant?.trim() ? tx.merchant : "—"} />
-          <DetailRow label="Description / memo" value="—" />
+          <DetailRow label="Description / memo" value="Fake data here" />
           <DetailRow label="Transaction ID" value={tx.id} />
           <DetailRow
             label="Status"
             value={pending ? "Pending" : "Cleared"}
           />
-          <DetailRow label="Date" value={formatLongCalendarDay(tx.date)} />
+          <DetailRow label="Date" value={tx.date} />
           <DetailRow label="Account" value={account.name} />
         </section>
       </div>
