@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 import {
   TOP_CARD_TRANSACTION_REFERENCE,
@@ -14,6 +15,7 @@ import { useBudgetStore } from "@/state/budget-store";
 export function TransactionsScreen() {
   const transactions = useBudgetStore((s) => s.transactions);
   const buckets = useBudgetStore((s) => s.buckets);
+  const router = useRouter();
   const sorted = useMemo(
     () =>
       [...transactions].sort(
@@ -49,27 +51,38 @@ export function TransactionsScreen() {
                     key={tx.id}
                     className={index < sorted.length - 1 ? "border-b border-[#222]/10" : ""}
                   >
-                    <div className="flex items-center justify-between py-4">
+                    <div
+                      role="link"
+                      tabIndex={0}
+                      className="flex cursor-pointer items-center justify-between py-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#222]/30"
+                      onClick={() => router.push(appRoutes.transaction(tx.id))}
+                      onKeyDown={(e) => {
+                        // Only activate when the row itself is focused (not when tabbing through child links).
+                        if (e.target !== e.currentTarget) return;
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          router.push(appRoutes.transaction(tx.id));
+                        }
+                      }}
+                    >
                       <div className="flex flex-col gap-1">
-                        <Link
-                          href={appRoutes.transaction(tx.id)}
-                          className="w-fit text-[18px] font-semibold text-[#222] underline-offset-2 hover:underline"
-                        >
-                          {tx.merchant || "Target"}
-                        </Link>
                         <Link
                           href={bucketHref}
                           className="w-fit text-[12px] font-medium text-[#1e0403]/50 underline-offset-2 hover:underline"
+                          onClick={(e) => {
+                            // Keep bucket navigation separate from row transaction navigation.
+                            e.stopPropagation();
+                          }}
                         >
                           {bucketName}
                         </Link>
+                        <span className="w-fit text-[18px] font-semibold text-[#222] underline-offset-2 hover:underline">
+                          {tx.merchant || "Target"}
+                        </span>
                       </div>
-                      <Link
-                        href={appRoutes.transaction(tx.id)}
-                        className="text-[18px] font-semibold text-[#222] underline-offset-2 hover:underline"
-                      >
+                      <span className="text-[18px] font-semibold text-[#222] underline-offset-2 hover:underline">
                         ${Math.round(tx.amount)}
-                      </Link>
+                      </span>
                     </div>
                   </li>
                 );
