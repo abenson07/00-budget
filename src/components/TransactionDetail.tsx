@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import {
-  BucketTransaction,
-  BucketTransactionSplit,
+  BucketCard,
   TransactionHeader as FigmaTransactionHeader,
   TRANSACTION_HEADER_REFERENCE,
 } from "@/components/figma-buckets";
@@ -120,7 +119,9 @@ export function TransactionDetail({
                 return (
                   <li key={`${row.bucketId}-${index}`}>
                     <Link href={bucketRoutes.bucket(row.bucketId)}>
-                      <BucketTransactionSplit
+                      <BucketCard
+                        variant="transaction"
+                        state="split"
                         title={title}
                         amountLabel={`$${row.amount.toFixed(2)}`}
                         splitLabel={`${pct}% of transaction`}
@@ -137,10 +138,12 @@ export function TransactionDetail({
               const title = bucket?.name ?? row.bucketId;
               return (
                 <Link href={bucketRoutes.bucket(row.bucketId)}>
-                  <BucketTransaction
-                    title={title}
-                    amountLabel={`$${row.amount.toFixed(2)}`}
-                  />
+                    <BucketCard
+                      variant="transaction"
+                      state="default"
+                      title={title}
+                      amountLabel={`$${row.amount.toFixed(2)}`}
+                    />
                 </Link>
               );
             })()
@@ -158,7 +161,17 @@ export function TransactionDetail({
         </section>
 
         <section className="flex flex-col gap-4">
-          <h2 className="font-display text-[36px] leading-none">Extra details</h2>
+          <h2
+            className={[
+              "font-display box-border px-1",
+              "w-[285px] max-w-full h-[31px]",
+              "flex items-center",
+              "text-[24px] leading-[31px] font-normal",
+              "text-[#1c3812]",
+            ].join(" ")}
+          >
+            Extra details
+          </h2>
           <DetailRow label="Merchant name" value={tx.merchant?.trim() ? tx.merchant : "—"} />
           <DetailRow label="Description / memo" value="Fake data here" />
           <DetailRow label="Transaction ID" value={tx.id} />

@@ -1,11 +1,5 @@
 import {
-  BucketBill,
-  BucketHome,
-  BucketMonthlySpending,
-  BucketSpendingMoney,
-  BucketSpendingMoneyLocked,
-  BucketTransaction,
-  BucketTransactionSplit,
+  BucketCard,
   BUCKET_REFERENCE,
   FigmaPercentageTag,
   PERCENTAGE_TAG_REFERENCE,
@@ -33,7 +27,7 @@ export default function ComponentsShowcasePage() {
           Bucket — variant home — state default
         </h2>
         <div className="w-44">
-          <BucketHome {...BUCKET_REFERENCE.home} />
+          <BucketCard {...BUCKET_REFERENCE.home} />
         </div>
       </section>
 
@@ -41,42 +35,42 @@ export default function ComponentsShowcasePage() {
         <h2 className="text-xs font-bold uppercase tracking-wider text-[#1c3812] opacity-60">
           Bucket — variant spendingMoney — state default
         </h2>
-        <BucketSpendingMoney {...BUCKET_REFERENCE.spendingMoney} />
+        <BucketCard {...BUCKET_REFERENCE.spendingMoney} />
       </section>
 
       <section className="mb-12 space-y-3">
         <h2 className="text-xs font-bold uppercase tracking-wider text-[#1c3812] opacity-60">
           Bucket — variant spendingMoney — state locked
         </h2>
-        <BucketSpendingMoneyLocked {...BUCKET_REFERENCE.spendingMoneyLocked} />
+        <BucketCard {...BUCKET_REFERENCE.spendingMoneyLocked} />
       </section>
 
       <section className="mb-12 space-y-3">
         <h2 className="text-xs font-bold uppercase tracking-wider text-[#1c3812] opacity-60">
           Bucket — variant monthlySpending — state default
         </h2>
-        <BucketMonthlySpending {...BUCKET_REFERENCE.monthlySpending} />
+        <BucketCard {...BUCKET_REFERENCE.monthlySpending} />
       </section>
 
       <section className="mb-12 space-y-3">
         <h2 className="text-xs font-bold uppercase tracking-wider text-[#1c3812] opacity-60">
           Bucket — variant bill — state default
         </h2>
-        <BucketBill {...BUCKET_REFERENCE.bill} />
+        <BucketCard {...BUCKET_REFERENCE.bill} />
       </section>
 
       <section className="mb-12 space-y-3">
         <h2 className="text-xs font-bold uppercase tracking-wider text-[#1c3812] opacity-60">
           Bucket — variant transaction — state default
         </h2>
-        <BucketTransaction {...BUCKET_REFERENCE.transaction} />
+        <BucketCard {...BUCKET_REFERENCE.transaction} />
       </section>
 
       <section className="mb-12 space-y-3">
         <h2 className="text-xs font-bold uppercase tracking-wider text-[#1c3812] opacity-60">
           Bucket — variant transaction — state split
         </h2>
-        <BucketTransactionSplit {...BUCKET_REFERENCE.transactionSplit} />
+        <BucketCard {...BUCKET_REFERENCE.transactionSplit} />
       </section>
 
       <section className="mb-12 space-y-3">

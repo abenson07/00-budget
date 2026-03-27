@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { useMemo } from "react";
 import {
-  BucketBill,
-  BucketMonthlySpending,
+  BucketCard,
   TOP_CARD_ESSENTIALS_REFERENCE,
   TopCardEssentials,
 } from "@/components/figma-buckets";
@@ -71,11 +70,17 @@ export function MobileEssentialsBuckets() {
               {bills.map((b) => (
                 <li key={b.id}>
                   <Link href={appRoutes.bucket(b.id)}>
-                    <BucketBill
+                    <BucketCard
+                      variant="bill"
+                      state="default"
                       title={b.name}
-                      cadenceLabel={`$${Math.max(b.top_off ?? 0, 0).toFixed(0)} per paycheck`}
+                      cadence={{
+                        mode: "perPaycheck",
+                        label: `$${Math.max(b.top_off ?? 0, 0).toFixed(0)} per paycheck`,
+                      }}
                       balanceLabel={`$${Math.max(b.amount, 0).toFixed(0)}`}
                       percentLabel="100% "
+                      risk="safe"
                     />
                   </Link>
                 </li>
@@ -102,11 +107,17 @@ export function MobileEssentialsBuckets() {
               {monthly.map((b) => (
                 <li key={b.id}>
                   <Link href={appRoutes.bucket(b.id)}>
-                    <BucketMonthlySpending
+                    <BucketCard
+                      variant="monthlySpending"
+                      state="default"
                       title={b.name}
-                      cadenceLabel={`Top off to $${Math.max(b.top_off ?? 0, 0).toFixed(0)}`}
+                      cadence={{
+                        mode: "topOff",
+                        label: `Top off to $${Math.max(b.top_off ?? 0, 0).toFixed(0)}`,
+                      }}
                       balanceLabel={`$${Math.max(b.amount, 0).toFixed(0)}`}
                       percentLabel="40% "
+                      risk="safe"
                     />
                   </Link>
                 </li>

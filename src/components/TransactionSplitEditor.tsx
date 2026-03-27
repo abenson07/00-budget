@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import {
-  BucketTransactionSplit,
+  BucketCard,
   TransactionHeader as FigmaTransactionHeader,
   TRANSACTION_HEADER_REFERENCE,
 } from "@/components/figma-buckets";
@@ -95,11 +95,13 @@ export function TransactionSplitEditor({
               const pct = tx.amount > 0 ? Math.round((split.amount / tx.amount) * 100) : 0;
               return (
                 <li key={`${split.bucketId}-${index}`}>
-                  <BucketTransactionSplit
-                    title={bucketName}
-                    amountLabel={`$${split.amount.toFixed(2)}`}
-                    splitLabel={`${pct}% of transaction`}
-                  />
+                    <BucketCard
+                      variant="transaction"
+                      state="split"
+                      title={bucketName}
+                      amountLabel={`$${split.amount.toFixed(2)}`}
+                      splitLabel={`${pct}% of transaction`}
+                    />
                 </li>
               );
             })}

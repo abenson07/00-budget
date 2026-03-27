@@ -1,10 +1,4 @@
-import type { BucketBillProps } from "./BucketBill";
-import type { BucketHomeProps } from "./BucketHome";
-import type { BucketMonthlySpendingProps } from "./BucketMonthlySpending";
-import type { BucketSpendingMoneyLockedProps } from "./BucketSpendingMoneyLocked";
-import type { BucketSpendingMoneyProps } from "./BucketSpendingMoney";
-import type { BucketTransactionPropsWithState } from "./BucketTransaction";
-import type { BucketTransactionSplitProps } from "./BucketTransactionSplit";
+import type { BucketCardProps } from "./BucketCard";
 
 export const BUCKET_REFERENCE = {
   home: {
@@ -13,57 +7,57 @@ export const BUCKET_REFERENCE = {
     title: "Eating out",
     amountLabel: "$232",
     percentLabel: "20% ",
-  } satisfies BucketHomeProps,
+    risk: "atRisk" as const,
+  } satisfies Extract<BucketCardProps, { variant: "home" }>,
   spendingMoney: {
     variant: "spendingMoney" as const,
     state: "default" as const,
-    locked: false,
-    atRisk: false,
     title: "Eating out",
-    cadenceLabel: "$200 per paycheck",
+    cadence: { mode: "perPaycheck" as const, label: "$200 per paycheck" },
     balanceLabel: "$41",
     percentLabel: "40% ",
-  } satisfies BucketSpendingMoneyProps,
+    risk: "safe" as const,
+  } satisfies Extract<BucketCardProps, { variant: "spendingMoney" }>,
   spendingMoneyLocked: {
     variant: "spendingMoney" as const,
     state: "locked" as const,
-    atRisk: true,
     title: "Date night",
-    cadenceLabel: "$400 per paycheck",
+    cadence: { mode: "perPaycheck" as const, label: "$400 per paycheck" },
     balanceLabel: "$100",
     percentLabel: "20% ",
-  } satisfies BucketSpendingMoneyLockedProps,
+    risk: "atRisk" as const,
+  } satisfies Extract<BucketCardProps, { variant: "spendingMoney" }>,
   monthlySpending: {
     variant: "monthlySpending" as const,
     state: "default" as const,
-    atRisk: true,
     title: "Groceries",
-    cadenceLabel: "$400 per paycheck",
+    cadence: { mode: "topOff" as const, label: "$400 per paycheck" },
     balanceLabel: "$100",
     percentLabel: "20% ",
-  } satisfies BucketMonthlySpendingProps,
+    risk: "atRisk" as const,
+  } satisfies Extract<BucketCardProps, { variant: "monthlySpending" }>,
   bill: {
     variant: "bill" as const,
     state: "default" as const,
-    atRisk: true,
     title: "Rent",
-    cadenceLabel: "$495 per paycheck",
+    cadence: { mode: "perPaycheck" as const, label: "$495 per paycheck" },
     balanceLabel: "$840",
     percentLabel: "20% ",
-    dueLabel: "Due in 3 days",
-  } satisfies BucketBillProps,
+    due: { label: "Due in 3 days" },
+    risk: "atRisk" as const,
+  } satisfies Extract<BucketCardProps, { variant: "bill" }>,
   transaction: {
     variant: "transaction" as const,
     state: "default" as const,
-    split: false,
     title: "Groceries",
     amountLabel: "$45.23",
-  } satisfies BucketTransactionPropsWithState,
+  } satisfies Extract<BucketCardProps, { variant: "transaction" }>,
   transactionSplit: {
     variant: "transaction" as const,
     title: "Shopping",
     amountLabel: "$45.23",
     splitLabel: "12% of transaction",
-  } satisfies BucketTransactionSplitProps,
+    state: "split" as const,
+  } satisfies Extract<BucketCardProps, { variant: "transaction" }>,
 };
 

@@ -4,11 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import {
-  BucketBill,
-  BucketMonthlySpending,
-  BucketSpendingMoney,
-  BucketSpendingMoneyLocked,
-  BucketTransaction,
+  BucketCard,
 } from "@/components/figma-buckets";
 import { appRoutes } from "@/lib/routes";
 import { useBudgetStore } from "@/state/budget-store";
@@ -89,36 +85,56 @@ export default function BucketDetailPage() {
             </section>
 
             {bucketType === "bill" ? (
-              <BucketBill
+              <BucketCard
+                variant="bill"
+                state="default"
                 title={bucket.name}
+                cadence={{
+                  mode: "perPaycheck",
+                  label: `$${Math.max(bucket.top_off ?? 0, 0).toFixed(0)} per paycheck`,
+                }}
                 balanceLabel={`$${Math.max(bucket.amount, 0).toFixed(0)}`}
-                cadenceLabel={`$${Math.max(bucket.top_off ?? 0, 0).toFixed(0)} per paycheck`}
-                atRisk={atRisk}
                 percentLabel={atRisk ? "20% " : "100% "}
+                risk={atRisk ? "atRisk" : "safe"}
               />
             ) : bucketType === "spending" ? (
-              <BucketSpendingMoney
+              <BucketCard
+                variant="spendingMoney"
+                state="default"
                 title={bucket.name}
+                cadence={{
+                  mode: "perPaycheck",
+                  label: `$${Math.max(bucket.top_off ?? 0, 0).toFixed(0)} per paycheck`,
+                }}
                 balanceLabel={`$${Math.max(bucket.amount, 0).toFixed(0)}`}
-                cadenceLabel={`$${Math.max(bucket.top_off ?? 0, 0).toFixed(0)} per paycheck`}
-                atRisk={atRisk}
                 percentLabel={atRisk ? "20% " : "100% "}
+                risk={atRisk ? "atRisk" : "safe"}
               />
             ) : bucketType === "spendingLocked" ? (
-              <BucketSpendingMoneyLocked
+              <BucketCard
+                variant="spendingMoney"
+                state="locked"
                 title={bucket.name}
+                cadence={{
+                  mode: "perPaycheck",
+                  label: `$${Math.max(bucket.top_off ?? 0, 0).toFixed(0)} per paycheck`,
+                }}
                 balanceLabel={`$${Math.max(bucket.amount, 0).toFixed(0)}`}
-                cadenceLabel={`$${Math.max(bucket.top_off ?? 0, 0).toFixed(0)} per paycheck`}
-                atRisk={atRisk}
                 percentLabel={atRisk ? "20% " : "100% "}
+                risk={atRisk ? "atRisk" : "safe"}
               />
             ) : (
-              <BucketMonthlySpending
+              <BucketCard
+                variant="monthlySpending"
+                state="default"
                 title={bucket.name}
+                cadence={{
+                  mode: "topOff",
+                  label: `Top off to $${Math.max(bucket.top_off ?? 0, 0).toFixed(0)}`,
+                }}
                 balanceLabel={`$${Math.max(bucket.amount, 0).toFixed(0)}`}
-                cadenceLabel={`Top off to $${Math.max(bucket.top_off ?? 0, 0).toFixed(0)}`}
-                atRisk={atRisk}
                 percentLabel={atRisk ? "20% " : "100% "}
+                risk={atRisk ? "atRisk" : "safe"}
               />
             )}
 
@@ -142,7 +158,9 @@ export default function BucketDetailPage() {
                 {transactions.map((tx) => (
                   <li key={tx.id}>
                     <Link href={appRoutes.transaction(tx.id)}>
-                      <BucketTransaction
+                      <BucketCard
+                        variant="transaction"
+                        state="default"
                         title={tx.merchant || "Target"}
                         amountLabel={`$${tx.amount.toFixed(0)}`}
                         className="rounded-none bg-transparent px-0"

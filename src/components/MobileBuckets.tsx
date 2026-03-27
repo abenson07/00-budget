@@ -1,38 +1,91 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { MouseEvent } from "react";
 import {
-  BucketBill,
-  BucketMonthlySpending,
-  BucketSpendingMoney,
+  BucketCard,
   TOP_CARD_HOME_REFERENCE_CONTENT,
   TopCardHome,
 } from "@/components/figma-buckets";
 import { appRoutes } from "@/lib/routes";
 import { isUnassignedBucket } from "@/lib/unassigned-bucket";
+import type { DiscretionaryBucket, EssentialBillBucket, EssentialSpendingBucket } from "@/lib/types";
 import { useBudgetStore } from "@/state/budget-store";
+
+type RiskState = "safe" | "atRisk";
 
 export function MobileBuckets() {
   const buckets = useBudgetStore((s) => s.buckets);
-  const [atRisk, setAtRisk] = useState(false);
-  const [showType, setShowType] = useState<"all" | "spending" | "bill" | "monthly">("all");
+  const [riskOverrides, setRiskOverrides] = useState<Record<string, RiskState>>(
+    {},
+  );
+  const [contextMenu, setContextMenu] = useState<null | {
+    bucketId: string;
+    x: number;
+    y: number;
+  }>(null);
+  const contextMenuRef = useRef<HTMLDivElement | null>(null);
 
   const sortedBuckets = useMemo(
     () => [...buckets].sort((a, b) => a.order - b.order),
     [buckets],
   );
-  const discretionary = useMemo(
+  const discretionary = useMemo<DiscretionaryBucket[]>(
     () =>
       sortedBuckets.filter(
-        (b) => b.type === "discretionary" && !isUnassignedBucket(b),
+        (b): b is DiscretionaryBucket =>
+          b.type === "discretionary" && !isUnassignedBucket(b),
       ),
     [sortedBuckets],
   );
-  const essentialBuckets = useMemo(
-    () => sortedBuckets.filter((b) => b.type === "essential"),
+  const essentialBuckets = useMemo<(EssentialBillBucket | EssentialSpendingBucket)[]>(
+    () => sortedBuckets.filter((b): b is EssentialBillBucket | EssentialSpendingBucket => b.type === "essential"),
     [sortedBuckets],
   );
+
+  const atRiskForBucket = (bucketId: string) =>
+    riskOverrides[bucketId] === "atRisk";
+
+  const openContextMenu = (bucketId: string, e: MouseEvent) => {
+    e.preventDefault();
+    setContextMenu({ bucketId, x: e.clientX, y: e.clientY });
+  };
+
+  useEffect(() => {
+    if (!contextMenu) return;
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setContextMenu(null);
+    };
+
+    const onPointerDown = (e: PointerEvent) => {
+      const menu = contextMenuRef.current;
+      if (!menu) return;
+      if (e.target instanceof Node && !menu.contains(e.target)) {
+        setContextMenu(null);
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("pointerdown", onPointerDown);
+    };
+  }, [contextMenu]);
+
+  const setBucketRiskOverride = (bucketId: string, next: RiskState) => {
+    setRiskOverrides((prev) => {
+      // Default "safe" is no override (keeps behavior aligned with previous UI default).
+      if (next === "safe") {
+        const { [bucketId]: _, ...rest } = prev;
+        return rest;
+      }
+      return { ...prev, [bucketId]: next };
+    });
+    setContextMenu(null);
+  };
 
   return (
     <div className="min-h-screen bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
@@ -52,43 +105,41 @@ export function MobileBuckets() {
           </Link>
         </nav>
 
-        <h1 className="font-display text-2xl leading-tight text-[var(--budget-forest)]">
-          Buckets
-        </h1>
-
         <TopCardHome {...TOP_CARD_HOME_REFERENCE_CONTENT} />
 
-        <section className="rounded-lg border border-[#222]/10 bg-white/70 p-3">
-          <p className="text-xs font-semibold text-[#222]/70">Buckets controller</p>
-          <div className="mt-2 flex gap-2">
-            <button
-              type="button"
-              className={`rounded px-2 py-1 text-xs ${!atRisk ? "bg-[#1c3812] text-white" : "bg-[#e6e8dd]"}`}
-              onClick={() => setAtRisk(false)}
-            >
-              Safe
-            </button>
-            <button
-              type="button"
-              className={`rounded px-2 py-1 text-xs ${atRisk ? "bg-[#f35226] text-white" : "bg-[#e6e8dd]"}`}
-              onClick={() => setAtRisk(true)}
-            >
-              At risk
-            </button>
-          </div>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {(["all", "spending", "bill", "monthly"] as const).map((type) => (
+        {contextMenu ? (
+          <div
+            ref={contextMenuRef}
+            className="fixed z-50"
+            style={{ left: contextMenu.x, top: contextMenu.y }}
+          >
+            <div className="w-40 rounded-lg border border-[#222]/10 bg-white/95 p-1 shadow-lg">
+              <div className="px-2 py-1 text-[11px] font-bold uppercase tracking-wide text-[#222]/60">
+                Risk state
+              </div>
               <button
-                key={type}
                 type="button"
-                className={`rounded px-2 py-1 text-xs ${showType === type ? "bg-[#1b1b1b] text-white" : "bg-[#e6e8dd]"}`}
-                onClick={() => setShowType(type)}
+                className={`mx-2 mt-1 w-[calc(100%-1rem)] rounded px-2 py-1 text-xs ${!atRiskForBucket(contextMenu.bucketId) ? "bg-[#1c3812] text-white" : "bg-[#e6e8dd]"}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setBucketRiskOverride(contextMenu.bucketId, "safe");
+                }}
               >
-                {type}
+                Safe
               </button>
-            ))}
+              <button
+                type="button"
+                className={`mx-2 mt-1 w-[calc(100%-1rem)] rounded px-2 py-1 text-xs ${atRiskForBucket(contextMenu.bucketId) ? "bg-[#f35226] text-white" : "bg-[#e6e8dd]"}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setBucketRiskOverride(contextMenu.bucketId, "atRisk");
+                }}
+              >
+                At risk
+              </button>
+            </div>
           </div>
-        </section>
+        ) : null}
 
         <section className="flex flex-col gap-2" aria-label="Spending money">
           <div>
@@ -99,20 +150,28 @@ export function MobileBuckets() {
               The money you have left over for day-to-day choices.
             </p>
           </div>
-          {showType !== "all" && showType !== "spending" ? null : discretionary.length === 0 ? (
+          {discretionary.length === 0 ? (
             <p className="flex min-h-[88px] items-center rounded-[var(--radius-card)] border border-[var(--budget-card-border)] bg-[var(--budget-sage-panel)] px-4 text-sm text-[var(--budget-ink-soft)]">
               No discretionary buckets yet.
             </p>
           ) : (
             discretionary.map((b) => (
-              <Link key={b.id} href={appRoutes.bucket(b.id)}>
-                <BucketSpendingMoney
+              <Link
+                key={b.id}
+                href={appRoutes.bucket(b.id)}
+                onContextMenu={(e) => openContextMenu(b.id, e)}
+              >
+                <BucketCard
+                  variant="spendingMoney"
+                  state={b.locked ? "locked" : "default"}
                   title={b.name}
-                  cadenceLabel={`$${Math.max(b.top_off ?? 0, 0).toFixed(0)} per paycheck`}
+                  cadence={{
+                    mode: "perPaycheck",
+                    label: `$${Math.max(b.top_off ?? 0, 0).toFixed(0)} per paycheck`,
+                  }}
                   balanceLabel={`$${Math.max(b.amount, 0).toFixed(0)}`}
-                  percentLabel={atRisk ? "20% " : "100% "}
-                  atRisk={atRisk}
-                  locked={Boolean(b.locked)}
+                  percentLabel={atRiskForBucket(b.id) ? "20% " : "100% "}
+                  risk={atRiskForBucket(b.id) ? "atRisk" : "safe"}
                 />
               </Link>
             ))
@@ -129,28 +188,45 @@ export function MobileBuckets() {
 
           {essentialBuckets.map((bucket) => {
             if (bucket.essential_subtype === "bill") {
-              if (showType !== "all" && showType !== "bill") return null;
               return (
-                <Link key={bucket.id} href={appRoutes.bucket(bucket.id)}>
-                  <BucketBill
+                <Link
+                  key={bucket.id}
+                  href={appRoutes.bucket(bucket.id)}
+                  onContextMenu={(e) => openContextMenu(bucket.id, e)}
+                >
+                  <BucketCard
+                    variant="bill"
+                    state="default"
                     title={bucket.name}
+                    cadence={{
+                      mode: "perPaycheck",
+                      label: `$${Math.max(bucket.top_off ?? 0, 0).toFixed(0)} per paycheck`,
+                    }}
                     balanceLabel={`$${Math.max(bucket.amount, 0).toFixed(0)}`}
-                    cadenceLabel={`$${Math.max(bucket.top_off ?? 0, 0).toFixed(0)} per paycheck`}
-                    atRisk={atRisk}
-                    percentLabel={atRisk ? "20% " : "100% "}
+                    percentLabel={atRiskForBucket(bucket.id) ? "20% " : "100% "}
+                    risk={atRiskForBucket(bucket.id) ? "atRisk" : "safe"}
                   />
                 </Link>
               );
             }
-            if (showType !== "all" && showType !== "monthly") return null;
+
             return (
-              <Link key={bucket.id} href={appRoutes.bucket(bucket.id)}>
-                <BucketMonthlySpending
+              <Link
+                key={bucket.id}
+                href={appRoutes.bucket(bucket.id)}
+                onContextMenu={(e) => openContextMenu(bucket.id, e)}
+              >
+                <BucketCard
+                  variant="monthlySpending"
+                  state="default"
                   title={bucket.name}
+                  cadence={{
+                    mode: "topOff",
+                    label: `Top off to $${Math.max(bucket.top_off ?? 0, 0).toFixed(0)}`,
+                  }}
                   balanceLabel={`$${Math.max(bucket.amount, 0).toFixed(0)}`}
-                  cadenceLabel={`Top off to $${Math.max(bucket.top_off ?? 0, 0).toFixed(0)}`}
-                  atRisk={atRisk}
-                  percentLabel={atRisk ? "20% " : "100% "}
+                  percentLabel={atRiskForBucket(bucket.id) ? "20% " : "100% "}
+                  risk={atRiskForBucket(bucket.id) ? "atRisk" : "safe"}
                 />
               </Link>
             );
