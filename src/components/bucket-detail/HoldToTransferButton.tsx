@@ -2,16 +2,16 @@
 
 import { useCallback, useRef, useState } from "react";
 
-const HOLD_MS = 2000;
-
 export function HoldToTransferButton({
   label,
   onConfirm,
   disabled,
+  holdMs = 2000,
 }: {
   label: string;
   onConfirm: () => void;
   disabled?: boolean;
+  holdMs?: number;
 }) {
   const [progress, setProgress] = useState(0);
   const rafRef = useRef<number | null>(null);
@@ -27,7 +27,7 @@ export function HoldToTransferButton({
   const tick = useCallback(() => {
     if (startRef.current == null) return;
     const elapsed = Date.now() - startRef.current;
-    const pct = Math.min(1, elapsed / HOLD_MS);
+    const pct = Math.min(1, elapsed / holdMs);
     setProgress(pct);
     if (pct >= 1) {
       cancel();
@@ -35,7 +35,7 @@ export function HoldToTransferButton({
       return;
     }
     rafRef.current = requestAnimationFrame(tick);
-  }, [cancel, onConfirm]);
+  }, [cancel, onConfirm, holdMs]);
 
   const start = useCallback(() => {
     if (disabled) return;

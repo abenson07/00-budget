@@ -14,6 +14,7 @@ import {
 import type { BucketMetadataInput } from "@/lib/bucket-metadata";
 import { applyBucketMetadata, validateBucketMetadata } from "@/lib/bucket-metadata";
 import { swapOrderWithNeighbor } from "@/lib/discretionary-priority";
+import { discretionaryRecoveryPlan, essentialRecoveryPlan } from "@/lib/overspend-recovery";
 import {
   runPaycheckAllocation as runAllocationEngine,
   type AllocationLineItem,
@@ -139,6 +140,25 @@ export const selectSortedBuckets = (s: BudgetStore) =>
 export const selectAllocationRun = (id: string) => (s: BudgetStore) =>
   s.allocationHistory.find((r) => r.id === id);
 
+function applyOverspendRecovery(buckets: Bucket[]): Bucket[] {
+  let result = buckets;
+  for (const b of result) {
+    const current = result.find((x) => x.id === b.id)!;
+    if (current.amount >= 0) continue;
+    const plan =
+      current.type === "essential"
+        ? essentialRecoveryPlan(result, current.id)
+        : discretionaryRecoveryPlan(result, current.id);
+    if (!plan) continue;
+    result = result.map((x) => {
+      if (x.id === current.id) return { ...x, amount: x.amount + plan.amount };
+      if (x.id === plan.coverFromId) return { ...x, amount: x.amount - plan.amount };
+      return x;
+    });
+  }
+  return result;
+}
+
 const fallbackInitial = createMockDataset();
 
 export const useBudgetStore = create<BudgetState & BudgetActions>()(
@@ -170,7 +190,7 @@ export const useBudgetStore = create<BudgetState & BudgetActions>()(
       throw new Error("Transaction account_id does not match current account");
     }
 
-    const nextBuckets = applyDebitAllocation(buckets, getEffectiveSplits(tx));
+    const nextBuckets = applyOverspendRecovery(applyDebitAllocation(buckets, getEffectiveSplits(tx)));
     set({
       buckets: nextBuckets,
       transactions: [...transactions, tx],
@@ -209,6 +229,7 @@ export const useBudgetStore = create<BudgetState & BudgetActions>()(
 
     let nextBuckets = reverseDebitAllocation(buckets, getEffectiveSplits(prev));
     nextBuckets = applyDebitAllocation(nextBuckets, getEffectiveSplits(merged));
+    nextBuckets = applyOverspendRecovery(nextBuckets);
 
     set({
       buckets: nextBuckets,

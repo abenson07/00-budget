@@ -133,6 +133,12 @@ export function BucketTransferForm({ bucketId: originBucketId }: BucketTransferF
     bankedAheadAmount(fromBucket) > 0 &&
     fromBucket.amount - amountUsd < (fromBucket.top_off ?? 0);
 
+  const essentialToDiscretionary =
+    !!fromBucket &&
+    !!toBucket &&
+    fromBucket.type === "essential" &&
+    toBucket.type === "discretionary";
+
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-6">
       <header className="flex items-center justify-between gap-2">
@@ -247,6 +253,13 @@ export function BucketTransferForm({ bucketId: originBucketId }: BucketTransferF
           label={`transfer ${formatUsd(amountUsd)}`}
           onConfirm={onConfirmTransfer}
           disabled={!canSubmit}
+        />
+      ) : essentialToDiscretionary ? (
+        <HoldToTransferButton
+          label={`transfer ${formatUsd(amountUsd)}`}
+          onConfirm={onConfirmTransfer}
+          disabled={!canSubmit}
+          holdMs={60_000}
         />
       ) : (
         <button

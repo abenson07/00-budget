@@ -3,9 +3,12 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { BucketHome, TopCardHome } from "@/components/figma-buckets";
+import { NearLimitBanner } from "@/components/NearLimitBanner";
 import { getEffectiveSplits } from "@/lib/allocation";
 import { percentageTagForBucket } from "@/lib/bucket-percentage-tag";
 import { buildEssentialsSummary } from "@/lib/essentials-summary";
+import { ESSENTIAL_VARIANCE_THRESHOLD } from "@/lib/overspend-recovery";
+import { formatUsd } from "@/lib/format";
 import { appRoutes } from "@/lib/routes";
 import { paycheckLineFor, safeToSpendHeadline } from "@/lib/safe-to-spend-summary";
 import { isUnassignedBucket } from "@/lib/unassigned-bucket";
@@ -13,6 +16,8 @@ import { useBudgetStore } from "@/state/budget-store";
 
 export function MobileHome() {
   const buckets = useBudgetStore((s) => s.buckets);
+  const transferBetweenBuckets = useBudgetStore((s) => s.transferBetweenBuckets);
+  const [coverError, setCoverError] = useState<string | null>(null);
   const transactionsAll = useBudgetStore((s) => s.transactions);
   const transactions = useMemo(() => transactionsAll.slice(0, 6), [transactionsAll]);
   const [essentialsOpen, setEssentialsOpen] = useState(false);
@@ -34,6 +39,23 @@ export function MobileHome() {
         .sort((a, b) => a.order - b.order),
     [buckets],
   );
+  const unassignedBucket = useMemo(() => buckets.find(isUnassignedBucket), [buckets]);
+  const overThresholdEssentials = useMemo(
+    () =>
+      buckets.filter(
+        (b) => b.type === "essential" && b.amount < -ESSENTIAL_VARIANCE_THRESHOLD,
+      ),
+    [buckets],
+  );
+  const coverFromUnassigned = (bucketId: string, amount: number) => {
+    if (!unassignedBucket) return;
+    setCoverError(null);
+    try {
+      transferBetweenBuckets(unassignedBucket.id, bucketId, amount);
+    } catch (e) {
+      setCoverError(e instanceof Error ? e.message : String(e));
+    }
+  };
   const homeBuckets = useMemo(
     () =>
       browseBuckets.slice(0, 2).map((bucket) => {
@@ -52,6 +74,30 @@ export function MobileHome() {
   return (
     <div className="min-h-screen bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
       <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 pb-10 pt-8">
+        <NearLimitBanner />
+
+        {overThresholdEssentials.length > 0 ? (
+          <div className="flex flex-col gap-2 rounded-lg bg-[#fdecea] px-4 py-3 text-sm text-[#7a1f13]">
+            {coverError ? <p className="text-xs">{coverError}</p> : null}
+            {overThresholdEssentials.map((b) => (
+              <div key={b.id} className="flex items-center justify-between gap-3">
+                <span>
+                  {b.name} is {formatUsd(-b.amount)} over
+                </span>
+                {unassignedBucket ? (
+                  <button
+                    type="button"
+                    onClick={() => coverFromUnassigned(b.id, -b.amount)}
+                    className="text-xs font-semibold underline"
+                  >
+                    Cover from Unassigned
+                  </button>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        ) : null}
+
         <TopCardHome
           headline={headline}
           amount={amount}
