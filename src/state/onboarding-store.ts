@@ -22,6 +22,7 @@ type OnboardingState = {
   detectedEssentials: EssentialBillBucket[];
   includedEssentialIds: string[];
   detectedDiscretionary: DiscretionaryBucket | null;
+  onboardingComplete: boolean;
 };
 
 type OnboardingActions = {
@@ -32,6 +33,7 @@ type OnboardingActions = {
   toggleEssentialIncluded: (id: string) => void;
   updateEssentialAmount: (id: string, amount: number) => void;
   updateDiscretionaryAmount: (amount: number) => void;
+  markOnboardingComplete: () => void;
   reset: () => void;
 };
 
@@ -48,6 +50,7 @@ export const useOnboardingStore = create<OnboardingState & OnboardingActions>()(
       detectedEssentials: [],
       includedEssentialIds: [],
       detectedDiscretionary: null,
+      onboardingComplete: false,
 
       connectAccounts: (institutionId) => {
         const inst = DEMO_INSTITUTIONS.find((i) => i.id === institutionId);
@@ -122,6 +125,8 @@ export const useOnboardingStore = create<OnboardingState & OnboardingActions>()(
         set({ detectedDiscretionary: { ...current, amount, top_off: amount } });
       },
 
+      markOnboardingComplete: () => set({ onboardingComplete: true }),
+
       reset: () =>
         set({
           connectedAccounts: [],
@@ -134,8 +139,12 @@ export const useOnboardingStore = create<OnboardingState & OnboardingActions>()(
           detectedEssentials: [],
           includedEssentialIds: [],
           detectedDiscretionary: null,
+          onboardingComplete: false,
         }),
     }),
-    { name: "budget-onboarding", partialize: (s) => ({ connected: s.connected }) },
+    {
+      name: "budget-onboarding",
+      partialize: (s) => ({ connected: s.connected, onboardingComplete: s.onboardingComplete }),
+    },
   ),
 );

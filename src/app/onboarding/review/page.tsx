@@ -1,8 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { buildFinalizedBudgetDataset } from "@/lib/finalize-onboarding";
 import { formatUsd } from "@/lib/format";
 import { appRoutes } from "@/lib/routes";
+import { useBudgetStore } from "@/state/budget-store";
 import { useOnboardingStore } from "@/state/onboarding-store";
 
 export default function OnboardingReviewPage() {
@@ -15,6 +17,24 @@ export default function OnboardingReviewPage() {
   const detectedDiscretionary = useOnboardingStore((s) => s.detectedDiscretionary);
   const checking = connectedAccounts.find((a) => a.accountType === "checking");
   const includedEssentials = detectedEssentials.filter((e) => includedEssentialIds.includes(e.id));
+
+  const onContinue = () => {
+    const checkingAccount = connectedAccounts.find((a) => a.accountType === "checking");
+    if (!detectedDiscretionary || !checkingAccount) {
+      router.replace(appRoutes.onboardingConnect);
+      return;
+    }
+    const result = buildFinalizedBudgetDataset({
+      checkingAccount,
+      importedTransactions,
+      detectedEssentials,
+      includedEssentialIds,
+      detectedDiscretionary,
+    });
+    useBudgetStore.getState().loadFinalizedDataset(result);
+    useOnboardingStore.getState().markOnboardingComplete();
+    router.push(appRoutes.home);
+  };
 
   return (
     <div className="min-h-screen bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
@@ -110,7 +130,7 @@ export default function OnboardingReviewPage() {
 
         <button
           type="button"
-          onClick={() => router.push(appRoutes.home)}
+          onClick={onContinue}
           className="rounded-lg bg-[#1c3812] px-4 py-3 text-center text-sm font-semibold text-white"
         >
           Continue

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useBudgetStore } from "@/state/budget-store";
+import { useOnboardingStore } from "@/state/onboarding-store";
 
 export default function DevSimulatePage() {
   const [paycheckAmount, setPaycheckAmount] = useState("2000");
@@ -13,6 +14,11 @@ export default function DevSimulatePage() {
     const amount = Number(paycheckAmount);
     if (!Number.isFinite(amount)) return;
     useBudgetStore.getState().simulatePaycheckDeposit(amount);
+  };
+
+  const onResetOnboarding = () => {
+    useOnboardingStore.getState().reset();
+    window.location.href = "/";
   };
 
   const onSimulateSpend = () => {
@@ -84,6 +90,17 @@ export default function DevSimulatePage() {
             className="rounded-lg bg-[#1c3812] px-4 py-2 text-sm font-semibold text-white"
           >
             Simulate spend
+          </button>
+        </section>
+
+        <section className="flex flex-col gap-2 rounded-lg border border-[#222]/10 bg-white p-4">
+          <h2 className="text-sm font-semibold">Reset onboarding</h2>
+          <button
+            type="button"
+            onClick={onResetOnboarding}
+            className="rounded-lg border border-red-700 px-4 py-2 text-sm font-semibold text-red-700"
+          >
+            Reset onboarding
           </button>
         </section>
       </div>

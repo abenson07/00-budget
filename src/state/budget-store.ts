@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import {
   accountBalance,
   applyDebitAllocation,
@@ -102,6 +103,8 @@ type BudgetActions = {
 
   simulatePaycheckDeposit: (amount: number) => void;
 
+  loadFinalizedDataset: (dataset: { account: Account; buckets: Bucket[]; transactions: Transaction[] }) => void;
+
   /** Load from Supabase; seeds demo if `accounts` is empty. No-op if env missing. */
   syncFromSupabase: () => Promise<void>;
 };
@@ -120,7 +123,9 @@ export const selectSortedBuckets = (s: BudgetStore) =>
 
 const fallbackInitial = createMockDataset();
 
-export const useBudgetStore = create<BudgetState & BudgetActions>((set, get) => ({
+export const useBudgetStore = create<BudgetState & BudgetActions>()(
+  persist(
+    (set, get) => ({
   account: fallbackInitial.account,
   buckets: fallbackInitial.buckets,
   transactions: fallbackInitial.transactions,
@@ -311,6 +316,9 @@ export const useBudgetStore = create<BudgetState & BudgetActions>((set, get) => 
     console.log("simulatePaycheckDeposit", amount);
   },
 
+  loadFinalizedDataset: (dataset) =>
+    set({ account: dataset.account, buckets: dataset.buckets, transactions: dataset.transactions, syncError: null }),
+
   syncFromSupabase: async () => {
     const supabase = tryCreateSupabase();
     if (!supabase) {
@@ -335,4 +343,10 @@ export const useBudgetStore = create<BudgetState & BudgetActions>((set, get) => 
       set({ syncError: msg });
     }
   },
-}));
+    }),
+    {
+      name: "budget-data",
+      partialize: (s) => ({ account: s.account, buckets: s.buckets, transactions: s.transactions }),
+    },
+  ),
+);
