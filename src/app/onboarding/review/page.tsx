@@ -5,13 +5,16 @@ import { formatUsd } from "@/lib/format";
 import { appRoutes } from "@/lib/routes";
 import { useOnboardingStore } from "@/state/onboarding-store";
 
-/** Placeholder for this L2 only — BEN-1304 replaces this body with detected essentials/discretionary. */
 export default function OnboardingReviewPage() {
   const router = useRouter();
   const connectedAccounts = useOnboardingStore((s) => s.connectedAccounts);
   const importedTransactions = useOnboardingStore((s) => s.importedTransactions);
   const initialBudgetState = useOnboardingStore((s) => s.initialBudgetState);
+  const detectedEssentials = useOnboardingStore((s) => s.detectedEssentials);
+  const includedEssentialIds = useOnboardingStore((s) => s.includedEssentialIds);
+  const detectedDiscretionary = useOnboardingStore((s) => s.detectedDiscretionary);
   const checking = connectedAccounts.find((a) => a.accountType === "checking");
+  const includedEssentials = detectedEssentials.filter((e) => includedEssentialIds.includes(e.id));
 
   return (
     <div className="min-h-screen bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
@@ -77,6 +80,33 @@ export default function OnboardingReviewPage() {
             Set up your paycheck
           </button>
         )}
+
+        {detectedDiscretionary ? (
+          <div className="flex flex-col gap-2 rounded-lg border border-[#222]/10 bg-white px-4 py-3 shadow-sm">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-semibold">Your starting buckets</h2>
+              <button
+                type="button"
+                onClick={() => router.push(appRoutes.onboardingDetected)}
+                className="text-xs font-semibold text-[#1c3812] underline underline-offset-2"
+              >
+                Edit
+              </button>
+            </div>
+            <ul className="flex flex-col gap-1 text-sm text-[#222]/80">
+              {includedEssentials.map((e) => (
+                <li key={e.id} className="flex justify-between">
+                  <span>{e.name}</span>
+                  <span className="tabular-nums">{formatUsd(e.amount)}</span>
+                </li>
+              ))}
+              <li className="flex justify-between font-semibold">
+                <span>Spending money (Unassigned)</span>
+                <span className="tabular-nums">{formatUsd(detectedDiscretionary.amount)}</span>
+              </li>
+            </ul>
+          </div>
+        ) : null}
 
         <button
           type="button"

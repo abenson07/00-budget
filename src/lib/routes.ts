@@ -18,6 +18,7 @@ export const appRoutes = {
   onboardingConnect: "/onboarding/connect",
   onboardingImporting: "/onboarding/importing",
   onboardingPaycheck: "/onboarding/paycheck",
+  onboardingDetected: "/onboarding/detected",
   onboardingReview: "/onboarding/review",
 } as const;
 

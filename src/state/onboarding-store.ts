@@ -1,9 +1,15 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { DEMO_INSTITUTIONS } from "@/lib/demo-institutions";
+import { buildDiscretionaryCandidate, detectEssentialCandidates } from "@/lib/detect-essentials";
 import { generateImportedTransactions } from "@/lib/generate-import-history";
 import { computeInitialBudgetState, type InitialBudgetState } from "@/lib/initial-budget-state";
-import type { ConnectedAccountSummary, Transaction } from "@/lib/types";
+import type {
+  ConnectedAccountSummary,
+  DiscretionaryBucket,
+  EssentialBillBucket,
+  Transaction,
+} from "@/lib/types";
 
 type OnboardingState = {
   connectedAccounts: ConnectedAccountSummary[];
@@ -13,12 +19,19 @@ type OnboardingState = {
   nextPaycheckDate: string | null;
   nextPaycheckAmount: number | null;
   initialBudgetState: InitialBudgetState | null;
+  detectedEssentials: EssentialBillBucket[];
+  includedEssentialIds: string[];
+  detectedDiscretionary: DiscretionaryBucket | null;
 };
 
 type OnboardingActions = {
   connectAccounts: (institutionId: string) => void;
   completeImport: () => void;
   setPaycheckInfo: (date: string, amount: number) => void;
+  generateDetections: () => void;
+  toggleEssentialIncluded: (id: string) => void;
+  updateEssentialAmount: (id: string, amount: number) => void;
+  updateDiscretionaryAmount: (amount: number) => void;
   reset: () => void;
 };
 
@@ -32,6 +45,9 @@ export const useOnboardingStore = create<OnboardingState & OnboardingActions>()(
       nextPaycheckDate: null,
       nextPaycheckAmount: null,
       initialBudgetState: null,
+      detectedEssentials: [],
+      includedEssentialIds: [],
+      detectedDiscretionary: null,
 
       connectAccounts: (institutionId) => {
         const inst = DEMO_INSTITUTIONS.find((i) => i.id === institutionId);
@@ -66,6 +82,46 @@ export const useOnboardingStore = create<OnboardingState & OnboardingActions>()(
         set({ nextPaycheckDate: date, nextPaycheckAmount: amount, initialBudgetState });
       },
 
+      generateDetections: () => {
+        const initialBudgetState = get().initialBudgetState;
+        if (!initialBudgetState) return;
+        const detectedEssentials = detectEssentialCandidates(
+          initialBudgetState.obligationMerchants,
+          new Date(),
+        );
+        const detectedDiscretionary = buildDiscretionaryCandidate(
+          initialBudgetState.availableToAllocate,
+        );
+        set({
+          detectedEssentials,
+          includedEssentialIds: detectedEssentials.map((e) => e.id),
+          detectedDiscretionary,
+        });
+      },
+
+      toggleEssentialIncluded: (id) => {
+        const included = get().includedEssentialIds;
+        set({
+          includedEssentialIds: included.includes(id)
+            ? included.filter((x) => x !== id)
+            : [...included, id],
+        });
+      },
+
+      updateEssentialAmount: (id, amount) => {
+        set({
+          detectedEssentials: get().detectedEssentials.map((e) =>
+            e.id === id ? { ...e, amount, top_off: amount } : e,
+          ),
+        });
+      },
+
+      updateDiscretionaryAmount: (amount) => {
+        const current = get().detectedDiscretionary;
+        if (!current) return;
+        set({ detectedDiscretionary: { ...current, amount, top_off: amount } });
+      },
+
       reset: () =>
         set({
           connectedAccounts: [],
@@ -75,6 +131,9 @@ export const useOnboardingStore = create<OnboardingState & OnboardingActions>()(
           nextPaycheckDate: null,
           nextPaycheckAmount: null,
           initialBudgetState: null,
+          detectedEssentials: [],
+          includedEssentialIds: [],
+          detectedDiscretionary: null,
         }),
     }),
     { name: "budget-onboarding", partialize: (s) => ({ connected: s.connected }) },

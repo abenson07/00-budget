@@ -27,7 +27,8 @@ export default function OnboardingPaycheckPage() {
   const onContinue = () => {
     if (!canContinue) return;
     useOnboardingStore.getState().setPaycheckInfo(date, amountNum);
-    router.push(appRoutes.onboardingReview);
+    useOnboardingStore.getState().generateDetections();
+    router.push(appRoutes.onboardingDetected);
   };
 
   return (
