@@ -4,7 +4,16 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { BucketHome, TopCardHome } from "@/components/figma-buckets";
 import { NearLimitBanner } from "@/components/NearLimitBanner";
-import { Button, Card, Field, Input, ListRow, PageShell, SectionHeading } from "@/components/ui";
+import {
+  Button,
+  Card,
+  Field,
+  Input,
+  ListRow,
+  MerchantLogo,
+  PageShell,
+  SectionHeading,
+} from "@/components/ui";
 import { getEffectiveSplits } from "@/lib/allocation";
 import { percentageTagForBucket } from "@/lib/bucket-percentage-tag";
 import { buildEssentialsSummary } from "@/lib/essentials-summary";
@@ -178,6 +187,7 @@ export function MobileHome() {
                 <ListRow
                   key={tx.id}
                   href={appRoutes.transaction(tx.id)}
+                  leading={<MerchantLogo merchant={tx.merchant} size={44} />}
                   title={tx.merchant || "Target"}
                   subtitle={bucketName}
                   amount={`$${Math.round(tx.amount)}`}

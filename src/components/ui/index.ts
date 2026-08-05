@@ -4,6 +4,7 @@ export { SectionHeading } from "./SectionHeading";
 export { Card } from "./Card";
 export type { CardTone } from "./Card";
 export { ListRow } from "./ListRow";
+export { MerchantLogo } from "./MerchantLogo";
 export { Button } from "./Button";
 export type { ButtonVariant, ButtonSize } from "./Button";
 export { Chip } from "./Chip";

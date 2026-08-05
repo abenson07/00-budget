@@ -5,7 +5,7 @@ import {
   TOP_CARD_TRANSACTION_REFERENCE,
   TopCardTransaction,
 } from "@/components/figma-buckets";
-import { Chip, ListRow, PageHeader, PageShell, SectionHeading } from "@/components/ui";
+import { Chip, ListRow, MerchantLogo, PageHeader, PageShell, SectionHeading } from "@/components/ui";
 import { getEffectiveSplits } from "@/lib/allocation";
 import { unmatchedTransactions } from "@/lib/merchant-matching";
 import { appRoutes } from "@/lib/routes";
@@ -67,6 +67,7 @@ export function TransactionsScreen() {
                 <ListRow
                   key={tx.id}
                   href={appRoutes.transaction(tx.id)}
+                  leading={<MerchantLogo merchant={tx.merchant} size={44} />}
                   title={tx.merchant || "Target"}
                   subtitle={bucketName}
                   amount={`$${Math.round(tx.amount)}`}

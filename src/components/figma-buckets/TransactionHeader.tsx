@@ -1,5 +1,7 @@
 "use client";
 
+import { MerchantLogo } from "@/components/ui/MerchantLogo";
+
 export type TransactionHeaderVariant = "default";
 export type TransactionHeaderState = "default" | "pending";
 
@@ -13,12 +15,8 @@ export type TransactionHeaderProps = {
   amountLabel: string;
   dateLabel: string;
   timeLabel: string;
-  imageSrc?: string;
   className?: string;
 };
-
-const FIGMA_TRANSACTION_HEADER_IMAGE =
-  "http://localhost:3845/assets/119f60c39c28e556ed73a7a1b7c6b323ae5ec9c6.png";
 
 export const TRANSACTION_HEADER_REFERENCE = {
   default: {
@@ -54,7 +52,6 @@ export function TransactionHeader({
   amountLabel,
   dateLabel,
   timeLabel,
-  imageSrc = FIGMA_TRANSACTION_HEADER_IMAGE,
   className,
 }: TransactionHeaderProps) {
   const resolvedState: TransactionHeaderState = pending
@@ -75,13 +72,7 @@ export function TransactionHeader({
       data-transaction-header-state={resolvedState}
     >
       <div className="flex w-full shrink-0 items-center justify-center py-4">
-        <div className="relative size-[62px] shrink-0 rounded-lg">
-          <img
-            alt=""
-            className="pointer-events-none absolute inset-0 size-full max-w-none rounded-lg object-cover"
-            src={imageSrc}
-          />
-        </div>
+        <MerchantLogo merchant={merchantLabel} size={62} shape="square" />
       </div>
 
       <p className="font-display w-full shrink-0 text-title text-budget-ink not-italic">
