@@ -8,6 +8,7 @@ import {
   TRANSACTION_HEADER_REFERENCE,
 } from "@/components/figma-buckets";
 import { ScanReceiptStub } from "@/components/TransactionDetail";
+import { Button, PageHeader, PageShell, SectionHeading } from "@/components/ui";
 import { getEffectiveSplits } from "@/lib/allocation";
 import { formatUsd } from "@/lib/format";
 import {
@@ -43,17 +44,15 @@ export function TransactionSplitEditor({
 
   if (!tx) {
     return (
-      <div className="min-h-screen bg-[var(--budget-page-bg)] font-[family-name:var(--font-instrument-sans)] text-[var(--budget-ink)]">
-        <div className="mx-auto max-w-md px-4 pb-10 pt-8">
-          <p className="text-[#1e0403]/70">Transaction not found.</p>
-          <Link
-            href={routes.transactionsList}
-            className="mt-4 inline-block font-mono text-xs font-medium text-[#1e0403]/70 underline decoration-[#1e0403]/25 underline-offset-2"
-          >
-            Back to list
-          </Link>
-        </div>
-      </div>
+      <PageShell>
+        <p className="text-budget-ink-soft">Transaction not found.</p>
+        <Link
+          href={routes.transactionsList}
+          className="inline-block text-xs font-medium text-budget-ink-soft underline decoration-budget-card-border underline-offset-2"
+        >
+          Back to list
+        </Link>
+      </PageShell>
     );
   }
 
@@ -69,74 +68,69 @@ export function TransactionSplitEditor({
   };
 
   return (
-    <div className="min-h-screen bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-8 px-4 pb-10 pt-8">
-        <nav>
-          <Link
-            href={routes.transaction(tx.id)}
-            className="text-xs font-medium text-[#222]/55 underline decoration-[#222]/20 underline-offset-2 transition-colors hover:text-[#1b1b1b]"
+    <PageShell>
+      <PageHeader backHref={routes.transaction(tx.id)} size="compact" />
+
+      <FigmaTransactionHeader
+        {...TRANSACTION_HEADER_REFERENCE.pending}
+        merchantLabel={tx.merchant || "Target"}
+        amountLabel={`$${tx.amount.toFixed(2)}`}
+        pending
+        dateLabel={tx.date}
+        timeLabel=""
+      />
+
+      <section className="flex flex-col gap-3">
+        <SectionHeading>Choose a bucket</SectionHeading>
+        <ul className="flex flex-col gap-2">
+          {buckets.map((b) => {
+            const active = b.id === pickedBucketId;
+            return (
+              <li key={b.id}>
+                <button
+                  type="button"
+                  onClick={() => setPickedBucketId(b.id)}
+                  className={`flex min-h-[56px] w-full items-center justify-between rounded-control border px-4 py-3 text-left ${
+                    active ? "border-budget-forest bg-budget-forest/10" : "border-budget-card-border bg-white"
+                  }`}
+                >
+                  <span className="text-sm font-medium text-budget-ink">{b.name}</span>
+                  <span className="text-xs tabular-nums text-budget-ink-soft">
+                    {formatUsd(b.amount)}
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+
+        <label className="flex items-center gap-2 text-sm text-budget-ink">
+          <input
+            type="checkbox"
+            checked={remember}
+            onChange={(e) => setRemember(e.target.checked)}
+            className="h-5 w-5 rounded accent-[var(--budget-forest)]"
+          />
+          Remember this merchant
+        </label>
+
+        {saveError ? <p className="text-sm text-red-700">{saveError}</p> : null}
+
+        <div className="flex items-center justify-center gap-8 pt-2">
+          <Button
+            variant="primary"
+            size="cta"
+            fullWidth
+            disabled={pickedBucketId === ""}
+            onClick={onSave}
           >
-            ← Transaction
-          </Link>
-        </nav>
-
-        <FigmaTransactionHeader
-          {...TRANSACTION_HEADER_REFERENCE.pending}
-          merchantLabel={tx.merchant || "Target"}
-          amountLabel={`$${tx.amount.toFixed(2)}`}
-          pending
-          dateLabel={tx.date}
-          timeLabel=""
-        />
-
-        <section className="flex flex-col gap-3">
-          <h2 className="text-[12px] font-semibold text-[#222]">Choose a bucket</h2>
-          <ul className="flex flex-col gap-2">
-            {buckets.map((b) => {
-              const active = b.id === pickedBucketId;
-              return (
-                <li key={b.id}>
-                  <button
-                    type="button"
-                    onClick={() => setPickedBucketId(b.id)}
-                    className={`flex w-full items-center justify-between rounded-lg border px-4 py-3 text-left ${
-                      active ? "border-[#1c3812] bg-[#1c3812]/10" : "border-[#222]/10 bg-white"
-                    }`}
-                  >
-                    <span className="text-sm font-medium text-[#1b1b1b]">{b.name}</span>
-                    <span className="text-xs tabular-nums text-[#1e0403]/55">
-                      {formatUsd(b.amount)}
-                    </span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-
-          <label className="flex items-center gap-2 text-sm text-[#222]">
-            <input
-              type="checkbox"
-              checked={remember}
-              onChange={(e) => setRemember(e.target.checked)}
-            />
-            Remember this merchant
-          </label>
-
-          {saveError ? <p className="text-sm text-red-700">{saveError}</p> : null}
-
-          <div className="flex items-center justify-center gap-8 pt-2">
-            <button
-              type="button"
-              disabled={pickedBucketId === ""}
-              onClick={onSave}
-              className="rounded-lg bg-[#1c3812] px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              Save
-            </button>
-            <ScanReceiptStub />
-          </div>
-        </section>
-      </div>
-    </div>
+            Save
+          </Button>
+        </div>
+        <div className="flex justify-center">
+          <ScanReceiptStub />
+        </div>
+      </section>
+    </PageShell>
   );
 }

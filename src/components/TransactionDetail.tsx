@@ -7,6 +7,7 @@ import {
   TransactionHeader as FigmaTransactionHeader,
   TRANSACTION_HEADER_REFERENCE,
 } from "@/components/figma-buckets";
+import { PageHeader, PageShell, SectionHeading } from "@/components/ui";
 import {
   bucketRoutesApp,
   transactionRoutesApp,
@@ -24,9 +25,9 @@ type Props = {
 
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-col gap-0.5 text-sm text-[#1b1b1b]">
-      <p className="text-[#222]/55">{label}</p>
-      <p className="font-medium">{value}</p>
+    <div className="flex flex-col gap-1 text-budget-ink">
+      <p className="text-label text-budget-ink-soft">{label}</p>
+      <p className="text-body font-medium">{value}</p>
     </div>
   );
 }
@@ -62,17 +63,15 @@ export function TransactionDetail({
 
   if (!tx) {
     return (
-      <div className="min-h-screen bg-[var(--budget-page-bg)] font-[family-name:var(--font-instrument-sans)] text-[var(--budget-ink)]">
-        <div className="mx-auto max-w-md px-4 pb-10 pt-8">
-          <p className="text-[#222]/55">Transaction not found.</p>
-          <Link
-            href={routes.transactionsList}
-            className="mt-4 inline-block text-xs font-medium text-[#1c3812] underline underline-offset-2"
-          >
-            Back to list
-          </Link>
-        </div>
-      </div>
+      <PageShell>
+        <p className="text-budget-ink-soft">Transaction not found.</p>
+        <Link
+          href={routes.transactionsList}
+          className="inline-block text-xs font-medium text-budget-forest underline underline-offset-2"
+        >
+          Back to list
+        </Link>
+      </PageShell>
     );
   }
 
@@ -83,18 +82,10 @@ export function TransactionDetail({
   const amountLabel = `$${tx.amount.toFixed(2)}`;
 
   return (
-    <div className="min-h-screen bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-8 px-4 pb-10 pt-8">
-        <nav>
-          <Link
-            href={routes.transactionsList}
-            className="text-xs font-medium text-[#222]/55 underline decoration-[#222]/20 underline-offset-2 transition-colors hover:text-[#1b1b1b]"
-          >
-            ← Transactions
-          </Link>
-        </nav>
+    <PageShell>
+      <PageHeader backHref={routes.transactionsList} size="compact" />
 
-        <FigmaTransactionHeader
+      <FigmaTransactionHeader
           {...TRANSACTION_HEADER_REFERENCE.default}
           merchantLabel={tx.merchant || "Target"}
           amountLabel={amountLabel}
@@ -104,10 +95,10 @@ export function TransactionDetail({
         />
 
         <section className="flex flex-col gap-3">
-          <h2 className="text-[12px] font-semibold text-[#222]">Bucket</h2>
+          <SectionHeading>Bucket</SectionHeading>
 
           {liveSplits.length === 0 ? (
-            <p className="text-sm text-[#222]/55">No bucket assigned yet.</p>
+            <p className="text-sm text-budget-ink-soft">No bucket assigned yet.</p>
           ) : isSplit ? (
             <ul className="flex flex-col gap-2">
               {liveSplits.map((row, index) => {
@@ -149,7 +140,7 @@ export function TransactionDetail({
           <div className="flex flex-wrap items-center justify-center gap-8 pt-2">
             <Link
               href={splitHref}
-              className="text-sm font-semibold text-[#1c3812] underline-offset-2 hover:underline"
+              className="text-sm font-semibold text-budget-forest underline-offset-2 hover:underline"
             >
               {isSplit ? "Manage split" : "Add split"}
             </Link>
@@ -158,7 +149,7 @@ export function TransactionDetail({
         </section>
 
         <section className="flex flex-col gap-4">
-          <h2 className="font-display text-[36px] leading-none">Extra details</h2>
+          <SectionHeading>Extra details</SectionHeading>
           <DetailRow label="Merchant name" value={tx.merchant?.trim() ? tx.merchant : "—"} />
           <DetailRow label="Description / memo" value="Fake data here" />
           <DetailRow label="Transaction ID" value={tx.id} />
@@ -169,7 +160,6 @@ export function TransactionDetail({
           <DetailRow label="Date" value={tx.date} />
           <DetailRow label="Account" value={account.name} />
         </section>
-      </div>
-    </div>
+    </PageShell>
   );
 }

@@ -24,7 +24,7 @@ export function TopCardTransaction({
   return (
     <div
       className={[
-        "flex size-full w-full max-w-[408px] flex-col items-start rounded-xl bg-[#e6e8dd] px-6 py-8",
+        "flex size-full w-full flex-col items-start rounded-card bg-budget-sage-panel px-5 py-6",
         className,
       ]
         .filter(Boolean)
@@ -33,21 +33,21 @@ export function TopCardTransaction({
       data-top-card-variant={variant}
       data-top-card-state={state}
     >
-      <div className="relative flex w-full shrink-0 flex-col items-start">
-        <div className="flex w-full shrink-0 justify-center px-1">
-          <p className="text-center font-display text-[24px] leading-normal text-[#222] not-italic">
+      <div className="relative flex w-full shrink-0 flex-col items-start gap-1">
+        <div className="flex w-full shrink-0 justify-center">
+          <p className="text-center font-display text-section text-budget-ink not-italic">
             {title}
           </p>
         </div>
         <div
-          className="relative flex w-full shrink-0 flex-col items-center"
+          className="relative flex w-full shrink-0 flex-col items-center gap-1"
           data-name="Balance"
         >
-          <p className="w-[min-content] min-w-full shrink-0 text-center text-[72px] font-bold leading-normal text-[#1c3812] not-italic">
+          <p className="font-sans-condensed w-[min-content] min-w-full shrink-0 text-center text-display tabular-nums text-budget-forest not-italic">
             {amount}
           </p>
-          <div className="flex shrink-0 items-center justify-center rounded-lg bg-[#cae0b9] px-2 py-0.5">
-            <p className="relative shrink-0 whitespace-nowrap text-[13px] font-bold leading-normal text-[#1c3812] not-italic">
+          <div className="flex shrink-0 items-center justify-center rounded-pill bg-budget-sage px-2 py-0.5">
+            <p className="relative shrink-0 whitespace-nowrap text-label font-bold text-budget-forest not-italic">
               {subtitlePill}
             </p>
           </div>

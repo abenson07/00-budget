@@ -65,7 +65,7 @@ export function TransactionHeader({
   return (
     <div
       className={[
-        "flex w-full max-w-[408px] flex-col items-start gap-1 bg-[#faf9f6] p-4",
+        "flex w-full flex-col items-start gap-1 bg-budget-page p-4",
         className,
       ]
         .filter(Boolean)
@@ -84,33 +84,31 @@ export function TransactionHeader({
         </div>
       </div>
 
-      <p className="font-display w-[285px] shrink-0 text-[28px] leading-normal text-[#222] not-italic">
+      <p className="font-display w-full shrink-0 text-title text-budget-ink not-italic">
         {merchantLabel}
       </p>
 
-      <div className="flex w-full shrink-0 items-start justify-between">
-        <div className="flex w-[182px] shrink-0 flex-col items-start">
+      <div className="flex w-full shrink-0 items-start justify-between gap-3">
+        <div className="flex min-w-0 shrink flex-col items-start">
           <div className="flex w-full shrink-0 flex-col items-start">
-            <div className="flex shrink-0 items-center justify-center gap-2">
-              <p className="shrink-0 whitespace-nowrap text-[48px] font-bold leading-normal text-[#222] not-italic">
+            <div className="flex shrink-0 flex-wrap items-center gap-2">
+              <p className="font-sans-condensed shrink-0 whitespace-nowrap text-display tabular-nums text-budget-ink not-italic">
                 {amountLabel}
               </p>
               {showPendingBadge ? (
                 <div className="flex h-full shrink-0 flex-col items-center justify-end">
-                  <div className="flex shrink-0 items-center justify-center rounded-lg bg-[#d0d0d0] px-2 py-0.5">
-                    <p className="shrink-0 whitespace-nowrap text-[13px] font-normal leading-normal text-[#1b1b1b] not-italic">
+                  <div className="flex shrink-0 items-center justify-center rounded-pill bg-[var(--budget-tag-neutral-bg)] px-2 py-0.5">
+                    <p className="shrink-0 whitespace-nowrap text-label font-normal text-budget-ink not-italic">
                       Pending
                     </p>
                   </div>
                 </div>
-              ) : (
-                <div className="h-full w-10 shrink-0" />
-              )}
+              ) : null}
             </div>
           </div>
         </div>
 
-        <div className="flex shrink-0 flex-col items-end justify-center whitespace-nowrap text-right text-[12px] leading-normal text-[#222] not-italic">
+        <div className="flex shrink-0 flex-col items-end justify-center whitespace-nowrap text-right text-label text-budget-ink not-italic">
           <p className="font-semibold">{dateLabel}</p>
           <p className="font-medium">{timeLabel}</p>
         </div>
