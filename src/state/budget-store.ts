@@ -15,6 +15,10 @@ import type { BucketMetadataInput } from "@/lib/bucket-metadata";
 import { applyBucketMetadata, validateBucketMetadata } from "@/lib/bucket-metadata";
 import { swapOrderWithNeighbor } from "@/lib/discretionary-priority";
 import {
+  runPaycheckAllocation as runAllocationEngine,
+  type AllocationLineItem,
+} from "@/lib/paycheck-allocation-engine";
+import {
   fetchBudgetDataset,
   persistBucketAmounts,
   persistBucketCreate,
@@ -102,6 +106,11 @@ type BudgetActions = {
   reorderDiscretionaryBucket: (bucketId: string, direction: "up" | "down") => void;
 
   setNextPaycheckDate: (date: string) => void;
+
+  runPaycheckAllocation: (
+    incomeAmount: number,
+    slot: "paycheck_1" | "paycheck_2",
+  ) => AllocationLineItem[];
 
   createBucketFromCategory: (category: NewBucketCategoryId) => string;
 
@@ -309,6 +318,19 @@ export const useBudgetStore = create<BudgetState & BudgetActions>()(
   },
 
   setNextPaycheckDate: (date) => set({ nextPaycheckDate: date }),
+
+  runPaycheckAllocation: (incomeAmount, slot) => {
+    const { buckets } = get();
+    const { buckets: nextBuckets, lineItems } = runAllocationEngine(buckets, incomeAmount, slot, new Date());
+    set({ buckets: nextBuckets });
+    const supabase = tryCreateSupabase();
+    if (supabase) {
+      void persistBucketAmounts(supabase, nextBuckets).catch((e) =>
+        console.error("runPaycheckAllocation persist failed", e),
+      );
+    }
+    return lineItems;
+  },
 
   createBucketFromCategory: (category) => {
     const { account, buckets } = get();
