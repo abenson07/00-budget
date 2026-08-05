@@ -1,3 +1,4 @@
+export { BillSmoothingCard } from "./BillSmoothingCard";
 export { BucketAllocationTransactionRow } from "./BucketAllocationTransactionRow";
 export { BucketDetailHero } from "./BucketDetailHero";
 export { BucketMetadataForm } from "./BucketMetadataForm";

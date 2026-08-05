@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import {
+  BillSmoothingCard,
   BucketMetadataForm,
   BucketRulesDatesCard,
 } from "@/components/bucket-detail";
@@ -50,6 +51,9 @@ export default function BucketSettingsPage() {
         ) : (
           <div className="flex flex-col gap-6">
             <BucketRulesDatesCard bucket={bucket} />
+            {bucket.type === "essential" && bucket.essential_subtype === "bill" ? (
+              <BillSmoothingCard bucket={bucket} />
+            ) : null}
             <BucketMetadataForm bucketId={bucketId} bucket={bucket} />
           </div>
         )}
