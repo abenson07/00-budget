@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
   BucketBill,
   BucketMonthlySpending,
@@ -10,6 +10,7 @@ import {
   BucketSpendingMoneyLocked,
   BucketTransaction,
 } from "@/components/figma-buckets";
+import { percentageTagForBucket } from "@/lib/bucket-percentage-tag";
 import { appRoutes } from "@/lib/routes";
 import { useBudgetStore } from "@/state/budget-store";
 
@@ -26,9 +27,10 @@ export default function BucketDetailPage() {
   const transactionsAll = useBudgetStore((s) => s.transactions);
   const transactions = useMemo(() => transactionsAll.slice(0, 6), [transactionsAll]);
   const bucket = useMemo(() => buckets.find((b) => b.id === bucketId), [buckets, bucketId]);
-  const [riskState, setRiskState] = useState<"safe" | "atRisk">("safe");
-  const [bucketType, setBucketType] = useState<"monthly" | "bill" | "spending" | "spendingLocked">("monthly");
-  const atRisk = riskState === "atRisk";
+  const now = useMemo(() => new Date(), []);
+  const tag = bucket ? percentageTagForBucket(bucket, now) : null;
+  const atRisk = tag?.variant === "atRisk";
+  const percentLabel = tag ? tag.label : "—";
 
   return (
     <div className="min-h-screen bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
@@ -53,64 +55,37 @@ export default function BucketDetailPage() {
         ) : (
           <>
             <h1 className="font-display text-[44px] leading-none">
-              Bucket - {bucketType === "spendingLocked" ? "Spending money" : bucketType}
+              Bucket -{" "}
+              {bucket.type === "discretionary"
+                ? "Spending money"
+                : bucket.essential_subtype === "bill"
+                  ? "Bill"
+                  : "Monthly spending"}
             </h1>
 
-            <section className="rounded-lg border border-[#222]/10 bg-white/70 p-3">
-              <p className="text-xs font-semibold text-[#222]/70">State controller</p>
-              <div className="mt-2 flex gap-2">
-                <button
-                  type="button"
-                  className={`rounded px-2 py-1 text-xs ${riskState === "safe" ? "bg-[#1c3812] text-white" : "bg-[#e6e8dd]"}`}
-                  onClick={() => setRiskState("safe")}
-                >
-                  Safe
-                </button>
-                <button
-                  type="button"
-                  className={`rounded px-2 py-1 text-xs ${riskState === "atRisk" ? "bg-[#f35226] text-white" : "bg-[#e6e8dd]"}`}
-                  onClick={() => setRiskState("atRisk")}
-                >
-                  At risk
-                </button>
-              </div>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {(["monthly", "bill", "spending", "spendingLocked"] as const).map((type) => (
-                  <button
-                    key={type}
-                    type="button"
-                    className={`rounded px-2 py-1 text-xs ${bucketType === type ? "bg-[#1b1b1b] text-white" : "bg-[#e6e8dd]"}`}
-                    onClick={() => setBucketType(type)}
-                  >
-                    {type}
-                  </button>
-                ))}
-              </div>
-            </section>
-
-            {bucketType === "bill" ? (
+            {bucket.type === "essential" && bucket.essential_subtype === "bill" ? (
               <BucketBill
                 title={bucket.name}
                 balanceLabel={`$${Math.max(bucket.amount, 0).toFixed(0)}`}
                 cadenceLabel={`$${Math.max(bucket.top_off ?? 0, 0).toFixed(0)} per paycheck`}
                 atRisk={atRisk}
-                percentLabel={atRisk ? "20% " : "100% "}
+                percentLabel={percentLabel}
               />
-            ) : bucketType === "spending" ? (
-              <BucketSpendingMoney
-                title={bucket.name}
-                balanceLabel={`$${Math.max(bucket.amount, 0).toFixed(0)}`}
-                cadenceLabel={`$${Math.max(bucket.top_off ?? 0, 0).toFixed(0)} per paycheck`}
-                atRisk={atRisk}
-                percentLabel={atRisk ? "20% " : "100% "}
-              />
-            ) : bucketType === "spendingLocked" ? (
+            ) : bucket.type === "discretionary" && bucket.locked ? (
               <BucketSpendingMoneyLocked
                 title={bucket.name}
                 balanceLabel={`$${Math.max(bucket.amount, 0).toFixed(0)}`}
                 cadenceLabel={`$${Math.max(bucket.top_off ?? 0, 0).toFixed(0)} per paycheck`}
                 atRisk={atRisk}
-                percentLabel={atRisk ? "20% " : "100% "}
+                percentLabel={percentLabel}
+              />
+            ) : bucket.type === "discretionary" ? (
+              <BucketSpendingMoney
+                title={bucket.name}
+                balanceLabel={`$${Math.max(bucket.amount, 0).toFixed(0)}`}
+                cadenceLabel={`$${Math.max(bucket.top_off ?? 0, 0).toFixed(0)} per paycheck`}
+                atRisk={atRisk}
+                percentLabel={percentLabel}
               />
             ) : (
               <BucketMonthlySpending
@@ -118,7 +93,7 @@ export default function BucketDetailPage() {
                 balanceLabel={`$${Math.max(bucket.amount, 0).toFixed(0)}`}
                 cadenceLabel={`Top off to $${Math.max(bucket.top_off ?? 0, 0).toFixed(0)}`}
                 atRisk={atRisk}
-                percentLabel={atRisk ? "20% " : "100% "}
+                percentLabel={percentLabel}
               />
             )}
 
