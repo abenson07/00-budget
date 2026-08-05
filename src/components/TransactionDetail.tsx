@@ -31,7 +31,7 @@ function DetailRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-function ScanReceiptStub() {
+export function ScanReceiptStub() {
   return (
     <span
       className="inline-flex cursor-not-allowed items-center gap-1.5 text-sm font-medium text-[var(--budget-ink-soft)] opacity-60"
@@ -99,8 +99,8 @@ export function TransactionDetail({
           merchantLabel={tx.merchant || "Target"}
           amountLabel={amountLabel}
           pending={pending}
-          dateLabel="March 2nd, 2025"
-          timeLabel="3:02pm"
+          dateLabel={tx.date}
+          timeLabel=""
         />
 
         <section className="flex flex-col gap-3">

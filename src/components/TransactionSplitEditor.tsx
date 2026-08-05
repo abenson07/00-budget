@@ -1,52 +1,45 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import {
-  BucketTransactionSplit,
   TransactionHeader as FigmaTransactionHeader,
   TRANSACTION_HEADER_REFERENCE,
 } from "@/components/figma-buckets";
+import { ScanReceiptStub } from "@/components/TransactionDetail";
+import { getEffectiveSplits } from "@/lib/allocation";
+import { formatUsd } from "@/lib/format";
 import {
   transactionRoutesApp,
   type TransactionViewRoutes,
 } from "@/lib/routes";
-import { useMemo } from "react";
-import { getEffectiveSplits } from "@/lib/allocation";
 import { useBudgetStore } from "@/state/budget-store";
+import { useMerchantRulesStore } from "@/state/merchant-rules-store";
 
 type Props = {
   transactionId: string;
   routes?: TransactionViewRoutes;
 };
 
-/** Split visual route mirroring Figma "transaction detail - split". */
+/** Real single-bucket recategorization screen (mirrors Figma "transaction detail - split" layout). */
 export function TransactionSplitEditor({
   transactionId,
   routes = transactionRoutesApp,
 }: Props) {
+  const router = useRouter();
   const tx = useBudgetStore((s) =>
     s.transactions.find((t) => t.id === transactionId),
   );
-  const getBucketById = useBudgetStore((s) => s.getBucketById);
-  const splits = useMemo(() => {
-    if (!tx) return [];
-    const live = getEffectiveSplits(tx);
-    if (live.length > 1) return live;
-    if (live.length === 1) {
-      const first = live[0]!;
-      return [
-        first,
-        {
-          bucketId: "shopping",
-          amount: Math.max(tx.amount - first.amount, 0),
-        },
-      ];
-    }
-    return [
-      { bucketId: "groceries", amount: tx.amount * 0.88 },
-      { bucketId: "shopping", amount: tx.amount * 0.12 },
-    ];
-  }, [tx]);
+  const buckets = useBudgetStore((s) => s.buckets);
+  const updateTransaction = useBudgetStore((s) => s.updateTransaction);
+  const recordMerchantRule = useMerchantRulesStore((s) => s.recordMerchantRule);
+
+  const [pickedBucketId, setPickedBucketId] = useState(
+    tx ? (getEffectiveSplits(tx)[0]?.bucketId ?? "") : "",
+  );
+  const [remember, setRemember] = useState(true);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   if (!tx) {
     return (
@@ -63,6 +56,17 @@ export function TransactionSplitEditor({
       </div>
     );
   }
+
+  const onSave = () => {
+    setSaveError(null);
+    try {
+      updateTransaction(tx.id, { primary_bucket_id: pickedBucketId, splits: undefined });
+      if (remember) recordMerchantRule(tx.merchant, pickedBucketId);
+      router.push(routes.transaction(tx.id));
+    } catch (e) {
+      setSaveError(e instanceof Error ? e.message : String(e));
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
@@ -81,32 +85,55 @@ export function TransactionSplitEditor({
           merchantLabel={tx.merchant || "Target"}
           amountLabel={`$${tx.amount.toFixed(2)}`}
           pending
-          dateLabel="March 2nd, 2025"
-          timeLabel="3:02pm"
+          dateLabel={tx.date}
+          timeLabel=""
         />
 
         <section className="flex flex-col gap-3">
-          <h2 className="text-[12px] font-semibold text-[#222]">Bucket</h2>
+          <h2 className="text-[12px] font-semibold text-[#222]">Choose a bucket</h2>
           <ul className="flex flex-col gap-2">
-            {splits.map((split, index) => {
-              const bucketName =
-                getBucketById(split.bucketId)?.name ??
-                (index === 0 ? "Groceries" : "Shopping");
-              const pct = tx.amount > 0 ? Math.round((split.amount / tx.amount) * 100) : 0;
+            {buckets.map((b) => {
+              const active = b.id === pickedBucketId;
               return (
-                <li key={`${split.bucketId}-${index}`}>
-                  <BucketTransactionSplit
-                    title={bucketName}
-                    amountLabel={`$${split.amount.toFixed(2)}`}
-                    splitLabel={`${pct}% of transaction`}
-                  />
+                <li key={b.id}>
+                  <button
+                    type="button"
+                    onClick={() => setPickedBucketId(b.id)}
+                    className={`flex w-full items-center justify-between rounded-lg border px-4 py-3 text-left ${
+                      active ? "border-[#1c3812] bg-[#1c3812]/10" : "border-[#222]/10 bg-white"
+                    }`}
+                  >
+                    <span className="text-sm font-medium text-[#1b1b1b]">{b.name}</span>
+                    <span className="text-xs tabular-nums text-[#1e0403]/55">
+                      {formatUsd(b.amount)}
+                    </span>
+                  </button>
                 </li>
               );
             })}
           </ul>
+
+          <label className="flex items-center gap-2 text-sm text-[#222]">
+            <input
+              type="checkbox"
+              checked={remember}
+              onChange={(e) => setRemember(e.target.checked)}
+            />
+            Remember this merchant
+          </label>
+
+          {saveError ? <p className="text-sm text-red-700">{saveError}</p> : null}
+
           <div className="flex items-center justify-center gap-8 pt-2">
-            <span className="text-sm font-semibold text-[#1c3812]">Manage split</span>
-            <span className="text-sm text-[#222]/70">Scan receipt</span>
+            <button
+              type="button"
+              disabled={pickedBucketId === ""}
+              onClick={onSave}
+              className="rounded-lg bg-[#1c3812] px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Save
+            </button>
+            <ScanReceiptStub />
           </div>
         </section>
       </div>
