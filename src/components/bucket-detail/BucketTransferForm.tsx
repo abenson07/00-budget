@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { bankedAheadAmount } from "@/lib/bucket-runway";
 import { MONEY_EPSILON } from "@/lib/constants";
 import { formatUsd } from "@/lib/format";
 import { appRoutes } from "@/lib/routes";
 import type { Bucket } from "@/lib/types";
 import { useBudgetStore } from "@/state/budget-store";
+import { HoldToTransferButton } from "./HoldToTransferButton";
 
 const MAX_INPUT_CENTS = 999_999_999_99;
 
@@ -125,6 +127,12 @@ export function BucketTransferForm({ bucketId: originBucketId }: BucketTransferF
     !!fromBucket &&
     !!toBucket;
 
+  const dippingIntoBankedAhead =
+    !!fromBucket &&
+    fromBucket.type === "discretionary" &&
+    bankedAheadAmount(fromBucket) > 0 &&
+    fromBucket.amount - amountUsd < (fromBucket.top_off ?? 0);
+
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-6">
       <header className="flex items-center justify-between gap-2">
@@ -234,14 +242,22 @@ export function BucketTransferForm({ bucketId: originBucketId }: BucketTransferF
         <p className="text-center text-sm text-red-700">{transferError}</p>
       ) : null}
 
-      <button
-        type="button"
-        disabled={!canSubmit}
-        onClick={onConfirmTransfer}
-        className="w-full rounded-2xl bg-[#0f0f0f] py-4 text-center text-base font-semibold text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-35 active:opacity-90"
-      >
-        Transfer {formatUsd(amountUsd)}
-      </button>
+      {dippingIntoBankedAhead ? (
+        <HoldToTransferButton
+          label={`transfer ${formatUsd(amountUsd)}`}
+          onConfirm={onConfirmTransfer}
+          disabled={!canSubmit}
+        />
+      ) : (
+        <button
+          type="button"
+          disabled={!canSubmit}
+          onClick={onConfirmTransfer}
+          className="w-full rounded-2xl bg-[#0f0f0f] py-4 text-center text-base font-semibold text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-35 active:opacity-90"
+        >
+          Transfer {formatUsd(amountUsd)}
+        </button>
+      )}
 
       {picker ? (
         <div

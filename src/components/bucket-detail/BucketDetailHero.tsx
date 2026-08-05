@@ -6,12 +6,13 @@ import { useMemo } from "react";
 import { PercentageTag } from "@/components/design-system/PercentageTag";
 import { imageForBucket } from "@/lib/bucket-row-images";
 import { percentageTagForBucket } from "@/lib/bucket-percentage-tag";
+import { runwayDays } from "@/lib/bucket-runway";
 import { dueLabelForBill } from "@/lib/essentials-dates";
 import { formatUsd } from "@/lib/format";
 import { appRoutes } from "@/lib/routes";
-import type { Bucket } from "@/lib/types";
+import type { Bucket, Transaction } from "@/lib/types";
 
-type BucketDetailHeroProps = { bucket: Bucket };
+type BucketDetailHeroProps = { bucket: Bucket; transactions: Transaction[] };
 
 function categoryLabel(bucket: Bucket): string {
   if (bucket.type === "essential" && bucket.essential_subtype === "bill") {
@@ -21,13 +22,14 @@ function categoryLabel(bucket: Bucket): string {
   return "Spending money";
 }
 
-export function BucketDetailHero({ bucket }: BucketDetailHeroProps) {
+export function BucketDetailHero({ bucket, transactions }: BucketDetailHeroProps) {
   const now = useMemo(() => new Date(), []);
   const cover = imageForBucket(bucket);
   const tag = percentageTagForBucket(bucket, now);
   const isBill =
     bucket.type === "essential" && bucket.essential_subtype === "bill";
   const dueLine = isBill ? dueLabelForBill(bucket.due_date, now) : null;
+  const runway = bucket.type === "discretionary" ? runwayDays(bucket, transactions, now) : null;
   const billAtRisk = isBill && tag?.variant === "atRisk";
   const transferHref = appRoutes.bucketTransfer(bucket.id);
 
@@ -67,6 +69,11 @@ export function BucketDetailHero({ bucket }: BucketDetailHeroProps) {
             <PercentageTag variant={tag.variant}>{tag.label}</PercentageTag>
           ) : null}
         </div>
+        {bucket.type === "discretionary" ? (
+          <p className="text-xs text-[var(--budget-ink-soft)]">
+            {runway != null ? `${runway} days left at your current pace` : "Not enough spending history yet"}
+          </p>
+        ) : null}
         <p className="mt-2 text-right text-xs text-[var(--budget-ink-soft)]">
           {metaRight}
         </p>

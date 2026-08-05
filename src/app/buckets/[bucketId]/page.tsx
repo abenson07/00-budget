@@ -10,7 +10,9 @@ import {
   BucketSpendingMoneyLocked,
   BucketTransaction,
 } from "@/components/figma-buckets";
+import { selectTransactionsByBucket } from "@/lib/allocation";
 import { percentageTagForBucket } from "@/lib/bucket-percentage-tag";
+import { runwayDays } from "@/lib/bucket-runway";
 import { appRoutes } from "@/lib/routes";
 import { useBudgetStore } from "@/state/budget-store";
 
@@ -24,13 +26,19 @@ export default function BucketDetailPage() {
         : "";
 
   const buckets = useBudgetStore((s) => s.buckets);
-  const transactionsAll = useBudgetStore((s) => s.transactions);
-  const transactions = useMemo(() => transactionsAll.slice(0, 6), [transactionsAll]);
+  const allTransactions = useBudgetStore((s) => s.transactions);
+  const transactionsForBucket = useMemo(
+    () => selectTransactionsByBucket(allTransactions, bucketId),
+    [allTransactions, bucketId],
+  );
+  const transactions = useMemo(() => transactionsForBucket.slice(0, 6), [transactionsForBucket]);
   const bucket = useMemo(() => buckets.find((b) => b.id === bucketId), [buckets, bucketId]);
   const now = useMemo(() => new Date(), []);
   const tag = bucket ? percentageTagForBucket(bucket, now) : null;
   const atRisk = tag?.variant === "atRisk";
   const percentLabel = tag ? tag.label : "—";
+  const runway =
+    bucket && bucket.type === "discretionary" ? runwayDays(bucket, transactionsForBucket, now) : null;
 
   return (
     <div className="min-h-screen bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
@@ -96,6 +104,14 @@ export default function BucketDetailPage() {
                 percentLabel={percentLabel}
               />
             )}
+
+            {bucket.type === "discretionary" ? (
+              <p className="text-xs text-[#222]/55">
+                {runway != null
+                  ? `${runway} days left at your current pace`
+                  : "Not enough spending history yet"}
+              </p>
+            ) : null}
 
             <section className="flex flex-col gap-3.5">
               <h2 className="font-display px-1 text-lg text-[var(--budget-ink)]">
