@@ -38,25 +38,25 @@ function usePrefersReducedMotion(): boolean {
 function EssentialRow({ line }: { line: TopCardHomeEssentialLine }) {
   const sub =
     line.subtitleTone === "forest"
-      ? "text-[#1c3812] opacity-50"
-      : "text-[#222] opacity-50";
+      ? "text-budget-forest opacity-50"
+      : "text-budget-ink opacity-50";
   return (
     <div
       className="flex w-full items-center justify-between py-4"
       data-topcard-home-animate
     >
       <div className="relative flex shrink-0 flex-col items-start">
-        <div className="flex h-9 shrink-0 flex-col items-start gap-1 whitespace-nowrap leading-normal not-italic">
-          <p className="font-sans-condensed relative shrink-0 text-[24px] font-bold text-[#1b1b1b]">
+        <div className="flex shrink-0 flex-col items-start gap-1 whitespace-nowrap not-italic">
+          <p className="font-sans-condensed relative shrink-0 text-amount-lg text-budget-ink">
             {line.title}
           </p>
-          <p className={`relative shrink-0 text-[12px] font-bold ${sub}`}>
+          <p className={`relative shrink-0 text-label font-bold ${sub}`}>
             {line.subtitle}
           </p>
         </div>
       </div>
       <div className="relative flex shrink-0 items-center justify-center gap-1.5">
-        <p className="font-sans-condensed relative shrink-0 whitespace-nowrap text-[24px] font-bold leading-normal text-[#1b1b1b] not-italic">
+        <p className="font-sans-condensed relative shrink-0 whitespace-nowrap text-amount-lg tabular-nums text-budget-ink not-italic">
           {line.amount}
         </p>
         <FigmaPercentageTag
@@ -252,21 +252,21 @@ export function TopCardHome({
 
   const greenCard = (
     <div
-      className="relative z-[2] mb-[-13px] flex h-[245px] w-full max-w-[408px] shrink-0 flex-col items-start justify-between rounded-xl bg-[#1c3812] px-6 py-8 not-italic leading-normal shadow-[0px_12px_20px_0px_rgba(0,0,0,0.15)]"
+      className="relative z-[2] mb-[-13px] flex w-full shrink-0 flex-col items-start justify-between gap-4 rounded-card bg-budget-forest px-5 py-6 shadow-hero"
       data-name="Top Card"
       data-figma-node="28:5062"
     >
-      <p className="font-display relative w-[285px] shrink-0 text-[24px] text-[#cff851]">
+      <p className="font-display relative max-w-[18rem] shrink-0 text-section text-budget-lime">
         {headline}
       </p>
       <div
-        className="relative flex w-full shrink-0 flex-col items-start text-[#f9f8f4]"
+        className="relative flex w-full shrink-0 flex-col items-start gap-1 text-budget-on-dark"
         data-name="Balance"
       >
-        <p className="font-sans-condensed relative w-full shrink-0 text-[72px] font-bold">
+        <p className="font-sans-condensed relative w-full shrink-0 text-display tabular-nums">
           {amount}
         </p>
-        <p className="relative w-full shrink-0 text-[12px] opacity-80">
+        <p className="relative w-full shrink-0 text-label opacity-80">
           {paycheckLine}
         </p>
       </div>
@@ -276,7 +276,7 @@ export function TopCardHome({
   const defaultSage = (
     <div
       className={[
-        "relative z-[1] mb-[-13px] flex w-full min-w-0 max-w-[408px] shrink-0 items-center justify-between gap-3 rounded-lg bg-[#cae0b9] px-4 pb-4 pt-[26px]",
+        "relative z-[1] mb-[-13px] flex w-full min-w-0 shrink-0 items-center justify-between gap-3 rounded-card bg-budget-sage px-5 pb-4 pt-[26px]",
         toggleOnBannerClick ? "cursor-pointer" : "",
       ]
         .filter(Boolean)
@@ -287,12 +287,12 @@ export function TopCardHome({
       {...bannerButtonProps}
     >
       <div className="min-w-0 flex-1">
-        <p className="font-sans-condensed truncate text-[20px] font-bold leading-normal text-[#1b1b1b] not-italic">
+        <p className="font-sans-condensed truncate text-section font-bold text-budget-ink">
           {essentialsLabel}
         </p>
       </div>
       <div className="flex shrink-0 flex-col items-end justify-center">
-        <div className="flex items-center justify-end gap-2 rounded-lg bg-[#cae0b9] px-2 py-0.5 text-left text-[12px] font-bold leading-normal text-[#1c3812] not-italic">
+        <div className="flex items-center justify-end gap-2 rounded-pill bg-budget-forest/10 px-2 py-0.5 text-left text-label font-bold text-budget-forest">
           <p className="font-sans-condensed shrink-0 whitespace-nowrap">{dueThisWeekShort}</p>
           <p className="font-sans-condensed shrink-0 whitespace-nowrap">{monthlyStatusLine}</p>
         </div>
@@ -303,7 +303,7 @@ export function TopCardHome({
   const expandedHeader = (
     <div
       className={[
-        "flex h-[19px] w-full min-w-0 max-w-[376px] shrink-0 items-center justify-between gap-3",
+        "flex min-h-[19px] w-full min-w-0 shrink-0 items-center justify-between gap-3",
         toggleOnBannerClick ? "cursor-pointer" : "",
       ]
         .filter(Boolean)
@@ -313,12 +313,12 @@ export function TopCardHome({
       {...bannerButtonProps}
     >
       <div className="min-w-0 flex-1">
-        <p className="font-sans-condensed truncate text-[20px] font-bold leading-normal text-[#1b1b1b] not-italic">
+        <p className="font-sans-condensed truncate text-section font-bold text-budget-ink">
           {essentialsLabel}
         </p>
       </div>
       <div className="flex shrink-0 flex-col items-end justify-center">
-        <div className="flex items-center justify-end gap-2 rounded-lg bg-[#cae0b9] px-2 py-0.5 text-[12px] font-bold leading-normal text-[#1c3812] not-italic">
+        <div className="flex items-center justify-end gap-2 rounded-pill bg-budget-forest/10 px-2 py-0.5 text-label font-bold text-budget-forest">
           <p className="font-sans-condensed pointer-events-none shrink-0 select-none whitespace-nowrap opacity-0" aria-hidden>
             {dueThisWeekShort}
           </p>
@@ -338,10 +338,10 @@ export function TopCardHome({
         </div>
       </div>
       <div
-        className="relative flex w-full shrink-0 items-center justify-center rounded-lg bg-[#1c3812] py-2"
+        className="relative flex w-full shrink-0 items-center justify-center rounded-tile bg-budget-forest py-3"
         data-topcard-home-animate
       >
-        <p className="font-sans-condensed relative shrink-0 whitespace-nowrap text-[14px] font-bold leading-normal text-[#cae0b9] not-italic">
+        <p className="font-sans-condensed relative shrink-0 whitespace-nowrap text-meta font-bold text-budget-sage not-italic">
           {expandedFooterLine}
         </p>
       </div>
@@ -350,7 +350,7 @@ export function TopCardHome({
 
   const expandedSage = instantExpanded ? (
     <div
-      className="relative z-[1] mb-[-13px] flex w-full min-w-0 max-w-[408px] shrink-0 flex-col items-start gap-4 rounded-lg bg-[#cae0b9] px-4 pb-4 pt-[26px]"
+      className="relative z-[1] mb-[-13px] flex w-full min-w-0 shrink-0 flex-col items-start gap-4 rounded-card bg-budget-sage px-5 pb-4 pt-[26px]"
       data-figma-node="28:5171"
       id={`figma-top-card-essentials-${expandRegionId}`}
       role="region"
@@ -361,7 +361,7 @@ export function TopCardHome({
     </div>
   ) : (
     <div
-      className="relative z-[1] mb-[-13px] flex w-full min-w-0 max-w-[408px] shrink-0 flex-col items-start gap-4 rounded-lg bg-[#cae0b9] px-4 pb-4 pt-[26px]"
+      className="relative z-[1] mb-[-13px] flex w-full min-w-0 shrink-0 flex-col items-start gap-4 rounded-card bg-budget-sage px-5 pb-4 pt-[26px]"
       data-figma-node="28:5171"
     >
       {expandedHeader}
@@ -382,7 +382,7 @@ export function TopCardHome({
   return (
     <div className={className}>
       <div
-        className="relative flex w-full min-w-0 max-w-[408px] flex-col items-start isolate overflow-clip rounded-lg pb-[13px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)]"
+        className="relative flex w-full min-w-0 flex-col items-start isolate overflow-clip rounded-card pb-[13px] shadow-card"
         data-figma-node={expanded ? "28:5165" : "28:5061"}
         data-top-card-variant={variant}
         data-top-card-state={visualState}
@@ -393,7 +393,7 @@ export function TopCardHome({
       {showToggleButton ? (
         <button
           type="button"
-          className="mt-4 rounded-lg border border-[#1c3812]/25 bg-white/80 px-4 py-2 text-sm font-semibold text-[#1c3812] shadow-sm"
+          className="mt-4 rounded-pill border border-budget-forest/25 bg-white/80 px-4 py-2 text-sm font-semibold text-budget-forest shadow-sm"
           onClick={handleToggle}
           aria-expanded={expanded}
           aria-controls={

@@ -104,7 +104,7 @@ export function FigmaPercentageTag({
   return (
     <span
       className={[
-        "inline-flex shrink-0 items-center justify-center rounded-lg px-2 py-0.5",
+        "inline-flex shrink-0 items-center justify-center rounded-pill px-2 py-0.5",
         v.box,
         className,
       ]
@@ -114,7 +114,7 @@ export function FigmaPercentageTag({
     >
       <span
         className={[
-          "whitespace-nowrap text-[13px] font-bold leading-normal not-italic",
+          "whitespace-nowrap text-label font-bold tabular-nums not-italic",
           v.label,
         ].join(" ")}
       >
