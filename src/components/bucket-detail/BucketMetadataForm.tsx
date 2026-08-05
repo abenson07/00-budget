@@ -6,18 +6,11 @@ import {
   useState,
   type FormEvent,
 } from "react";
+import { Button, Card, Input, Label, SectionHeading } from "@/components/ui";
 import { addDaysToIsoLocal } from "@/lib/dates";
 import type { BucketMetadataInput } from "@/lib/bucket-metadata";
 import type { Bucket } from "@/lib/types";
 import { useBudgetStore } from "@/state/budget-store";
-
-function labelClass() {
-  return "block text-xs font-medium uppercase tracking-wide text-[#1e0403]/55";
-}
-
-function inputClass() {
-  return "mt-1 w-full rounded-md border border-[#bbb] bg-white px-3 py-2 text-sm text-[#222] shadow-sm focus:border-[#1e0403]/40 focus:outline-none focus:ring-1 focus:ring-[#1e0403]/25";
-}
 
 function bucketToFormState(b: Bucket): {
   name: string;
@@ -141,46 +134,41 @@ export function BucketMetadataForm({ bucketId, bucket }: BucketMetadataFormProps
   };
 
   return (
-    <section className="rounded-lg border border-[#bbb] bg-white p-4 shadow-sm">
-      <h2 className="text-sm font-semibold text-[#1e1e1e]">Edit bucket</h2>
-      <p className="mt-1 text-xs text-[#1e0403]/65">
+    <Card>
+      <SectionHeading>Edit bucket</SectionHeading>
+      <p className="mt-1 text-xs text-budget-ink-soft">
         Name, type, sort order, rules, and bill dates. Balance is changed only
         via transfers or transactions.
       </p>
       <form className="mt-4 space-y-3" onSubmit={onSaveMetadata}>
         <div>
-          <label htmlFor="edit-name" className={labelClass()}>
-            Name
-          </label>
-          <input
+          <Label htmlFor="edit-name">Name</Label>
+          <Input
             id="edit-name"
             type="text"
-            className={inputClass()}
             value={editName}
             onChange={(e) => setEditName(e.target.value)}
           />
         </div>
         <div>
-          <label htmlFor="edit-order" className={labelClass()}>
-            Order
-          </label>
-          <input
+          <Label htmlFor="edit-order">Order</Label>
+          <Input
             id="edit-order"
             type="number"
-            className={inputClass()}
             value={editOrder}
             onChange={(e) => setEditOrder(e.target.value)}
           />
         </div>
         <div>
-          <span className={labelClass()}>Type</span>
-          <div className="mt-2 flex flex-wrap gap-4 text-sm text-[#222]">
+          <Label>Type</Label>
+          <div className="mt-2 flex flex-wrap gap-4 text-sm text-budget-ink">
             <label className="inline-flex items-center gap-2">
               <input
                 type="radio"
                 name="edit-type"
                 checked={editType === "discretionary"}
                 onChange={() => setEditType("discretionary")}
+                className="h-5 w-5 accent-[var(--budget-forest)]"
               />
               Discretionary
             </label>
@@ -190,6 +178,7 @@ export function BucketMetadataForm({ bucketId, bucket }: BucketMetadataFormProps
                 name="edit-type"
                 checked={editType === "essential"}
                 onChange={() => setEditType("essential")}
+                className="h-5 w-5 accent-[var(--budget-forest)]"
               />
               Essential
             </label>
@@ -197,14 +186,15 @@ export function BucketMetadataForm({ bucketId, bucket }: BucketMetadataFormProps
         </div>
         {editType === "essential" ? (
           <div>
-            <span className={labelClass()}>Essential subtype</span>
-            <div className="mt-2 flex flex-wrap gap-4 text-sm text-[#222]">
+            <Label>Essential subtype</Label>
+            <div className="mt-2 flex flex-wrap gap-4 text-sm text-budget-ink">
               <label className="inline-flex items-center gap-2">
                 <input
                   type="radio"
                   name="edit-subtype"
                   checked={editSubtype === "essential_spending"}
                   onChange={() => setEditSubtype("essential_spending")}
+                  className="h-5 w-5 accent-[var(--budget-forest)]"
                 />
                 Essential spending
               </label>
@@ -214,6 +204,7 @@ export function BucketMetadataForm({ bucketId, bucket }: BucketMetadataFormProps
                   name="edit-subtype"
                   checked={editSubtype === "bill"}
                   onChange={() => setEditSubtype("bill")}
+                  className="h-5 w-5 accent-[var(--budget-forest)]"
                 />
                 Bill
               </label>
@@ -222,15 +213,12 @@ export function BucketMetadataForm({ bucketId, bucket }: BucketMetadataFormProps
         ) : null}
         {editType === "essential" && editSubtype === "bill" ? (
           <div className="space-y-2">
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label htmlFor="edit-due" className={labelClass()}>
-                  Due date
-                </label>
-                <input
+                <Label htmlFor="edit-due">Due date</Label>
+                <Input
                   id="edit-due"
                   type="date"
-                  className={inputClass()}
                   value={editDue}
                   onChange={(e) => {
                     const v = e.target.value;
@@ -243,13 +231,10 @@ export function BucketMetadataForm({ bucketId, bucket }: BucketMetadataFormProps
                 />
               </div>
               <div>
-                <label htmlFor="edit-alert" className={labelClass()}>
-                  Alert date
-                </label>
-                <input
+                <Label htmlFor="edit-alert">Alert date</Label>
+                <Input
                   id="edit-alert"
                   type="date"
-                  className={inputClass()}
                   value={editAlert}
                   max={
                     editDue
@@ -260,7 +245,7 @@ export function BucketMetadataForm({ bucketId, bucket }: BucketMetadataFormProps
                 />
               </div>
             </div>
-            <p className="text-xs text-[#1e0403]/50">
+            <p className="text-xs text-budget-ink-soft">
               Changing the due date sets the alert to five days before. You can
               adjust the alert separately; it must stay before the due date.
             </p>
@@ -269,55 +254,47 @@ export function BucketMetadataForm({ bucketId, bucket }: BucketMetadataFormProps
         {editType === "discretionary" ? (
           <>
             <div>
-              <label htmlFor="edit-goal-target" className={labelClass()}>
-                Goal target date (optional)
-              </label>
-              <input
+              <Label htmlFor="edit-goal-target">Goal target date (optional)</Label>
+              <Input
                 id="edit-goal-target"
                 type="date"
-                className={inputClass()}
                 value={editGoalTarget}
                 onChange={(e) => setEditGoalTarget(e.target.value)}
               />
             </div>
-            <label className="flex cursor-pointer items-center gap-2 text-sm text-[#222]">
+            <label className="flex cursor-pointer items-center gap-2 text-sm text-budget-ink">
               <input
                 type="checkbox"
                 checked={editLocked}
                 onChange={(e) => setEditLocked(e.target.checked)}
+                className="h-5 w-5 rounded accent-[var(--budget-forest)]"
               />
               Locked spending money (hidden from safe to spend)
             </label>
           </>
         ) : null}
         <div>
-          <label htmlFor="edit-topoff" className={labelClass()}>
-            Top off (empty = none)
-          </label>
-          <input
+          <Label htmlFor="edit-topoff">Top off (empty = none)</Label>
+          <Input
             id="edit-topoff"
             type="number"
             inputMode="decimal"
             min={0}
             step="0.01"
-            className={inputClass()}
             value={editTopOff}
             onChange={(e) => setEditTopOff(e.target.value)}
             placeholder="Optional"
           />
         </div>
         <div>
-          <label htmlFor="edit-pct" className={labelClass()}>
-            Percentage of income (0–100, empty = none)
-          </label>
-          <input
+          <Label htmlFor="edit-pct">Percentage of income (0–100, empty = none)</Label>
+          <Input
             id="edit-pct"
             type="number"
             inputMode="decimal"
             min={0}
             max={100}
             step="0.1"
-            className={inputClass()}
             value={editPct}
             onChange={(e) => setEditPct(e.target.value)}
             placeholder="e.g. 12 for 12%"
@@ -329,13 +306,10 @@ export function BucketMetadataForm({ bucketId, bucket }: BucketMetadataFormProps
         {editOk ? (
           <p className="text-sm text-emerald-800">Saved.</p>
         ) : null}
-        <button
-          type="submit"
-          className="rounded-lg border border-[#bbb] bg-white px-4 py-2 text-sm font-medium text-[#222] transition-colors hover:bg-[#faf9f6]"
-        >
+        <Button type="submit" variant="primary" size="cta" fullWidth>
           Save changes
-        </button>
+        </Button>
       </form>
-    </section>
+    </Card>
   );
 }

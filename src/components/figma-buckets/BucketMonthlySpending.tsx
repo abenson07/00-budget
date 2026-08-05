@@ -31,7 +31,7 @@ export function BucketMonthlySpending({
   return (
     <div
       className={[
-        "flex min-h-[92px] w-full max-w-full items-center rounded-lg bg-[#e6e8dd] p-px",
+        "flex min-h-[72px] w-full max-w-full items-center rounded-tile bg-budget-sage-panel p-px",
         className,
       ]
         .filter(Boolean)
@@ -51,19 +51,19 @@ export function BucketMonthlySpending({
           </div>
         </div>
       </div>
-      <div className="relative flex min-h-px min-w-px flex-1 items-center justify-between px-3 py-5">
+      <div className="relative flex min-h-px min-w-px flex-1 items-center justify-between px-4 py-4">
         <div className="flex h-full flex-row items-center self-stretch">
           <div className="flex h-full shrink-0 flex-col items-start gap-1 whitespace-nowrap leading-normal not-italic">
-            <p className="relative shrink-0 text-[24px] font-bold text-[#1b1b1b]">
+            <p className="relative shrink-0 text-amount-lg text-budget-ink">
               {title}
             </p>
-            <p className="relative shrink-0 text-[12px] font-bold text-[#1c3812] opacity-50">
+            <p className="relative shrink-0 text-label text-budget-forest opacity-50">
               {cadenceLabel}
             </p>
           </div>
         </div>
         <div className="flex shrink-0 items-start justify-end gap-2">
-          <p className="relative shrink-0 whitespace-nowrap text-[24px] font-bold leading-normal text-[#1b1b1b]">
+          <p className="relative shrink-0 whitespace-nowrap text-amount-lg tabular-nums text-budget-ink">
             {balanceLabel}
           </p>
           <FigmaPercentageTag inverse={false} variant={atRisk ? "atRisk" : "safe"}>

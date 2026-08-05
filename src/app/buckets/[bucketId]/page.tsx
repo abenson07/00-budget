@@ -10,6 +10,7 @@ import {
   BucketSpendingMoneyLocked,
   BucketTransaction,
 } from "@/components/figma-buckets";
+import { Button, PageHeader, PageShell, SectionHeading } from "@/components/ui";
 import { selectTransactionsByBucket } from "@/lib/allocation";
 import { percentageTagForBucket } from "@/lib/bucket-percentage-tag";
 import { runwayDays } from "@/lib/bucket-runway";
@@ -41,35 +42,27 @@ export default function BucketDetailPage() {
     bucket && bucket.type === "discretionary" ? runwayDays(bucket, transactionsForBucket, now) : null;
 
   return (
-    <div className="min-h-screen bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 pb-10 pt-8">
-        <nav>
-          <Link
-            href={appRoutes.buckets}
-            className="text-xs font-medium text-[#222]/55 underline decoration-[#222]/20 underline-offset-2 transition-colors hover:text-[#1b1b1b]"
-          >
-            ← Buckets
-          </Link>
-        </nav>
+    <PageShell>
+      <PageHeader backHref={appRoutes.buckets} size="compact" />
 
-        {!bucket ? (
-          <div className="rounded-[var(--radius-card)] border border-amber-200 bg-amber-50/90 p-4 text-amber-950">
-            <h1 className="text-lg font-semibold">Bucket not found</h1>
-            <p className="mt-1 text-sm text-amber-900/90">
-              No bucket matches this link. Return to buckets and pick one from
-              the list.
-            </p>
-          </div>
-        ) : (
-          <>
-            <h1 className="font-display text-[44px] leading-none">
-              Bucket -{" "}
-              {bucket.type === "discretionary"
-                ? "Spending money"
-                : bucket.essential_subtype === "bill"
-                  ? "Bill"
-                  : "Monthly spending"}
-            </h1>
+      {!bucket ? (
+        <div className="rounded-card border border-amber-200 bg-amber-50/90 p-4 text-amber-950">
+          <h1 className="text-lg font-semibold">Bucket not found</h1>
+          <p className="mt-1 text-sm text-amber-900/90">
+            No bucket matches this link. Return to buckets and pick one from
+            the list.
+          </p>
+        </div>
+      ) : (
+        <>
+          <h1 className="text-title">
+            Bucket -{" "}
+            {bucket.type === "discretionary"
+              ? "Spending money"
+              : bucket.essential_subtype === "bill"
+                ? "Bill"
+                : "Monthly spending"}
+          </h1>
 
             {bucket.type === "essential" && bucket.essential_subtype === "bill" ? (
               <BucketBill
@@ -106,30 +99,31 @@ export default function BucketDetailPage() {
             )}
 
             {bucket.type === "discretionary" ? (
-              <p className="text-xs text-[#222]/55">
+              <p className="text-xs text-budget-ink-soft">
                 {runway != null
                   ? `${runway} days left at your current pace`
                   : "Not enough spending history yet"}
               </p>
             ) : null}
 
-            <section className="flex flex-col gap-3.5">
-              <h2 className="font-display px-1 text-lg text-[var(--budget-ink)]">
-                Recent spending
-              </h2>
-              <Link
-                href={appRoutes.transactions}
-                className="flex items-center justify-between px-1"
+            <section className="flex flex-col gap-3">
+              <SectionHeading
+                action={
+                  <Link
+                    href={appRoutes.transactions}
+                    className="flex items-center gap-1 text-xs font-bold uppercase tracking-wide text-budget-ink"
+                  >
+                    All transactions
+                    <span aria-hidden className="text-budget-ink-soft">
+                      →
+                    </span>
+                  </Link>
+                }
               >
-                <span className="text-xs font-bold uppercase tracking-wide text-[var(--budget-ink)]">
-                  All transactions
-                </span>
-                <span aria-hidden className="text-[var(--budget-ink-soft)]">
-                  →
-                </span>
-              </Link>
+                Recent spending
+              </SectionHeading>
 
-              <ul className="flex flex-col divide-y divide-[#222]/10 border-y border-[#222]/10">
+              <ul className="flex flex-col divide-y divide-budget-hairline border-y border-budget-hairline">
                 {transactions.map((tx) => (
                   <li key={tx.id}>
                     <Link href={appRoutes.transaction(tx.id)}>
@@ -143,15 +137,13 @@ export default function BucketDetailPage() {
                 ))}
               </ul>
             </section>
-            <Link
-              href={appRoutes.bucketSettings(bucketId)}
-              className="mx-auto rounded-lg bg-[#e6e8dd] px-4 py-2 text-sm font-semibold text-[#1c3812]"
-            >
-              Change bucket settings
-            </Link>
+            <div className="flex justify-center">
+              <Button href={appRoutes.bucketSettings(bucketId)} variant="secondary" size="md">
+                Change bucket settings
+              </Button>
+            </div>
           </>
         )}
-      </div>
-    </div>
+    </PageShell>
   );
 }

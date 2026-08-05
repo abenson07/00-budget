@@ -9,6 +9,7 @@ import {
   TOP_CARD_HOME_REFERENCE_CONTENT,
   TopCardHome,
 } from "@/components/figma-buckets";
+import { Button, Card, Chip, PageHeader, PageShell } from "@/components/ui";
 import { percentageTagForBucket } from "@/lib/bucket-percentage-tag";
 import { discretionaryPriorityList } from "@/lib/discretionary-priority";
 import { appRoutes } from "@/lib/routes";
@@ -30,43 +31,28 @@ export function MobileBuckets() {
   );
 
   return (
-    <div className="min-h-screen bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 pb-10 pt-8">
-        <nav className="flex items-center justify-between gap-3">
-          <Link
-            href="/"
-            className="text-xs font-medium text-[var(--budget-ink-soft)] underline decoration-[var(--budget-card-border)] underline-offset-2 transition-colors hover:text-[var(--budget-ink)]"
-          >
-            ← Home
-          </Link>
-          <Link
-            href={appRoutes.bucketNew}
-            className="shrink-0 rounded-[var(--radius-card)] bg-[var(--budget-forest)] px-3 py-1.5 text-xs font-semibold text-white transition-opacity active:opacity-90"
-          >
+    <PageShell>
+      <PageHeader
+        title="Buckets"
+        backHref="/"
+        right={
+          <Button href={appRoutes.bucketNew} variant="primary" size="md">
             New bucket
-          </Link>
-        </nav>
+          </Button>
+        }
+      />
 
-        <h1 className="font-display text-2xl leading-tight text-[var(--budget-forest)]">
-          Buckets
-        </h1>
+      <TopCardHome {...TOP_CARD_HOME_REFERENCE_CONTENT} />
 
-        <TopCardHome {...TOP_CARD_HOME_REFERENCE_CONTENT} />
-
-        <section className="rounded-lg border border-[#222]/10 bg-white/70 p-3">
-          <div className="flex flex-wrap gap-2">
-            {(["all", "spending", "bill", "monthly"] as const).map((type) => (
-              <button
-                key={type}
-                type="button"
-                className={`rounded px-2 py-1 text-xs ${showType === type ? "bg-[#1b1b1b] text-white" : "bg-[#e6e8dd]"}`}
-                onClick={() => setShowType(type)}
-              >
-                {type}
-              </button>
-            ))}
-          </div>
-        </section>
+      <Card tone="surface" padded={false} className="p-3">
+        <div className="flex flex-wrap gap-2">
+          {(["all", "spending", "bill", "monthly"] as const).map((type) => (
+            <Chip key={type} selected={showType === type} onClick={() => setShowType(type)}>
+              {type}
+            </Chip>
+          ))}
+        </div>
+      </Card>
 
         <section className="flex flex-col gap-2" aria-label="Spending money">
           <div>
@@ -78,7 +64,7 @@ export function MobileBuckets() {
             </p>
           </div>
           {showType !== "all" && showType !== "spending" ? null : discretionary.length === 0 ? (
-            <p className="flex min-h-[88px] items-center rounded-[var(--radius-card)] border border-[var(--budget-card-border)] bg-[var(--budget-sage-panel)] px-4 text-sm text-[var(--budget-ink-soft)]">
+            <p className="flex min-h-[88px] items-center rounded-card border border-budget-card-border bg-budget-sage-panel px-4 text-sm text-budget-ink-soft">
               No discretionary buckets yet.
             </p>
           ) : (
@@ -98,24 +84,28 @@ export function MobileBuckets() {
                       locked={b.type === "discretionary" && Boolean(b.locked)}
                     />
                   </Link>
-                  <div className="flex flex-col gap-1">
+                  <div className="flex shrink-0 flex-col gap-1.5">
                     <button
                       type="button"
                       disabled={idx === 0}
                       onClick={() => useBudgetStore.getState().reorderDiscretionaryBucket(b.id, "up")}
-                      className="rounded px-2 py-1 text-xs disabled:opacity-30"
+                      className="flex h-9 w-9 items-center justify-center rounded-pill border border-budget-card-border bg-white text-budget-ink transition-colors active:bg-budget-sage-panel disabled:opacity-30"
                       aria-label={`Move ${b.name} up`}
                     >
-                      ▲
+                      <span className="material-symbols-outlined text-[18px]" aria-hidden>
+                        arrow_upward
+                      </span>
                     </button>
                     <button
                       type="button"
                       disabled={idx === discretionary.length - 1}
                       onClick={() => useBudgetStore.getState().reorderDiscretionaryBucket(b.id, "down")}
-                      className="rounded px-2 py-1 text-xs disabled:opacity-30"
+                      className="flex h-9 w-9 items-center justify-center rounded-pill border border-budget-card-border bg-white text-budget-ink transition-colors active:bg-budget-sage-panel disabled:opacity-30"
                       aria-label={`Move ${b.name} down`}
                     >
-                      ▼
+                      <span className="material-symbols-outlined text-[18px]" aria-hidden>
+                        arrow_downward
+                      </span>
                     </button>
                   </div>
                 </div>
@@ -126,10 +116,10 @@ export function MobileBuckets() {
 
         <section className="flex flex-col gap-2" aria-label="Essential spending">
           <div className="flex w-full items-center justify-between gap-3">
-            <p className="min-w-0 flex-1 text-base font-bold text-[var(--budget-ink)]">
+            <p className="min-w-0 flex-1 text-base font-bold text-budget-ink">
               Essentials
             </p>
-            <div className="text-xs text-[#222]/55">{essentialBuckets.length} buckets</div>
+            <div className="text-xs text-budget-ink-soft">{essentialBuckets.length} buckets</div>
           </div>
 
           {essentialBuckets.map((bucket) => {
@@ -164,7 +154,6 @@ export function MobileBuckets() {
             );
           })}
         </section>
-      </div>
-    </div>
+    </PageShell>
   );
 }
