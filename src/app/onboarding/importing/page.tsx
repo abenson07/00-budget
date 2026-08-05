@@ -22,13 +22,13 @@ export default function OnboardingImportingPage() {
   }, [router]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
+    <div className="flex min-h-screen items-center justify-center bg-budget-page text-budget-ink">
       <div className="flex flex-col items-center gap-4">
         <div
-          className="h-8 w-8 animate-spin rounded-full border-2 border-[#1c3812]/20 border-t-[#1c3812]"
+          className="h-8 w-8 animate-spin rounded-full border-2 border-budget-forest/20 border-t-budget-forest"
           aria-hidden
         />
-        <p className="text-sm text-[#222]/70">Importing your last 3 months...</p>
+        <p className="text-sm text-budget-ink-soft">Importing your last 3 months...</p>
       </div>
     </div>
   );

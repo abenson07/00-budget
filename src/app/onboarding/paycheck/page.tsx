@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Button, Field, Input, Label, PageHeader, PageShell } from "@/components/ui";
 import { addDaysToIsoLocal } from "@/lib/dates";
 import { appRoutes } from "@/lib/routes";
 import { useOnboardingStore } from "@/state/onboarding-store";
@@ -32,41 +33,30 @@ export default function OnboardingPaycheckPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 pb-10 pt-8">
-        <h1 className="font-display text-2xl leading-tight">When&apos;s your next paycheck?</h1>
-        <div className="flex flex-col gap-2">
-          <label className="text-xs font-medium uppercase tracking-wide text-[#1e0403]/55">
-            Date
-          </label>
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="rounded-md border border-[#bbb] bg-white px-3 py-2 text-sm"
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <label className="text-xs font-medium uppercase tracking-wide text-[#1e0403]/55">
-            Amount
-          </label>
-          <input
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder="2000"
-            className="rounded-md border border-[#bbb] bg-white px-3 py-2 text-sm"
-          />
-        </div>
-        <button
-          type="button"
-          disabled={!canContinue}
-          onClick={onContinue}
-          className="rounded-lg bg-[#1c3812] px-4 py-3 text-center text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          Continue
-        </button>
-      </div>
-    </div>
+    <PageShell>
+      <PageHeader title={"When's your next paycheck?"} />
+      <Field>
+        <Label htmlFor="onboarding-paycheck-date">Date</Label>
+        <Input
+          id="onboarding-paycheck-date"
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+        />
+      </Field>
+      <Field>
+        <Label htmlFor="onboarding-paycheck-amount">Amount</Label>
+        <Input
+          id="onboarding-paycheck-amount"
+          type="number"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          placeholder="2000"
+        />
+      </Field>
+      <Button variant="primary" size="cta" fullWidth disabled={!canContinue} onClick={onContinue}>
+        Continue
+      </Button>
+    </PageShell>
   );
 }

@@ -50,7 +50,7 @@ export function HoldToTransferButton({
       onPointerDown={start}
       onPointerUp={cancel}
       onPointerLeave={cancel}
-      className="relative w-full overflow-hidden rounded-2xl bg-[#0f0f0f] py-4 text-center text-base font-semibold text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-35"
+      className="relative h-14 w-full overflow-hidden rounded-pill bg-budget-forest text-center text-body font-semibold text-budget-on-dark transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
     >
       <span
         className="absolute inset-y-0 left-0 bg-white/20"

@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useParams } from "next/navigation";
+import { AmountDisplay, PageHeader, PageShell, SectionHeading } from "@/components/ui";
 import type { AllocationStep } from "@/lib/paycheck-allocation-engine";
 import { formatUsd } from "@/lib/format";
 import { appRoutes } from "@/lib/routes";
@@ -24,53 +24,42 @@ export default function AllocationRunPage() {
 
   if (!run) {
     return (
-      <div className="min-h-screen bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
-        <div className="mx-auto flex w-full max-w-md flex-col gap-4 px-4 pb-10 pt-8">
-          <p className="text-sm text-[#222]/60">Allocation run not found.</p>
-          <Link href={appRoutes.allocations} className="text-sm font-semibold text-[#1c3812] underline">
-            Back to allocations
-          </Link>
-        </div>
-      </div>
+      <PageShell>
+        <PageHeader backHref={appRoutes.allocations} size="compact" />
+        <p className="text-sm text-budget-ink-soft">Allocation run not found.</p>
+      </PageShell>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 pb-10 pt-8">
-        <nav>
-          <Link href={appRoutes.allocations} className="text-xs font-medium text-[#222]/55 underline">
-            ← Allocations
-          </Link>
-        </nav>
-        <div>
-          <p className="text-3xl font-bold tabular-nums">{formatUsd(run.incomeAmount)}</p>
-          <p className="text-sm text-[#222]/55">
-            {run.slot} · {run.date}
-          </p>
-        </div>
+    <PageShell>
+      <PageHeader backHref={appRoutes.allocations} size="compact" />
+      <AmountDisplay
+        size="lg"
+        value={formatUsd(run.incomeAmount)}
+        sublabel={`${run.slot} · ${run.date}`}
+      />
 
-        {STEP_ORDER.map((step) => {
-          const items = run.lineItems.filter((l) => l.step === step);
-          if (items.length === 0) return null;
-          return (
-            <section key={step} className="flex flex-col gap-2">
-              <h2 className="text-sm font-semibold">{STEP_LABEL[step]}</h2>
-              <ul className="flex flex-col gap-1">
-                {items.map((item, i) => (
-                  <li
-                    key={`${item.bucketId}-${i}`}
-                    className="flex justify-between rounded-md border border-[#222]/10 bg-white px-3 py-2 text-sm"
-                  >
-                    <span>{item.bucketName}</span>
-                    <span className="tabular-nums">{formatUsd(item.amountAdded)}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          );
-        })}
-      </div>
-    </div>
+      {STEP_ORDER.map((step) => {
+        const items = run.lineItems.filter((l) => l.step === step);
+        if (items.length === 0) return null;
+        return (
+          <section key={step} className="flex flex-col gap-3">
+            <SectionHeading>{STEP_LABEL[step]}</SectionHeading>
+            <ul className="flex flex-col gap-2">
+              {items.map((item, i) => (
+                <li
+                  key={`${item.bucketId}-${i}`}
+                  className="flex justify-between rounded-control border border-budget-card-border bg-white px-4 py-3 text-sm"
+                >
+                  <span>{item.bucketName}</span>
+                  <span className="tabular-nums">{formatUsd(item.amountAdded)}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        );
+      })}
+    </PageShell>
   );
 }

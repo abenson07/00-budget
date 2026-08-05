@@ -42,12 +42,12 @@ const STYLES: Record<
   Record<FigmaPercentageTagState, { box: string; label: string; node: string }>
 > = {
   safe: {
-    default: { box: "bg-[#cae0b9]", label: "text-[#1c3812]", node: "28:6415" },
-    inverse: { box: "bg-[#1c3812]", label: "text-[#cae0b9]", node: "28:6418" },
+    default: { box: "bg-budget-sage", label: "text-budget-forest", node: "28:6415" },
+    inverse: { box: "bg-budget-forest", label: "text-budget-sage", node: "28:6418" },
   },
   atRisk: {
-    default: { box: "bg-[#fbdbba]", label: "text-[#f35226]", node: "28:6347" },
-    inverse: { box: "bg-[#912a0e]", label: "text-[#fbdbba]", node: "28:6413" },
+    default: { box: "bg-budget-risk-bg", label: "text-budget-risk-ink", node: "28:6347" },
+    inverse: { box: "bg-[#912a0e]", label: "text-budget-risk-bg", node: "28:6413" },
   },
   noValue: {
     default: { box: "bg-[#d0d0d0]", label: "text-[#5b5b5b]", node: "28:6423" },

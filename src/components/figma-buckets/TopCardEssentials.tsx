@@ -31,8 +31,8 @@ export function TopCardEssentials({
   return (
     <div
       className={[
-        "flex size-full w-full max-w-[408px] flex-col items-start rounded-xl px-6 py-8",
-        atRisk ? "bg-[#fbdbba]" : "bg-[#e6e8dd]",
+        "flex size-full w-full flex-col items-start rounded-card px-5 py-6",
+        atRisk ? "bg-budget-risk-bg" : "bg-budget-sage-panel",
         className,
       ]
         .filter(Boolean)
@@ -41,56 +41,54 @@ export function TopCardEssentials({
       data-top-card-variant={variant}
       data-top-card-state={state}
     >
-      <div className="flex w-full shrink-0 flex-col items-start">
-        <div className="flex shrink-0 items-start gap-2">
+      <div className="flex w-full shrink-0 flex-col items-start gap-1">
+        <div className="flex w-full shrink-0 items-start justify-between gap-2">
           <p
             className={[
-              "font-display relative w-[285px] shrink-0 text-[24px] leading-normal not-italic",
-              atRisk ? "text-[#f35226]" : "text-[#1c3812]",
+              "font-display relative max-w-[18rem] shrink-0 text-section not-italic",
+              atRisk ? "text-budget-risk-ink" : "text-budget-forest",
             ].join(" ")}
           >
             {title}
           </p>
-          <div className="relative flex shrink-0 flex-col items-start">
-            <div className="relative flex shrink-0 items-center">
-              <p
-                className={[
-                  "relative shrink-0 whitespace-nowrap text-right text-[12px] leading-normal not-italic",
-                  atRisk ? "text-[#f35226]" : "text-[#222]",
-                ].join(" ")}
-              >
-                {totalReservedLabel}
-              </p>
-            </div>
+          <div className="relative flex shrink-0 flex-col items-end">
             <p
               className={[
-                "relative w-[min-content] min-w-full shrink-0 text-right text-[16px] font-bold leading-normal not-italic",
-                atRisk ? "text-[#f35226]" : "text-[#222] opacity-50",
+                "relative shrink-0 whitespace-nowrap text-right text-label not-italic",
+                atRisk ? "text-budget-risk-ink" : "text-budget-ink",
+              ].join(" ")}
+            >
+              {totalReservedLabel}
+            </p>
+            <p
+              className={[
+                "relative shrink-0 whitespace-nowrap text-right text-sm font-bold not-italic",
+                atRisk ? "text-budget-risk-ink" : "text-budget-ink opacity-50",
               ].join(" ")}
             >
               {totalReservedAmount}
             </p>
           </div>
         </div>
-        <div className="relative flex w-full shrink-0 flex-col items-start" data-name="Balance">
+        <div className="relative flex w-full shrink-0 flex-col items-start gap-1" data-name="Balance">
           <p
             className={[
-              "w-[min-content] min-w-full shrink-0 text-[72px] font-bold leading-normal not-italic",
-              atRisk ? "text-[#f35226]" : "text-[#1c3812]",
+              "font-sans-condensed shrink-0 text-display tabular-nums not-italic",
+              atRisk ? "text-budget-risk-ink" : "text-budget-forest",
             ].join(" ")}
           >
             {mainAmount}
           </p>
           <div
             className={[
-              "flex shrink-0 items-center justify-center rounded-lg px-2 py-0.5",
-              atRisk ? "bg-[#f35226]" : "bg-[#cae0b9]",
+              "flex shrink-0 items-center justify-center rounded-pill px-2 py-0.5",
+              atRisk ? "bg-budget-risk-ink" : "bg-budget-sage",
             ].join(" ")}
           >
             <p
               className={[
-                "relative shrink-0 whitespace-nowrap text-[13px] font-bold leading-normal not-italic",
-                atRisk ? "text-[#fbdbba]" : "text-[#1c3812]",
+                "relative shrink-0 whitespace-nowrap text-label font-bold not-italic",
+                atRisk ? "text-budget-risk-bg" : "text-budget-forest",
               ].join(" ")}
             >
               {statusPill}

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import {
   BillSmoothingCard,
@@ -8,6 +7,7 @@ import {
   BucketRulesDatesCard,
   GoalContributionCard,
 } from "@/components/bucket-detail";
+import { PageHeader, PageShell } from "@/components/ui";
 import { getBucketById } from "@/lib/allocation";
 import { appRoutes } from "@/lib/routes";
 import { useBudgetStore } from "@/state/budget-store";
@@ -25,41 +25,30 @@ export default function BucketSettingsPage() {
   const bucket = getBucketById(buckets, bucketId);
 
   return (
-    <div className="min-h-screen bg-[var(--budget-page-bg)] font-[family-name:var(--font-instrument-sans)] text-[var(--budget-ink)]">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 pb-10 pt-8">
-        <nav className="flex flex-col gap-2">
-          <Link
-            href={appRoutes.bucket(bucketId)}
-            className="font-mono text-xs font-medium text-[#1e0403]/70 underline decoration-[#1e0403]/25 underline-offset-2 transition-colors hover:text-[#1b1b1b]"
-          >
-            ← {bucket?.name ?? "Bucket"}
-          </Link>
-        </nav>
+    <PageShell>
+      <PageHeader
+        size="compact"
+        title={bucket ? "Settings" : undefined}
+        backHref={appRoutes.bucket(bucketId)}
+      />
 
-        {bucket ? (
-          <h1 className="font-[family-name:var(--font-instrument-serif)] text-2xl text-[#1e1e1e]">
-            Settings
-          </h1>
-        ) : null}
-
-        {!bucket ? (
-          <div className="rounded-lg border border-amber-200 bg-amber-50/90 p-4 text-amber-950">
-            <h1 className="text-lg font-semibold">Bucket not found</h1>
-            <p className="mt-1 text-sm text-amber-900/90">
-              No bucket matches this link.
-            </p>
-          </div>
-        ) : (
-          <div className="flex flex-col gap-6">
-            <BucketRulesDatesCard bucket={bucket} />
-            {bucket.type === "essential" && bucket.essential_subtype === "bill" ? (
-              <BillSmoothingCard bucket={bucket} />
-            ) : null}
-            {bucket.type === "discretionary" ? <GoalContributionCard bucket={bucket} /> : null}
-            <BucketMetadataForm bucketId={bucketId} bucket={bucket} />
-          </div>
-        )}
-      </div>
-    </div>
+      {!bucket ? (
+        <div className="rounded-card border border-amber-200 bg-amber-50/90 p-4 text-amber-950">
+          <h1 className="text-lg font-semibold">Bucket not found</h1>
+          <p className="mt-1 text-sm text-amber-900/90">
+            No bucket matches this link.
+          </p>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-6">
+          <BucketRulesDatesCard bucket={bucket} />
+          {bucket.type === "essential" && bucket.essential_subtype === "bill" ? (
+            <BillSmoothingCard bucket={bucket} />
+          ) : null}
+          {bucket.type === "discretionary" ? <GoalContributionCard bucket={bucket} /> : null}
+          <BucketMetadataForm bucketId={bucketId} bucket={bucket} />
+        </div>
+      )}
+    </PageShell>
   );
 }

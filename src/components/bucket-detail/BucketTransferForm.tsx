@@ -156,7 +156,7 @@ export function BucketTransferForm({ bucketId: originBucketId }: BucketTransferF
         <button
           type="button"
           onClick={() => setPicker("from")}
-          className="relative flex min-h-[6.5rem] flex-col rounded-card bg-budget-lime p-4 text-left text-[#0f0f0f] shadow-card transition-transform active:scale-[0.99]"
+          className="relative flex min-h-[6.5rem] flex-col rounded-card bg-budget-lime p-4 text-left text-budget-ink shadow-card transition-transform active:scale-[0.99]"
         >
           <span className="text-label font-semibold uppercase tracking-wide opacity-80">
             From

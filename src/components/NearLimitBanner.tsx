@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { Button, Card } from "@/components/ui";
 import { remainingPercentFromBucket } from "@/lib/bucket-percentage-tag";
 import { useBudgetStore } from "@/state/budget-store";
 import { useSettingsStore } from "@/state/settings-store";
@@ -23,17 +24,13 @@ export function NearLimitBanner() {
   if (dismissed || atRisk.length === 0) return null;
 
   return (
-    <div className="flex items-center justify-between gap-3 rounded-lg bg-[#fdecea] px-4 py-2 text-sm text-[#7a1f13]">
+    <Card tone="alert" padded={false} className="flex items-center justify-between gap-3 px-4 py-3 text-sm">
       <span>
         {atRisk.length} bucket{atRisk.length > 1 ? "s" : ""} near their limit
       </span>
-      <button
-        type="button"
-        onClick={() => setDismissed(true)}
-        className="text-xs font-semibold underline"
-      >
+      <Button variant="ghost" size="sm" onClick={() => setDismissed(true)}>
         Dismiss
-      </button>
-    </div>
+      </Button>
+    </Card>
   );
 }

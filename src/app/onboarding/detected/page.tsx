@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Button, Card, Input, PageHeader, PageShell } from "@/components/ui";
 import { formatUsd } from "@/lib/format";
 import { appRoutes } from "@/lib/routes";
 import { useOnboardingStore } from "@/state/onboarding-store";
@@ -24,68 +25,65 @@ export default function OnboardingDetectedPage() {
   if (!detectedDiscretionary) return null;
 
   return (
-    <div className="min-h-screen bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 pb-10 pt-8">
-        <h1 className="font-display text-2xl leading-tight">Here&apos;s what we found</h1>
+    <PageShell>
+      <PageHeader title={"Here's what we found"} />
 
-        {detectedEssentials.length === 0 ? (
-          <p className="text-sm text-[#222]/70">
-            No recurring bills detected in your imported history.
-          </p>
-        ) : (
-          <ul className="flex flex-col gap-2">
-            {detectedEssentials.map((essential) => (
-              <li
-                key={essential.id}
-                className="flex items-center gap-3 rounded-lg border border-[#222]/10 bg-white px-4 py-3 shadow-sm"
-              >
-                <input
-                  type="checkbox"
-                  checked={includedEssentialIds.includes(essential.id)}
-                  onChange={() => toggleEssentialIncluded(essential.id)}
-                />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold">{essential.name}</p>
-                  <p className="text-xs text-[#222]/55">{formatUsd(essential.amount)}</p>
-                </div>
-                <input
-                  type="number"
-                  inputMode="decimal"
-                  min={0}
-                  step="0.01"
-                  value={essential.amount}
-                  onChange={(e) => updateEssentialAmount(essential.id, Number(e.target.value))}
-                  className="w-24 rounded-md border border-[#bbb] px-2 py-1 text-right text-sm"
-                />
-              </li>
-            ))}
-          </ul>
-        )}
-
-        <div className="flex items-center gap-3 rounded-lg border border-[#222]/10 bg-white px-4 py-3 shadow-sm">
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold">Spending money (Unassigned)</p>
-            <p className="text-xs text-[#222]/55">{formatUsd(detectedDiscretionary.amount)}</p>
-          </div>
-          <input
-            type="number"
-            inputMode="decimal"
-            min={0}
-            step="0.01"
-            value={detectedDiscretionary.amount}
-            onChange={(e) => updateDiscretionaryAmount(Number(e.target.value))}
-            className="w-24 rounded-md border border-[#bbb] px-2 py-1 text-right text-sm"
-          />
+      {detectedEssentials.length === 0 ? (
+        <p className="text-sm text-budget-ink-soft">
+          No recurring bills detected in your imported history.
+        </p>
+      ) : (
+        <div className="flex flex-col gap-2">
+          {detectedEssentials.map((essential) => (
+            <Card key={essential.id} className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                checked={includedEssentialIds.includes(essential.id)}
+                onChange={() => toggleEssentialIncluded(essential.id)}
+                className="h-5 w-5 rounded accent-[var(--budget-forest)]"
+              />
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold text-budget-ink">{essential.name}</p>
+                <p className="text-xs text-budget-ink-soft">{formatUsd(essential.amount)}</p>
+              </div>
+              <Input
+                type="number"
+                inputMode="decimal"
+                min={0}
+                step="0.01"
+                value={essential.amount}
+                onChange={(e) => updateEssentialAmount(essential.id, Number(e.target.value))}
+                className="mt-0 w-28 text-right"
+              />
+            </Card>
+          ))}
         </div>
+      )}
 
-        <button
-          type="button"
-          onClick={() => router.push(appRoutes.onboardingReview)}
-          className="rounded-lg bg-[#1c3812] px-4 py-3 text-center text-sm font-semibold text-white"
-        >
-          Continue
-        </button>
-      </div>
-    </div>
+      <Card className="flex items-center gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-semibold text-budget-ink">Spending money (Unassigned)</p>
+          <p className="text-xs text-budget-ink-soft">{formatUsd(detectedDiscretionary.amount)}</p>
+        </div>
+        <Input
+          type="number"
+          inputMode="decimal"
+          min={0}
+          step="0.01"
+          value={detectedDiscretionary.amount}
+          onChange={(e) => updateDiscretionaryAmount(Number(e.target.value))}
+          className="mt-0 w-28 text-right"
+        />
+      </Card>
+
+      <Button
+        variant="primary"
+        size="cta"
+        fullWidth
+        onClick={() => router.push(appRoutes.onboardingReview)}
+      >
+        Continue
+      </Button>
+    </PageShell>
   );
 }
