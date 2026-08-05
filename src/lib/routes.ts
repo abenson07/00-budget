@@ -21,6 +21,8 @@ export const appRoutes = {
   onboardingDetected: "/onboarding/detected",
   onboardingReview: "/onboarding/review",
   paySchedule: "/settings/pay-schedule",
+  allocations: "/allocations",
+  allocationRun: (id: string) => `/allocations/${encodeURIComponent(id)}`,
 } as const;
 
 /** Links used by transaction detail + split editor (mirrors app vs `/test` tree). */

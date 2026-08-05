@@ -34,7 +34,7 @@ import {
   type NewBucketCategoryId,
 } from "@/lib/new-bucket-from-category";
 import { createMockDataset } from "@/lib/mockData";
-import type { Account, Bucket, Transaction } from "@/lib/types";
+import type { Account, AllocationRunSummary, Bucket, Transaction } from "@/lib/types";
 import { validateTransactionAllocation } from "@/lib/validation";
 import { createClient } from "@/utils/supabase/client";
 
@@ -78,6 +78,7 @@ type BudgetState = {
   syncError: string | null;
   nextPaycheckDate: string | null;
   lastAllocationRunAt: string | null;
+  allocationHistory: AllocationRunSummary[];
 };
 
 type BudgetActions = {
@@ -111,13 +112,11 @@ type BudgetActions = {
   runPaycheckAllocation: (
     incomeAmount: number,
     slot: "paycheck_1" | "paycheck_2",
-  ) => AllocationLineItem[];
+  ) => AllocationRunSummary | null;
 
   createBucketFromCategory: (category: NewBucketCategoryId) => string;
 
   appendBucket: (bucket: Bucket) => void;
-
-  simulatePaycheckDeposit: (amount: number) => void;
 
   loadFinalizedDataset: (dataset: { account: Account; buckets: Bucket[]; transactions: Transaction[] }) => void;
 
@@ -137,6 +136,9 @@ export const selectSafeToSpend = (s: BudgetStore) =>
 export const selectSortedBuckets = (s: BudgetStore) =>
   [...s.buckets].sort((a, b) => a.order - b.order);
 
+export const selectAllocationRun = (id: string) => (s: BudgetStore) =>
+  s.allocationHistory.find((r) => r.id === id);
+
 const fallbackInitial = createMockDataset();
 
 export const useBudgetStore = create<BudgetState & BudgetActions>()(
@@ -148,6 +150,7 @@ export const useBudgetStore = create<BudgetState & BudgetActions>()(
   syncError: null,
   nextPaycheckDate: null,
   lastAllocationRunAt: null,
+  allocationHistory: [],
 
   getBucketById: (id) => getBucketById(get().buckets, id),
 
@@ -324,18 +327,29 @@ export const useBudgetStore = create<BudgetState & BudgetActions>()(
   runPaycheckAllocation: (incomeAmount, slot) => {
     const last = get().lastAllocationRunAt;
     if (last && Date.now() - new Date(last).getTime() < 60_000) {
-      return [];
+      return null;
     }
     const { buckets } = get();
     const { buckets: nextBuckets, lineItems } = runAllocationEngine(buckets, incomeAmount, slot, new Date());
-    set({ buckets: nextBuckets, lastAllocationRunAt: new Date().toISOString() });
+    const run: AllocationRunSummary = {
+      id: crypto.randomUUID(),
+      date: new Date().toISOString(),
+      incomeAmount,
+      slot,
+      lineItems,
+    };
+    set({
+      buckets: nextBuckets,
+      lastAllocationRunAt: new Date().toISOString(),
+      allocationHistory: [...get().allocationHistory, run],
+    });
     const supabase = tryCreateSupabase();
     if (supabase) {
       void persistBucketAmounts(supabase, nextBuckets).catch((e) =>
         console.error("runPaycheckAllocation persist failed", e),
       );
     }
-    return lineItems;
+    return run;
   },
 
   createBucketFromCategory: (category) => {
@@ -369,11 +383,6 @@ export const useBudgetStore = create<BudgetState & BudgetActions>()(
         console.error("appendBucket persist failed", e);
       }
     })();
-  },
-
-  simulatePaycheckDeposit: (amount) => {
-    // Stub only — real allocation math lands in BEN-1303's plan.
-    console.log("simulatePaycheckDeposit", amount);
   },
 
   loadFinalizedDataset: (dataset) =>
@@ -411,6 +420,7 @@ export const useBudgetStore = create<BudgetState & BudgetActions>()(
         buckets: s.buckets,
         transactions: s.transactions,
         nextPaycheckDate: s.nextPaycheckDate,
+        allocationHistory: s.allocationHistory,
       }),
     },
   ),

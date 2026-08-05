@@ -89,3 +89,11 @@ export type IncomeEvent = {
 };
 
 export type PayCadence = "weekly" | "biweekly" | "monthly" | "unknown";
+
+export type AllocationRunSummary = {
+  id: string;
+  date: string;
+  incomeAmount: number;
+  slot: "paycheck_1" | "paycheck_2";
+  lineItems: import("./paycheck-allocation-engine").AllocationLineItem[];
+};

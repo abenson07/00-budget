@@ -1,10 +1,13 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { appRoutes } from "@/lib/routes";
 import { useBudgetStore } from "@/state/budget-store";
 import { useOnboardingStore } from "@/state/onboarding-store";
 
 export default function DevSimulatePage() {
+  const router = useRouter();
   const [paycheckAmount, setPaycheckAmount] = useState("2000");
   const [spendMerchant, setSpendMerchant] = useState("");
   const [spendAmount, setSpendAmount] = useState("");
@@ -13,7 +16,8 @@ export default function DevSimulatePage() {
   const onSimulatePaycheck = () => {
     const amount = Number(paycheckAmount);
     if (!Number.isFinite(amount)) return;
-    useBudgetStore.getState().simulatePaycheckDeposit(amount);
+    const run = useBudgetStore.getState().runPaycheckAllocation(amount, "paycheck_1");
+    if (run) router.push(appRoutes.allocationRun(run.id));
   };
 
   const onResetOnboarding = () => {
