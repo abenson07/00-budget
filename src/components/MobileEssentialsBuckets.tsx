@@ -5,14 +5,17 @@ import { useMemo } from "react";
 import {
   BucketBill,
   BucketMonthlySpending,
-  TOP_CARD_ESSENTIALS_REFERENCE,
   TopCardEssentials,
 } from "@/components/figma-buckets";
+import { percentageTagForBucket } from "@/lib/bucket-percentage-tag";
+import { buildEssentialsCardSummary } from "@/lib/essentials-summary";
 import { appRoutes } from "@/lib/routes";
 import { useBudgetStore } from "@/state/budget-store";
 
 export function MobileEssentialsBuckets() {
   const buckets = useBudgetStore((s) => s.buckets);
+  const now = useMemo(() => new Date(), []);
+  const cardSummary = useMemo(() => buildEssentialsCardSummary(buckets, now), [buckets, now]);
 
   const essentialBuckets = useMemo(
     () =>
@@ -53,7 +56,7 @@ export function MobileEssentialsBuckets() {
           Essential Buckets
         </h1>
 
-        <TopCardEssentials {...TOP_CARD_ESSENTIALS_REFERENCE.default} />
+        <TopCardEssentials {...cardSummary} />
 
         <section className="flex flex-col gap-3" aria-label="Bills">
           <div>
@@ -68,18 +71,24 @@ export function MobileEssentialsBuckets() {
             </p>
           ) : (
             <ul className="flex flex-col gap-2">
-              {bills.map((b) => (
-                <li key={b.id}>
-                  <Link href={appRoutes.bucket(b.id)}>
-                    <BucketBill
-                      title={b.name}
-                      cadenceLabel={`$${Math.max(b.top_off ?? 0, 0).toFixed(0)} per paycheck`}
-                      balanceLabel={`$${Math.max(b.amount, 0).toFixed(0)}`}
-                      percentLabel="100% "
-                    />
-                  </Link>
-                </li>
-              ))}
+              {bills.map((b) => {
+                const tag = percentageTagForBucket(b, now);
+                const percentLabel = tag ? tag.label : "—";
+                const atRisk = tag?.variant === "atRisk";
+                return (
+                  <li key={b.id}>
+                    <Link href={appRoutes.bucket(b.id)}>
+                      <BucketBill
+                        title={b.name}
+                        cadenceLabel={`$${Math.max(b.top_off ?? 0, 0).toFixed(0)} per paycheck`}
+                        balanceLabel={`$${Math.max(b.amount, 0).toFixed(0)}`}
+                        percentLabel={percentLabel}
+                        atRisk={atRisk}
+                      />
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </section>
@@ -99,18 +108,24 @@ export function MobileEssentialsBuckets() {
             </p>
           ) : (
             <ul className="flex flex-col gap-2">
-              {monthly.map((b) => (
-                <li key={b.id}>
-                  <Link href={appRoutes.bucket(b.id)}>
-                    <BucketMonthlySpending
-                      title={b.name}
-                      cadenceLabel={`Top off to $${Math.max(b.top_off ?? 0, 0).toFixed(0)}`}
-                      balanceLabel={`$${Math.max(b.amount, 0).toFixed(0)}`}
-                      percentLabel="40% "
-                    />
-                  </Link>
-                </li>
-              ))}
+              {monthly.map((b) => {
+                const tag = percentageTagForBucket(b, now);
+                const percentLabel = tag ? tag.label : "—";
+                const atRisk = tag?.variant === "atRisk";
+                return (
+                  <li key={b.id}>
+                    <Link href={appRoutes.bucket(b.id)}>
+                      <BucketMonthlySpending
+                        title={b.name}
+                        cadenceLabel={`Top off to $${Math.max(b.top_off ?? 0, 0).toFixed(0)}`}
+                        balanceLabel={`$${Math.max(b.amount, 0).toFixed(0)}`}
+                        percentLabel={percentLabel}
+                        atRisk={atRisk}
+                      />
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </section>

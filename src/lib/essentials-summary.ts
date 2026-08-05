@@ -1,6 +1,10 @@
 import { percentageTagForBucket } from "./bucket-percentage-tag";
 import { dueLabelForBill, nextBillHeroLine } from "./essentials-dates";
-import { essentialsHaveAtRiskBucket } from "./essentials-aggregates";
+import {
+  essentialsFundingShortfall,
+  essentialsHaveAtRiskBucket,
+  sumEssentialDueWithinDays,
+} from "./essentials-aggregates";
 import { formatUsd } from "./format";
 import type { Bucket } from "./types";
 import type { TopCardHomeEssentialLine } from "@/components/figma-buckets/top-card-types";
@@ -40,5 +44,23 @@ export function buildEssentialsSummary(buckets: Bucket[], now: Date): Essentials
     monthlyStatusLine: allOnTrack ? "On track this month" : "Needs attention",
     essentialLines,
     expandedFooterLine: allOnTrack ? "All essentials on track" : "Some essentials need funding",
+  };
+}
+
+export function buildEssentialsCardSummary(buckets: Bucket[], now: Date) {
+  const essentialBuckets = buckets.filter((b) => b.type === "essential");
+  const atRisk = essentialsHaveAtRiskBucket(buckets, now);
+  const totalReserved = essentialBuckets.reduce((s, b) => s + b.amount, 0);
+  const dueSoon = sumEssentialDueWithinDays(buckets, now, 7);
+  const shortfall = essentialsFundingShortfall(buckets, now);
+  return {
+    state: atRisk ? ("atRisk" as const) : ("default" as const),
+    title: "Due this week",
+    totalReservedLabel: "Total reserved",
+    totalReservedAmount: formatUsd(totalReserved),
+    mainAmount: formatUsd(dueSoon),
+    statusPill: atRisk
+      ? `${formatUsd(shortfall)} short - transfer money to cover it`
+      : "Good and ready",
   };
 }

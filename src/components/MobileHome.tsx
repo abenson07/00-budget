@@ -8,6 +8,7 @@ import {
   TopCardHome,
 } from "@/components/figma-buckets";
 import { getEffectiveSplits } from "@/lib/allocation";
+import { buildEssentialsSummary } from "@/lib/essentials-summary";
 import { appRoutes } from "@/lib/routes";
 import { isUnassignedBucket } from "@/lib/unassigned-bucket";
 import { useBudgetStore } from "@/state/budget-store";
@@ -17,6 +18,8 @@ export function MobileHome() {
   const transactionsAll = useBudgetStore((s) => s.transactions);
   const transactions = useMemo(() => transactionsAll.slice(0, 6), [transactionsAll]);
   const [essentialsOpen, setEssentialsOpen] = useState(false);
+  const now = useMemo(() => new Date(), []);
+  const essentialsSummary = useMemo(() => buildEssentialsSummary(buckets, now), [buckets, now]);
   const browseBuckets = useMemo(
     () =>
       [...buckets]
@@ -40,7 +43,14 @@ export function MobileHome() {
     <div className="min-h-screen bg-[#faf9f6] font-[family-name:var(--font-instrument-sans)] text-[#1b1b1b]">
       <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 pb-10 pt-8">
         <TopCardHome
-          {...TOP_CARD_HOME_REFERENCE_CONTENT}
+          headline={TOP_CARD_HOME_REFERENCE_CONTENT.headline}
+          amount={TOP_CARD_HOME_REFERENCE_CONTENT.amount}
+          paycheckLine={TOP_CARD_HOME_REFERENCE_CONTENT.paycheckLine}
+          essentialsLabel="Essentials"
+          dueThisWeekShort={essentialsSummary.dueThisWeekShort}
+          monthlyStatusLine={essentialsSummary.monthlyStatusLine}
+          essentials={essentialsSummary.essentialLines}
+          expandedFooterLine={essentialsSummary.expandedFooterLine}
           expanded={essentialsOpen}
           onExpandedChange={setEssentialsOpen}
         />
