@@ -5,46 +5,62 @@
   --background: var(--budget-page-bg);
   --foreground: var(--budget-ink);
 
-  --budget-page-bg: #f9f8f3;
+  /* Surfaces — consolidated to the values already rendering on screen */
+  --budget-page-bg: #faf9f6;
+  --budget-forest: #1c3812;
+  --budget-forest-700: #16300f;
+  --budget-mint: #b8d4c4;
+  --budget-mint-bright: #d4eadc;
+  --budget-sage: #cae0b9;
+  --budget-sage-panel: #e6e8dd;
+  --budget-sage-deep: #a8c9a2;
+  --budget-lime: #cff851;
+  --budget-card: #efeeea;
+  --budget-on-dark: #f9f8f4;
+
+  /* Ink */
   --budget-ink: #1b1b1b;
   --budget-ink-muted: #1e0403;
   --budget-ink-soft: color-mix(in srgb, var(--budget-ink-muted) 55%, transparent);
 
-  --budget-forest: #1e3d32;
-  --budget-forest-700: #163329;
-  --budget-mint: #b8d4c4;
-  --budget-mint-bright: #d4eadc;
-
-  --budget-sage: #c5dcc0;
-  --budget-sage-panel: #dce8d8;
-  --budget-sage-deep: #a8c9a2;
-
-  --budget-card: #efeeea;
+  /* Lines */
+  --budget-hairline: #d7ddd6;
   --budget-card-border: #c8c6c0;
 
-  --budget-tag-safe-bg: #d4eadc;
-  --budget-tag-safe-fg: #1e3d32;
-  --budget-tag-safe-inverse-bg: #1e3d32;
-  --budget-tag-safe-inverse-fg: #d4eadc;
+  /* Status */
+  --budget-tag-safe-bg: #cae0b9;
+  --budget-tag-safe-fg: #1c3812;
+  --budget-tag-safe-inverse-bg: #1c3812;
+  --budget-tag-safe-inverse-fg: #cae0b9;
 
-  --budget-tag-risk-bg: #fcd9c9;
-  --budget-tag-risk-fg: #9a3412;
-  --budget-tag-risk-inverse-bg: #9a3412;
-  --budget-tag-risk-inverse-fg: #fcd9c9;
+  --budget-tag-risk-bg: #fbdbba;
+  --budget-tag-risk-fg: #f35226;
+  --budget-tag-risk-inverse-bg: #f35226;
+  --budget-tag-risk-inverse-fg: #fbdbba;
 
   --budget-tag-neutral-bg: #e5e4e0;
   --budget-tag-neutral-fg: #4b5563;
 
-  --budget-alert-bg: #fde8dc;
-  --budget-alert-ink: #c2410c;
+  --budget-alert-bg: #fdecea;
+  --budget-alert-ink: #7a1f13;
+  --budget-risk-bg: #fbdbba;
+  --budget-risk-ink: #f35226;
   --budget-danger-bar: #ea580c;
 
   --budget-scrim: rgb(0 0 0 / 0.35);
-
-  --radius-card: 1rem;
-  --radius-pill: 624.9375rem;
 }
 
+/*
+ * Spacing rhythm (plain Tailwind numerics, not named tokens):
+ *   page gutter   px-5  (20px)
+ *   section gap   gap-8 (32px) — between top-level page sections
+ *   card padding  p-5   (20px)
+ *   group gap     gap-3 (12px) — inside a card; heading -> content
+ *   pair gap      gap-1 (4px)  — label -> value
+ *
+ * Control heights (enforced by <Button>, not tokens):
+ *   CTA h-14 (56px) · default h-11 (44px) · chip h-9 (36px) · icon button h-11 w-11
+ */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -54,14 +70,69 @@
 
   --color-budget-page: var(--budget-page-bg);
   --color-budget-ink: var(--budget-ink);
+  --color-budget-ink-soft: var(--budget-ink-soft);
   --color-budget-forest: var(--budget-forest);
   --color-budget-forest-700: var(--budget-forest-700);
   --color-budget-mint: var(--budget-mint);
   --color-budget-mint-bright: var(--budget-mint-bright);
   --color-budget-sage: var(--budget-sage);
   --color-budget-sage-panel: var(--budget-sage-panel);
+  --color-budget-lime: var(--budget-lime);
+  --color-budget-on-dark: var(--budget-on-dark);
   --color-budget-card: var(--budget-card);
   --color-budget-card-border: var(--budget-card-border);
+  --color-budget-hairline: var(--budget-hairline);
+  --color-budget-alert-bg: var(--budget-alert-bg);
+  --color-budget-alert-ink: var(--budget-alert-ink);
+  --color-budget-risk-bg: var(--budget-risk-bg);
+  --color-budget-risk-ink: var(--budget-risk-ink);
+
+  /* Radii — rounded-card / rounded-tile / rounded-control / rounded-pill */
+  --radius-card: 1.25rem;
+  --radius-tile: 1rem;
+  --radius-control: 0.875rem;
+  --radius-pill: 9999px;
+
+  /* Shadows — shadow-card / shadow-hero / shadow-sheet */
+  --shadow-card: 0 1px 2px rgb(28 56 18 / 0.04), 0 8px 24px -12px rgb(28 56 18 / 0.12);
+  --shadow-hero: 0 12px 32px -12px rgb(28 56 18 / 0.28);
+  --shadow-sheet: 0 -8px 32px -8px rgb(0 0 0 / 0.18);
+
+  /* Type scale — each token carries its own leading/tracking/weight */
+  --text-display: 3.5rem;
+  --text-display--line-height: 1;
+  --text-display--letter-spacing: -0.03em;
+  --text-display--font-weight: 700;
+
+  --text-amount-lg: 2rem;
+  --text-amount-lg--line-height: 1;
+  --text-amount-lg--letter-spacing: -0.02em;
+  --text-amount-lg--font-weight: 700;
+
+  --text-amount: 1.25rem;
+  --text-amount--line-height: 1.1;
+  --text-amount--letter-spacing: -0.01em;
+  --text-amount--font-weight: 700;
+
+  --text-title: 1.75rem;
+  --text-title--line-height: 1.1;
+  --text-title--letter-spacing: -0.02em;
+  --text-title--font-weight: 600;
+
+  --text-section: 1.0625rem;
+  --text-section--line-height: 1.3;
+  --text-section--letter-spacing: -0.01em;
+  --text-section--font-weight: 600;
+
+  --text-body: 1rem;
+  --text-body--line-height: 1.4;
+
+  --text-meta: 0.875rem;
+  --text-meta--line-height: 1.35;
+
+  --text-label: 0.75rem;
+  --text-label--line-height: 1.3;
+  --text-label--font-weight: 500;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -83,5 +154,5 @@ body {
 }
 
 .font-display {
-  font-family: var(--font-instrument-serif), ui-serif, Georgia, serif;
+  font-family: var(--font-instrument-sans), ui-sans-serif, system-ui, sans-serif;
 }

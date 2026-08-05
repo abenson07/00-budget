@@ -23,7 +23,7 @@ function TabIcon({
       style={{
         fontVariationSettings:
           "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24",
-        color: active ? "var(--budget-forest)" : "rgba(255,255,255,0.55)",
+        color: active ? "var(--budget-forest)" : "color-mix(in srgb, var(--budget-on-dark) 55%, transparent)",
       }}
       aria-hidden
     >
@@ -56,7 +56,7 @@ const Tab = forwardRef<HTMLAnchorElement, TabProps>(function Tab(
       >
         <TabIcon name={icon} active={active} />
         {active ? (
-          <span className="whitespace-nowrap text-[11px] font-semibold tracking-tight text-[#141414] sm:text-xs">
+          <span className="whitespace-nowrap text-[11px] font-semibold tracking-tight text-budget-forest sm:text-xs">
             {label}
           </span>
         ) : (
@@ -135,7 +135,7 @@ export function MobileBottomNav() {
       className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex justify-center max-md:pb-[max(0.5rem,env(safe-area-inset-bottom))] md:hidden"
       aria-label="Primary"
     >
-      <div className="pointer-events-auto w-full max-w-md px-5 pb-1.5">
+      <div className="pointer-events-auto w-full max-w-md px-5 pb-2">
         <div
           ref={barRef}
           className="relative flex items-center rounded-full border border-white/[0.12] bg-[var(--budget-forest)]/92 px-1.5 py-1.5 shadow-[0_12px_48px_-8px_rgba(0,0,0,0.35),0_4px_20px_-6px_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-2xl backdrop-saturate-150"

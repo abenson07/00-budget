@@ -28,7 +28,7 @@ export function MobileAppShell({ children }: { children: ReactNode }) {
       <div
         className={
           showNav
-            ? "max-md:pb-[calc(5.25rem+env(safe-area-inset-bottom))]"
+            ? "max-md:pb-[calc(4.5rem+env(safe-area-inset-bottom))]"
             : undefined
         }
       >
