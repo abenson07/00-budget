@@ -52,9 +52,9 @@ export function BucketMonthlySpending({
         </div>
       </div>
       <div className="relative flex min-h-px min-w-px flex-1 items-center justify-between px-4 py-4">
-        <div className="flex h-full flex-row items-center self-stretch">
-          <div className="flex h-full shrink-0 flex-col items-start gap-1 whitespace-nowrap leading-normal not-italic">
-            <p className="relative shrink-0 text-amount-lg text-budget-ink">
+        <div className="flex h-full min-w-0 flex-1 flex-row items-center self-stretch">
+          <div className="flex h-full min-w-0 w-full flex-col items-start gap-1 leading-normal not-italic">
+            <p className="relative w-full truncate text-xl font-bold text-budget-ink">
               {title}
             </p>
             <p className="relative shrink-0 text-label text-budget-forest opacity-50">

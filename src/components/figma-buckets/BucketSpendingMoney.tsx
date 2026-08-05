@@ -58,10 +58,10 @@ export function BucketSpendingMoney({
         </div>
       </div>
       <div className="relative flex min-h-px min-w-px flex-1 items-center justify-between px-4 py-4">
-        <div className="flex h-full flex-row items-center self-stretch">
-          <div className="flex h-full shrink-0 flex-col items-start gap-1 leading-normal not-italic">
-            <div className="flex shrink-0 items-center gap-2 whitespace-nowrap">
-              <p className="relative shrink-0 text-amount-lg text-budget-ink">
+        <div className="flex h-full min-w-0 flex-1 flex-row items-center self-stretch">
+          <div className="flex h-full min-w-0 w-full flex-col items-start gap-1 leading-normal not-italic">
+            <div className="flex w-full min-w-0 items-center gap-2">
+              <p className="relative min-w-0 flex-1 truncate text-xl font-bold text-budget-ink">
                 {title}
               </p>
               {showLock ? (

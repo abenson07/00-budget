@@ -40,15 +40,13 @@ export function BucketHome({
           {title}
         </p>
       </div>
-      <div className="flex w-full shrink-0 flex-col items-center justify-end">
-        <div className="flex w-full shrink-0 items-end justify-between">
-          <p className="font-sans-condensed min-h-px min-w-px flex-1 text-amount-lg tabular-nums text-budget-ink">
-            {amountLabel}
-          </p>
-          <FigmaPercentageTag inverse={false} variant={atRisk ? "atRisk" : "safe"}>
-            {percentLabel}
-          </FigmaPercentageTag>
-        </div>
+      <div className="flex w-full shrink-0 flex-col items-start gap-1.5">
+        <p className="font-sans-condensed w-full truncate text-2xl tabular-nums text-budget-ink">
+          {amountLabel}
+        </p>
+        <FigmaPercentageTag inverse={false} variant={atRisk ? "atRisk" : "safe"}>
+          {percentLabel}
+        </FigmaPercentageTag>
       </div>
     </div>
   );
