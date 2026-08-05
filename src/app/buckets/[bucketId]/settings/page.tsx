@@ -6,6 +6,7 @@ import {
   BillSmoothingCard,
   BucketMetadataForm,
   BucketRulesDatesCard,
+  GoalContributionCard,
 } from "@/components/bucket-detail";
 import { getBucketById } from "@/lib/allocation";
 import { appRoutes } from "@/lib/routes";
@@ -54,6 +55,7 @@ export default function BucketSettingsPage() {
             {bucket.type === "essential" && bucket.essential_subtype === "bill" ? (
               <BillSmoothingCard bucket={bucket} />
             ) : null}
+            {bucket.type === "discretionary" ? <GoalContributionCard bucket={bucket} /> : null}
             <BucketMetadataForm bucketId={bucketId} bucket={bucket} />
           </div>
         )}

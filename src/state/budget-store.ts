@@ -77,6 +77,7 @@ type BudgetState = {
   transactions: Transaction[];
   syncError: string | null;
   nextPaycheckDate: string | null;
+  lastAllocationRunAt: string | null;
 };
 
 type BudgetActions = {
@@ -146,6 +147,7 @@ export const useBudgetStore = create<BudgetState & BudgetActions>()(
   transactions: fallbackInitial.transactions,
   syncError: null,
   nextPaycheckDate: null,
+  lastAllocationRunAt: null,
 
   getBucketById: (id) => getBucketById(get().buckets, id),
 
@@ -320,9 +322,13 @@ export const useBudgetStore = create<BudgetState & BudgetActions>()(
   setNextPaycheckDate: (date) => set({ nextPaycheckDate: date }),
 
   runPaycheckAllocation: (incomeAmount, slot) => {
+    const last = get().lastAllocationRunAt;
+    if (last && Date.now() - new Date(last).getTime() < 60_000) {
+      return [];
+    }
     const { buckets } = get();
     const { buckets: nextBuckets, lineItems } = runAllocationEngine(buckets, incomeAmount, slot, new Date());
-    set({ buckets: nextBuckets });
+    set({ buckets: nextBuckets, lastAllocationRunAt: new Date().toISOString() });
     const supabase = tryCreateSupabase();
     if (supabase) {
       void persistBucketAmounts(supabase, nextBuckets).catch((e) =>
