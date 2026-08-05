@@ -13,6 +13,7 @@ import {
 } from "@/lib/allocation";
 import type { BucketMetadataInput } from "@/lib/bucket-metadata";
 import { applyBucketMetadata, validateBucketMetadata } from "@/lib/bucket-metadata";
+import { swapOrderWithNeighbor } from "@/lib/discretionary-priority";
 import {
   fetchBudgetDataset,
   persistBucketAmounts,
@@ -96,6 +97,8 @@ type BudgetActions = {
   ) => void;
 
   updateBucketMetadata: (bucketId: string, input: BucketMetadataInput) => void;
+
+  reorderDiscretionaryBucket: (bucketId: string, direction: "up" | "down") => void;
 
   createBucketFromCategory: (category: NewBucketCategoryId) => string;
 
@@ -274,6 +277,29 @@ export const useBudgetStore = create<BudgetState & BudgetActions>()(
         await persistBucketUpdate(supabase, get().getBucketById(bucketId)!);
       } catch (e) {
         console.error("updateBucketMetadata persist failed", e);
+      }
+    })();
+  },
+
+  reorderDiscretionaryBucket: (bucketId, direction) => {
+    const { buckets } = get();
+    const swap = swapOrderWithNeighbor(buckets, bucketId, direction);
+    if (!swap) return;
+    const next = buckets.map((b) => {
+      const found = swap.find((s) => s.id === b.id);
+      return found ? { ...b, order: found.order } : b;
+    });
+    set({ buckets: next });
+    const supabase = tryCreateSupabase();
+    if (!supabase) return;
+    void (async () => {
+      try {
+        for (const s of swap) {
+          const b = next.find((x) => x.id === s.id)!;
+          await persistBucketUpdate(supabase, b);
+        }
+      } catch (e) {
+        console.error("reorderDiscretionaryBucket persist failed", e);
       }
     })();
   },
