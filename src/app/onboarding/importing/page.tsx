@@ -16,7 +16,7 @@ export default function OnboardingImportingPage() {
     }
     const timeout = setTimeout(() => {
       useOnboardingStore.getState().completeImport();
-      router.push(appRoutes.onboardingReview);
+      router.push(appRoutes.onboardingPaycheck);
     }, 900);
     return () => clearTimeout(timeout);
   }, [router]);

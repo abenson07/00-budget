@@ -17,6 +17,7 @@ export const appRoutes = {
     `/transaction/${encodeURIComponent(id)}/split`,
   onboardingConnect: "/onboarding/connect",
   onboardingImporting: "/onboarding/importing",
+  onboardingPaycheck: "/onboarding/paycheck",
   onboardingReview: "/onboarding/review",
 } as const;
 
