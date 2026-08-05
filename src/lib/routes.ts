@@ -20,6 +20,7 @@ export const appRoutes = {
   onboardingPaycheck: "/onboarding/paycheck",
   onboardingDetected: "/onboarding/detected",
   onboardingReview: "/onboarding/review",
+  paySchedule: "/settings/pay-schedule",
 } as const;
 
 /** Links used by transaction detail + split editor (mirrors app vs `/test` tree). */

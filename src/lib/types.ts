@@ -79,3 +79,13 @@ export type ConnectedAccountSummary = {
   mask: string;
   balance: number;
 };
+
+export type IncomeEvent = {
+  id: string;
+  account_id: string;
+  amount: number;
+  source: string;
+  date: string;
+};
+
+export type PayCadence = "weekly" | "biweekly" | "monthly" | "unknown";
