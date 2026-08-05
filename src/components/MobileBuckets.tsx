@@ -9,27 +9,21 @@ import {
   TOP_CARD_HOME_REFERENCE_CONTENT,
   TopCardHome,
 } from "@/components/figma-buckets";
+import { percentageTagForBucket } from "@/lib/bucket-percentage-tag";
+import { discretionaryPriorityList } from "@/lib/discretionary-priority";
 import { appRoutes } from "@/lib/routes";
-import type { DiscretionaryBucket } from "@/lib/types";
-import { isUnassignedBucket } from "@/lib/unassigned-bucket";
 import { useBudgetStore } from "@/state/budget-store";
 
 export function MobileBuckets() {
   const buckets = useBudgetStore((s) => s.buckets);
-  const [atRisk, setAtRisk] = useState(false);
   const [showType, setShowType] = useState<"all" | "spending" | "bill" | "monthly">("all");
+  const now = useMemo(() => new Date(), []);
 
   const sortedBuckets = useMemo(
     () => [...buckets].sort((a, b) => a.order - b.order),
     [buckets],
   );
-  const discretionary = useMemo(
-    () =>
-      sortedBuckets.filter(
-        (b): b is DiscretionaryBucket => b.type === "discretionary" && !isUnassignedBucket(b),
-      ),
-    [sortedBuckets],
-  );
+  const discretionary = useMemo(() => discretionaryPriorityList(buckets), [buckets]);
   const essentialBuckets = useMemo(
     () => sortedBuckets.filter((b) => b.type === "essential"),
     [sortedBuckets],
@@ -60,24 +54,7 @@ export function MobileBuckets() {
         <TopCardHome {...TOP_CARD_HOME_REFERENCE_CONTENT} />
 
         <section className="rounded-lg border border-[#222]/10 bg-white/70 p-3">
-          <p className="text-xs font-semibold text-[#222]/70">Buckets controller</p>
-          <div className="mt-2 flex gap-2">
-            <button
-              type="button"
-              className={`rounded px-2 py-1 text-xs ${!atRisk ? "bg-[#1c3812] text-white" : "bg-[#e6e8dd]"}`}
-              onClick={() => setAtRisk(false)}
-            >
-              Safe
-            </button>
-            <button
-              type="button"
-              className={`rounded px-2 py-1 text-xs ${atRisk ? "bg-[#f35226] text-white" : "bg-[#e6e8dd]"}`}
-              onClick={() => setAtRisk(true)}
-            >
-              At risk
-            </button>
-          </div>
-          <div className="mt-2 flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2">
             {(["all", "spending", "bill", "monthly"] as const).map((type) => (
               <button
                 key={type}
@@ -105,18 +82,45 @@ export function MobileBuckets() {
               No discretionary buckets yet.
             </p>
           ) : (
-            discretionary.map((b) => (
-              <Link key={b.id} href={appRoutes.bucket(b.id)}>
-                <BucketSpendingMoney
-                  title={b.name}
-                  cadenceLabel={`$${Math.max(b.top_off ?? 0, 0).toFixed(0)} per paycheck`}
-                  balanceLabel={`$${Math.max(b.amount, 0).toFixed(0)}`}
-                  percentLabel={atRisk ? "20% " : "100% "}
-                  atRisk={atRisk}
-                  locked={Boolean(b.locked)}
-                />
-              </Link>
-            ))
+            discretionary.map((b, idx) => {
+              const tag = percentageTagForBucket(b, now);
+              const percentLabel = tag ? tag.label : "—";
+              const rowAtRisk = tag?.variant === "atRisk";
+              return (
+                <div key={b.id} className="flex items-center gap-2">
+                  <Link href={appRoutes.bucket(b.id)} className="min-w-0 flex-1">
+                    <BucketSpendingMoney
+                      title={b.name}
+                      cadenceLabel={`$${Math.max(b.top_off ?? 0, 0).toFixed(0)} per paycheck`}
+                      balanceLabel={`$${Math.max(b.amount, 0).toFixed(0)}`}
+                      percentLabel={percentLabel}
+                      atRisk={rowAtRisk}
+                      locked={b.type === "discretionary" && Boolean(b.locked)}
+                    />
+                  </Link>
+                  <div className="flex flex-col gap-1">
+                    <button
+                      type="button"
+                      disabled={idx === 0}
+                      onClick={() => useBudgetStore.getState().reorderDiscretionaryBucket(b.id, "up")}
+                      className="rounded px-2 py-1 text-xs disabled:opacity-30"
+                      aria-label={`Move ${b.name} up`}
+                    >
+                      ▲
+                    </button>
+                    <button
+                      type="button"
+                      disabled={idx === discretionary.length - 1}
+                      onClick={() => useBudgetStore.getState().reorderDiscretionaryBucket(b.id, "down")}
+                      className="rounded px-2 py-1 text-xs disabled:opacity-30"
+                      aria-label={`Move ${b.name} down`}
+                    >
+                      ▼
+                    </button>
+                  </div>
+                </div>
+              );
+            })
           )}
         </section>
 
@@ -129,6 +133,9 @@ export function MobileBuckets() {
           </div>
 
           {essentialBuckets.map((bucket) => {
+            const tag = percentageTagForBucket(bucket, now);
+            const percentLabel = tag ? tag.label : "—";
+            const rowAtRisk = tag?.variant === "atRisk";
             if (bucket.essential_subtype === "bill") {
               if (showType !== "all" && showType !== "bill") return null;
               return (
@@ -137,8 +144,8 @@ export function MobileBuckets() {
                     title={bucket.name}
                     balanceLabel={`$${Math.max(bucket.amount, 0).toFixed(0)}`}
                     cadenceLabel={`$${Math.max(bucket.top_off ?? 0, 0).toFixed(0)} per paycheck`}
-                    atRisk={atRisk}
-                    percentLabel={atRisk ? "20% " : "100% "}
+                    atRisk={rowAtRisk}
+                    percentLabel={percentLabel}
                   />
                 </Link>
               );
@@ -150,8 +157,8 @@ export function MobileBuckets() {
                   title={bucket.name}
                   balanceLabel={`$${Math.max(bucket.amount, 0).toFixed(0)}`}
                   cadenceLabel={`Top off to $${Math.max(bucket.top_off ?? 0, 0).toFixed(0)}`}
-                  atRisk={atRisk}
-                  percentLabel={atRisk ? "20% " : "100% "}
+                  atRisk={rowAtRisk}
+                  percentLabel={percentLabel}
                 />
               </Link>
             );

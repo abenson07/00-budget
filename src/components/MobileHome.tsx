@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { BucketHome, TopCardHome } from "@/components/figma-buckets";
 import { getEffectiveSplits } from "@/lib/allocation";
+import { percentageTagForBucket } from "@/lib/bucket-percentage-tag";
 import { buildEssentialsSummary } from "@/lib/essentials-summary";
 import { appRoutes } from "@/lib/routes";
 import { paycheckLineFor, safeToSpendHeadline } from "@/lib/safe-to-spend-summary";
@@ -35,14 +36,17 @@ export function MobileHome() {
   );
   const homeBuckets = useMemo(
     () =>
-      browseBuckets.slice(0, 2).map((bucket, index) => ({
-        id: bucket.id,
-        title: bucket.name,
-        amountLabel: `$${Math.round(bucket.amount)}`,
-        percentLabel: index === 0 ? "20% " : "80% ",
-        atRisk: index === 0,
-      })),
-    [browseBuckets],
+      browseBuckets.slice(0, 2).map((bucket) => {
+        const tag = percentageTagForBucket(bucket, now);
+        return {
+          id: bucket.id,
+          title: bucket.name,
+          amountLabel: `$${Math.round(bucket.amount)}`,
+          percentLabel: tag ? tag.label : "—",
+          atRisk: tag?.variant === "atRisk",
+        };
+      }),
+    [browseBuckets, now],
   );
 
   return (
