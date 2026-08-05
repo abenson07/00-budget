@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { AmountDisplay, Button, Keypad, PageHeader, Sheet } from "@/components/ui";
 import { bankedAheadAmount } from "@/lib/bucket-runway";
 import { MONEY_EPSILON } from "@/lib/constants";
 import { formatUsd } from "@/lib/format";
@@ -141,42 +141,24 @@ export function BucketTransferForm({ bucketId: originBucketId }: BucketTransferF
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-6">
-      <header className="flex items-center justify-between gap-2">
-        <Link
-          href={appRoutes.bucket(originBucketId)}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-lg text-[#1b1b1b] transition-colors hover:bg-black/5"
-          aria-label="Back"
-        >
-          ‹
-        </Link>
-        <h2 className="text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-[#1b1b1b]">
-          Between buckets
-        </h2>
-        <Link
-          href={appRoutes.bucket(originBucketId)}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-lg leading-none text-[#1b1b1b] transition-colors hover:bg-black/5"
-          aria-label="Close"
-        >
-          ×
-        </Link>
-      </header>
+      <PageHeader
+        size="compact"
+        title="Between buckets"
+        backHref={appRoutes.bucket(originBucketId)}
+        onClose={() => {}}
+      />
 
       <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-1 px-1">
-        <p className="text-[2.5rem] font-bold leading-none tracking-tight tabular-nums text-[#1b1b1b]">
-          {formatUsd(amountUsd)}
-        </p>
-        <p className="text-sm text-[#1e0403]/45">
-          Total account balance unchanged
-        </p>
+        <AmountDisplay value={formatUsd(amountUsd)} sublabel="Total account balance unchanged" />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <button
           type="button"
           onClick={() => setPicker("from")}
-          className="relative flex min-h-[7.5rem] flex-col rounded-2xl bg-[#d4ea3a] p-3.5 text-left text-[#0f0f0f] shadow-sm transition-transform active:scale-[0.99]"
+          className="relative flex min-h-[6.5rem] flex-col rounded-card bg-budget-lime p-4 text-left text-[#0f0f0f] shadow-card transition-transform active:scale-[0.99]"
         >
-          <span className="text-[10px] font-semibold uppercase tracking-wide opacity-80">
+          <span className="text-label font-semibold uppercase tracking-wide opacity-80">
             From
           </span>
           <span className="mt-2 line-clamp-2 text-sm font-medium leading-snug">
@@ -185,19 +167,13 @@ export function BucketTransferForm({ bucketId: originBucketId }: BucketTransferF
           <span className="mt-auto pt-2 text-lg font-bold tabular-nums">
             {fromBucket ? formatUsd(fromBucket.amount) : "—"}
           </span>
-          <span
-            className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-lg font-bold opacity-35"
-            aria-hidden
-          >
-            ⋮
-          </span>
         </button>
         <button
           type="button"
           onClick={() => setPicker("to")}
-          className="relative flex min-h-[7.5rem] flex-col rounded-2xl bg-[#0f0f0f] p-3.5 text-left text-white shadow-sm transition-transform active:scale-[0.99]"
+          className="relative flex min-h-[6.5rem] flex-col rounded-card bg-budget-forest p-4 text-left text-budget-on-dark shadow-card transition-transform active:scale-[0.99]"
         >
-          <span className="text-[10px] font-semibold uppercase tracking-wide text-white/70">
+          <span className="text-label font-semibold uppercase tracking-wide opacity-70">
             To
           </span>
           <span className="mt-2 line-clamp-2 text-sm font-medium leading-snug">
@@ -206,132 +182,82 @@ export function BucketTransferForm({ bucketId: originBucketId }: BucketTransferF
           <span className="mt-auto pt-2 text-lg font-bold tabular-nums">
             {toBucket ? formatUsd(toBucket.amount) : "—"}
           </span>
-          <span
-            className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-lg font-bold text-white/35"
-            aria-hidden
-          >
-            ⋮
-          </span>
         </button>
       </div>
 
-      <div className="grid grid-cols-3 gap-2.5 px-0.5">
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
-          <button
-            key={n}
-            type="button"
-            onClick={() => appendDigit(n)}
-            className="rounded-full border border-[#ddd] bg-white py-3.5 text-lg font-semibold text-[#1b1b1b] shadow-sm transition-colors hover:bg-[#f7f7f4] active:bg-[#efeeea]"
-          >
-            {n}
-          </button>
-        ))}
-        <div aria-hidden className="py-3.5" />
-        <button
-          type="button"
-          onClick={() => appendDigit(0)}
-          className="rounded-full border border-[#ddd] bg-white py-3.5 text-lg font-semibold text-[#1b1b1b] shadow-sm transition-colors hover:bg-[#f7f7f4] active:bg-[#efeeea]"
-        >
-          0
-        </button>
-        <button
-          type="button"
-          onClick={backspace}
-          className="rounded-full border border-[#ddd] bg-white py-3.5 text-lg font-semibold text-[#1b1b1b] shadow-sm transition-colors hover:bg-[#f7f7f4] active:bg-[#efeeea]"
-          aria-label="Backspace"
-        >
-          ⌫
-        </button>
-      </div>
+      <Keypad
+        onDigit={(digit) => appendDigit(Number(digit))}
+        onDelete={backspace}
+      />
 
       {transferError ? (
         <p className="text-center text-sm text-red-700">{transferError}</p>
       ) : null}
 
-      {dippingIntoBankedAhead ? (
-        <HoldToTransferButton
-          label={`transfer ${formatUsd(amountUsd)}`}
-          onConfirm={onConfirmTransfer}
-          disabled={!canSubmit}
-        />
-      ) : essentialToDiscretionary ? (
-        <HoldToTransferButton
-          label={`transfer ${formatUsd(amountUsd)}`}
-          onConfirm={onConfirmTransfer}
-          disabled={!canSubmit}
-          holdMs={60_000}
-        />
-      ) : (
-        <button
-          type="button"
-          disabled={!canSubmit}
-          onClick={onConfirmTransfer}
-          className="w-full rounded-2xl bg-[#0f0f0f] py-4 text-center text-base font-semibold text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-35 active:opacity-90"
-        >
-          Transfer {formatUsd(amountUsd)}
-        </button>
-      )}
-
-      {picker ? (
-        <div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center"
-          role="dialog"
-          aria-modal="true"
-          aria-label={picker === "from" ? "Choose source bucket" : "Choose destination bucket"}
-        >
-          <button
-            type="button"
-            className="absolute inset-0 cursor-default"
-            aria-label="Dismiss"
-            onClick={() => setPicker(null)}
+      <div className="sticky bottom-0 -mx-5 mt-auto bg-budget-page px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-3">
+        {dippingIntoBankedAhead ? (
+          <HoldToTransferButton
+            label={`transfer ${formatUsd(amountUsd)}`}
+            onConfirm={onConfirmTransfer}
+            disabled={!canSubmit}
           />
-          <div className="relative z-[1] w-full max-w-md overflow-hidden rounded-2xl bg-[var(--budget-page-bg)] shadow-xl">
-            <div className="flex items-center justify-between border-b border-[#e5e4e0] px-4 py-3">
-              <span className="text-sm font-semibold text-[#1b1b1b]">
-                {picker === "from" ? "Transfer from" : "Transfer to"}
-              </span>
-              <button
-                type="button"
-                onClick={() => setPicker(null)}
-                className="rounded-full px-2 py-1 text-sm text-[#1e0403]/60 hover:bg-black/5"
-              >
-                Done
-              </button>
-            </div>
-            <ul className="max-h-[min(24rem,70vh)] overflow-y-auto py-1">
-              {pickerBuckets.map((b) => {
-                const active =
-                  picker === "from"
-                    ? b.id === fromBucketId
-                    : b.id === toBucketId;
-                return (
-                  <li key={b.id}>
-                    <button
-                      type="button"
-                      onClick={() => selectBucket(b.id)}
-                      className={`flex w-full flex-col items-start gap-0.5 px-4 py-3 text-left transition-colors ${
-                        active ? "bg-[#1e0403]/8" : "hover:bg-black/[0.04]"
-                      }`}
-                    >
-                      <span className="text-sm font-medium text-[#1b1b1b]">
-                        {b.name}
-                        {b.id === originBucketId ? (
-                          <span className="ml-2 text-xs font-normal text-[#1e0403]/45">
-                            (from this bucket)
-                          </span>
-                        ) : null}
+        ) : essentialToDiscretionary ? (
+          <HoldToTransferButton
+            label={`transfer ${formatUsd(amountUsd)}`}
+            onConfirm={onConfirmTransfer}
+            disabled={!canSubmit}
+            holdMs={60_000}
+          />
+        ) : (
+          <Button
+            variant="primary"
+            size="cta"
+            fullWidth
+            disabled={!canSubmit}
+            onClick={onConfirmTransfer}
+          >
+            Transfer {formatUsd(amountUsd)}
+          </Button>
+        )}
+      </div>
+
+      <Sheet
+        open={picker !== null}
+        onClose={() => setPicker(null)}
+        title={picker === "from" ? "Transfer from" : "Transfer to"}
+      >
+        <ul className="max-h-[min(24rem,70vh)] overflow-y-auto">
+          {pickerBuckets.map((b) => {
+            const active =
+              picker === "from"
+                ? b.id === fromBucketId
+                : b.id === toBucketId;
+            return (
+              <li key={b.id}>
+                <button
+                  type="button"
+                  onClick={() => selectBucket(b.id)}
+                  className={`flex min-h-[56px] w-full flex-col items-start justify-center gap-0.5 rounded-control px-4 py-3 text-left transition-colors ${
+                    active ? "bg-budget-forest/10" : "hover:bg-black/[0.04]"
+                  }`}
+                >
+                  <span className="text-sm font-medium text-budget-ink">
+                    {b.name}
+                    {b.id === originBucketId ? (
+                      <span className="ml-2 text-xs font-normal text-budget-ink-soft">
+                        (from this bucket)
                       </span>
-                      <span className="text-xs tabular-nums text-[#1e0403]/55">
-                        {formatUsd(b.amount)}
-                      </span>
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </div>
-      ) : null}
+                    ) : null}
+                  </span>
+                  <span className="text-xs tabular-nums text-budget-ink-soft">
+                    {formatUsd(b.amount)}
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </Sheet>
     </div>
   );
 }

@@ -9,6 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { Button, Card, Field, Input, Label, ListRow, Sheet } from "@/components/ui";
 import { validateBucketMetadata } from "@/lib/bucket-metadata";
 import { biweeklyPerPaycheckAmount } from "@/lib/biweekly-savings-breakdown";
 import { buildBucketFromWizard, centsToDollars } from "@/lib/build-bucket-from-wizard";
@@ -86,31 +87,9 @@ function WizardModal({
   onClose: () => void;
 }) {
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="wizard-modal-title"
-    >
-      <div className="max-h-[90vh] w-full max-w-md overflow-auto rounded-t-2xl bg-[var(--budget-page-bg)] p-6 shadow-xl sm:rounded-2xl">
-        <div className="mb-4 flex items-center justify-between gap-3">
-          <h2
-            id="wizard-modal-title"
-            className="font-[family-name:var(--font-instrument-serif)] text-xl text-[#1e1e1e]"
-          >
-            {title}
-          </h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-full px-2 py-1 text-sm text-[#1e0403]/70"
-          >
-            Cancel
-          </button>
-        </div>
-        {children}
-      </div>
-    </div>
+    <Sheet open onClose={onClose} title={title}>
+      {children}
+    </Sheet>
   );
 }
 
@@ -294,7 +273,7 @@ export function NewBucketWizard() {
       >
         <h1
           id={`${groupId}-heading`}
-          className="mt-2 font-[family-name:var(--font-instrument-serif)] text-[1.65rem] leading-tight text-[#1e1e1e]"
+          className="mt-2 text-title text-budget-ink"
         >
           Create a new bucket
         </h1>
@@ -310,22 +289,22 @@ export function NewBucketWizard() {
               return (
                 <label
                   key={c.id}
-                  className={`flex cursor-pointer items-start gap-3 rounded-xl border px-4 py-4 transition-colors ${
+                  className={`flex cursor-pointer items-start gap-3 rounded-card border px-4 py-4 transition-colors ${
                     isOn
-                      ? "border-[#1e0403] bg-[#efeeea]"
-                      : "border-transparent bg-white shadow-[0_1px_0_rgba(30,4,3,0.06)]"
+                      ? "border-budget-ink bg-budget-card"
+                      : "border-transparent bg-white shadow-card"
                   }`}
                 >
-                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 border-[#1e0403]">
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 border-budget-ink">
                     {isOn ? (
-                      <span className="h-2.5 w-2.5 rounded-full bg-[#1e0403]" />
+                      <span className="h-2.5 w-2.5 rounded-full bg-budget-ink" />
                     ) : null}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-base font-semibold text-[var(--budget-ink)]">
+                    <span className="block text-base font-semibold text-budget-ink">
                       {c.title}
                     </span>
-                    <span className="mt-1 block text-sm leading-snug text-[#1e0403]/60">
+                    <span className="mt-1 block text-sm leading-snug text-budget-ink-soft">
                       {c.description}
                     </span>
                   </span>
@@ -343,19 +322,20 @@ export function NewBucketWizard() {
           </div>
         </fieldset>
         <div className="mt-10 shrink-0 pt-2">
-          <button
-            type="button"
+          <Button
+            variant="primary"
+            size="cta"
+            fullWidth
             onClick={() => startWizard(step1Category)}
-            className="w-full rounded-2xl bg-[#1e1e1e] py-3.5 text-center text-base font-medium text-white transition-opacity active:opacity-90"
           >
             Proceed
-          </button>
+          </Button>
         </div>
         <div className="mt-4 text-center">
           <Link
             href={appRoutes.buckets}
             onClick={closeAndReset}
-            className="font-mono text-xs text-[#1e0403]/60 underline underline-offset-2"
+            className="text-xs text-budget-ink-soft underline underline-offset-2"
           >
             Cancel
           </Link>
@@ -385,74 +365,63 @@ export function NewBucketWizard() {
       >
         {w.category === "upcoming_bills" && w.step === 2 ? (
           <>
-            <h1 className="mt-2 font-[family-name:var(--font-instrument-serif)] text-[1.65rem] leading-tight text-[#1e1e1e]">
+            <h1 className="mt-2 text-title text-budget-ink">
               Link a past bill or start fresh
             </h1>
-            <p className="mt-2 text-sm text-[#1e0403]/60">
+            <p className="mt-2 text-sm text-budget-ink-soft">
               Pick a transaction to copy amount and due date, or create a new
               bill.
             </p>
             <div className="mt-6 flex flex-col gap-3">
-              <button
-                type="button"
-                onClick={() => setModal("bill")}
-                className="w-full rounded-xl border border-[#1e0403]/30 bg-white py-3.5 text-center text-sm font-semibold text-[#1e0403]"
-              >
+              <Button variant="ghost" size="cta" fullWidth onClick={() => setModal("bill")}>
                 Make new bill
-              </button>
-              <p className="font-mono text-[11px] uppercase tracking-wide text-[#1e0403]/50">
+              </Button>
+              <p className="text-label uppercase tracking-wide text-budget-ink-soft">
                 Past transactions
               </p>
-              <ul className="max-h-[45vh] overflow-auto rounded-xl border border-[#bbb] bg-white">
+              <div className="max-h-[45vh] overflow-auto rounded-card border border-budget-card-border bg-white">
                 {sortedTx.length === 0 ? (
-                  <li className="px-4 py-6 text-sm text-[#1e0403]/60">
+                  <p className="px-4 py-6 text-sm text-budget-ink-soft">
                     No transactions yet. Use &quot;Make new bill&quot; instead.
-                  </li>
+                  </p>
                 ) : (
-                  sortedTx.map((tx) => (
-                    <li key={tx.id} className="border-b border-[#eee] last:border-0">
-                      <button
-                        type="button"
-                        onClick={() => onSelectTransaction(tx)}
-                        className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm transition-colors hover:bg-[var(--budget-page-bg)]"
-                      >
-                        <span className="min-w-0 font-medium text-[var(--budget-ink)]">
-                          {tx.merchant || "Transaction"}
-                        </span>
-                        <span className="shrink-0 tabular-nums text-[#1e0403]">
-                          {formatUsd(tx.amount)}
-                        </span>
-                      </button>
-                    </li>
+                  sortedTx.map((tx, index) => (
+                    <ListRow
+                      key={tx.id}
+                      onClick={() => onSelectTransaction(tx)}
+                      title={tx.merchant || "Transaction"}
+                      amount={formatUsd(tx.amount)}
+                      divider={index < sortedTx.length - 1}
+                    />
                   ))
                 )}
-              </ul>
+              </div>
             </div>
           </>
         ) : null}
 
         {w.category === "upcoming_bills" && w.step === 3 ? (
           <>
-            <h1 className="mt-2 font-[family-name:var(--font-instrument-serif)] text-[1.65rem] leading-tight text-[#1e1e1e]">
+            <h1 className="mt-2 text-title text-budget-ink">
               Due date & paychecks
             </h1>
-            <p className="mt-2 text-sm text-[#1e0403]/60">
+            <p className="mt-2 text-sm text-budget-ink-soft">
               Confirm dates and how this bill is funded from your paychecks.
             </p>
             <div className="mt-6 space-y-4">
               {w.billTransactionId ? (
-                <div className="rounded-xl border border-[#bbb] bg-[#efeeea] px-4 py-3 text-sm">
-                  <p className="text-[#1e0403]/65">Amount (from transaction)</p>
-                  <p className="mt-1 font-semibold tabular-nums text-[var(--budget-ink)]">
+                <Card tone="panel" padded={false} className="px-4 py-3 text-sm">
+                  <p className="text-budget-ink-soft">Amount (from transaction)</p>
+                  <p className="mt-1 font-semibold tabular-nums text-budget-ink">
                     {formatUsd(
                       transactions.find((t) => t.id === w.billTransactionId)
                         ?.amount ?? 0,
                     )}
                   </p>
-                </div>
+                </Card>
               ) : (
                 <div>
-                  <p className="mb-2 text-sm font-medium text-[var(--budget-ink)]">
+                  <p className="mb-2 text-sm font-medium text-budget-ink">
                     Bill amount
                   </p>
                   <AmountKeypad
@@ -463,10 +432,11 @@ export function NewBucketWizard() {
                   />
                 </div>
               )}
-              <div className="grid gap-3 sm:grid-cols-2">
-                <label className="block text-xs font-medium uppercase tracking-wide text-[#1e0403]/55">
-                  Due date
-                  <input
+              <div className="grid grid-cols-2 gap-3">
+                <Field>
+                  <Label htmlFor="wizard-due-date">Due date</Label>
+                  <Input
+                    id="wizard-due-date"
                     type="date"
                     value={w.dueDate}
                     onChange={(e) => {
@@ -477,12 +447,12 @@ export function NewBucketWizard() {
                         if (next) patchWizard({ alertDate: next });
                       }
                     }}
-                    className="mt-1 w-full rounded-md border border-[#bbb] bg-white px-3 py-2 text-sm"
                   />
-                </label>
-                <label className="block text-xs font-medium uppercase tracking-wide text-[#1e0403]/55">
-                  Alert date
-                  <input
+                </Field>
+                <Field>
+                  <Label htmlFor="wizard-alert-date">Alert date</Label>
+                  <Input
+                    id="wizard-alert-date"
                     type="date"
                     value={w.alertDate}
                     max={
@@ -493,29 +463,29 @@ export function NewBucketWizard() {
                     onChange={(e) =>
                       patchWizard({ alertDate: e.target.value })
                     }
-                    className="mt-1 w-full rounded-md border border-[#bbb] bg-white px-3 py-2 text-sm"
                   />
-                </label>
+                </Field>
               </div>
-              <label className="block text-xs font-medium uppercase tracking-wide text-[#1e0403]/55">
-                Paycheck funding
+              <Field>
+                <Label htmlFor="wizard-paycheck-funding">Paycheck funding</Label>
                 <select
+                  id="wizard-paycheck-funding"
                   value={w.paycheckMode}
                   onChange={(e) =>
                     patchWizard({
                       paycheckMode: e.target.value as typeof w.paycheckMode,
                     })
                   }
-                  className="mt-1 w-full rounded-md border border-[#bbb] bg-white px-3 py-2 text-sm"
+                  className="mt-1 h-12 w-full rounded-control border border-budget-card-border bg-white px-4 text-body text-budget-ink focus:border-budget-forest/40 focus:outline-none focus:ring-2 focus:ring-budget-forest/15"
                 >
                   <option value="paycheck_1">Paycheck 1</option>
                   <option value="paycheck_2">Paycheck 2</option>
                   <option value="both">Both paychecks</option>
                 </select>
-              </label>
+              </Field>
               {w.paycheckMode === "both" ? (
                 <div>
-                  <div className="flex justify-between text-sm text-[var(--budget-ink)]">
+                  <div className="flex justify-between text-sm text-budget-ink">
                     <span>Paycheck 1</span>
                     <span>Paycheck 2</span>
                   </div>
@@ -529,9 +499,9 @@ export function NewBucketWizard() {
                         paycheckSplit: Number(e.target.value) / 100,
                       })
                     }
-                    className="mt-2 w-full accent-[#1e0403]"
+                    className="mt-2 h-2 w-full accent-[var(--budget-forest)]"
                   />
-                  <p className="mt-1 text-center text-xs text-[#1e0403]/65">
+                  <p className="mt-1 text-center text-xs text-budget-ink-soft">
                     {Math.round(w.paycheckSplit * 100)}% /{" "}
                     {100 - Math.round(w.paycheckSplit * 100)}%
                   </p>
@@ -541,20 +511,16 @@ export function NewBucketWizard() {
             {finishError ? (
               <p className="mt-4 text-sm text-red-700">{finishError}</p>
             ) : null}
-            <button
-              type="button"
-              onClick={onFinishBill}
-              className="mt-8 w-full rounded-2xl bg-[#1e1e1e] py-3.5 text-center text-base font-medium text-white transition-opacity active:opacity-90"
-            >
+            <Button variant="primary" size="cta" fullWidth className="mt-8" onClick={onFinishBill}>
               Create bucket
-            </button>
+            </Button>
           </>
         ) : null}
 
         {(w.category === "essential_spending" || w.category === "spending_money") &&
         w.step === 2 ? (
           <>
-            <h1 className="mt-2 font-[family-name:var(--font-instrument-serif)] text-[1.65rem] leading-tight text-[#1e1e1e]">
+            <h1 className="mt-2 text-title text-budget-ink">
               What is this for?
             </h1>
             <div className="mt-6 flex flex-col gap-2">
@@ -569,7 +535,7 @@ export function NewBucketWizard() {
                     patchWizard({ subcategoryLabel: label });
                     setStep(3);
                   }}
-                  className="rounded-xl border border-[#bbb] bg-white px-4 py-3.5 text-left text-sm font-semibold text-[var(--budget-ink)] transition-colors hover:bg-[var(--budget-page-bg)]"
+                  className="min-h-[48px] rounded-card border border-budget-card-border bg-white px-4 py-3.5 text-left text-sm font-semibold text-budget-ink transition-colors hover:bg-budget-page"
                 >
                   {label}
                 </button>
@@ -584,7 +550,7 @@ export function NewBucketWizard() {
                       : "spending_name",
                   );
                 }}
-                className="rounded-xl border border-dashed border-[#1e0403]/35 bg-[#efeeea]/50 px-4 py-3.5 text-left text-sm font-semibold text-[#1e0403]"
+                className="min-h-[48px] rounded-card border border-dashed border-budget-ink-soft bg-budget-card/50 px-4 py-3.5 text-left text-sm font-semibold text-budget-ink-muted"
               >
                 Add new…
               </button>
@@ -595,10 +561,10 @@ export function NewBucketWizard() {
         {(w.category === "essential_spending" || w.category === "spending_money") &&
         w.step === 3 ? (
           <>
-            <p className="mt-2 text-center font-[family-name:var(--font-instrument-serif)] text-xl text-[#1e1e1e]">
+            <p className="mt-2 text-center text-section text-budget-ink">
               {w.subcategoryLabel ?? "Amount"}
             </p>
-            <p className="mt-1 text-center text-sm text-[#1e0403]/60">
+            <p className="mt-1 text-center text-sm text-budget-ink-soft">
               How much do you want to allocate?
             </p>
             <div className="mt-8">
@@ -610,51 +576,55 @@ export function NewBucketWizard() {
             {finishError ? (
               <p className="mt-4 text-sm text-red-700">{finishError}</p>
             ) : null}
-            <button
-              type="button"
+            <Button
+              variant="primary"
+              size="cta"
+              fullWidth
+              className="mt-8"
               onClick={onFinishEssentialOrSpending}
-              className="mt-8 w-full rounded-2xl bg-[#1e1e1e] py-3.5 text-center text-base font-medium text-white transition-opacity active:opacity-90"
             >
               Create bucket
-            </button>
+            </Button>
           </>
         ) : null}
 
         {w.category === "future_planning" && w.step === 2 ? (
           <>
-            <h1 className="mt-2 font-[family-name:var(--font-instrument-serif)] text-[1.65rem] leading-tight text-[#1e1e1e]">
+            <h1 className="mt-2 text-title text-budget-ink">
               Name your savings goal
             </h1>
-            <label className="mt-6 block text-xs font-medium uppercase tracking-wide text-[#1e0403]/55">
-              Goal name
-              <input
+            <Field className="mt-6">
+              <Label htmlFor="wizard-goal-name">Goal name</Label>
+              <Input
+                id="wizard-goal-name"
                 type="text"
                 value={w.goalName}
                 onChange={(e) => patchWizard({ goalName: e.target.value })}
                 placeholder="e.g. New laptop fund"
-                className="mt-1 w-full rounded-md border border-[#bbb] bg-white px-3 py-2.5 text-base text-[#222]"
               />
-            </label>
-            <button
-              type="button"
+            </Field>
+            <Button
+              variant="primary"
+              size="cta"
+              fullWidth
+              className="mt-10"
               onClick={() => {
                 if (!w.goalName.trim()) return;
                 setStep(3);
               }}
               disabled={!w.goalName.trim()}
-              className="mt-10 w-full rounded-2xl bg-[#1e1e1e] py-3.5 text-center text-base font-medium text-white transition-opacity active:opacity-90 disabled:opacity-40"
             >
               Continue
-            </button>
+            </Button>
           </>
         ) : null}
 
         {w.category === "future_planning" && w.step === 3 ? (
           <>
-            <p className="mt-2 text-center font-[family-name:var(--font-instrument-serif)] text-xl text-[#1e1e1e]">
+            <p className="mt-2 text-center text-section text-budget-ink">
               {w.goalName.trim() || "Target amount"}
             </p>
-            <p className="mt-1 text-center text-sm text-[#1e0403]/60">
+            <p className="mt-1 text-center text-sm text-budget-ink-soft">
               How much do you want to save?
             </p>
             <div className="mt-8">
@@ -663,39 +633,41 @@ export function NewBucketWizard() {
                 onChangeCents={(c) => patchWizard({ keypadCents: c })}
               />
             </div>
-            <button
-              type="button"
+            <Button
+              variant="primary"
+              size="cta"
+              fullWidth
+              className="mt-8"
               onClick={() => {
                 if (w.keypadCents <= 0) return;
                 setStep(4);
               }}
               disabled={w.keypadCents <= 0}
-              className="mt-8 w-full rounded-2xl bg-[#1e1e1e] py-3.5 text-center text-base font-medium text-white transition-opacity active:opacity-90 disabled:opacity-40"
             >
               Continue
-            </button>
+            </Button>
           </>
         ) : null}
 
         {w.category === "future_planning" && w.step === 4 ? (
           <>
-            <h1 className="mt-2 font-[family-name:var(--font-instrument-serif)] text-[1.65rem] leading-tight text-[#1e1e1e]">
+            <h1 className="mt-2 text-title text-budget-ink">
               When do you want to buy?
             </h1>
-            <label className="mt-6 block text-xs font-medium uppercase tracking-wide text-[#1e0403]/55">
-              Target date
-              <input
+            <Field className="mt-6">
+              <Label htmlFor="wizard-target-date">Target date</Label>
+              <Input
+                id="wizard-target-date"
                 type="date"
                 value={w.targetPurchaseDate}
                 onChange={(e) =>
                   patchWizard({ targetPurchaseDate: e.target.value })
                 }
-                className="mt-1 w-full rounded-md border border-[#bbb] bg-white px-3 py-2 text-sm"
               />
-            </label>
+            </Field>
             {futureBreakdown ? (
-              <div className="mt-6 rounded-xl border border-[#bbb] bg-[#efeeea] p-4 text-sm text-[var(--budget-ink)]">
-                <p className="font-medium text-[#1e0403]">
+              <Card tone="panel" className="mt-6 text-sm text-budget-ink">
+                <p className="font-medium text-budget-ink-muted">
                   Bi-weekly paycheck plan
                 </p>
                 <p className="mt-2">
@@ -705,7 +677,7 @@ export function NewBucketWizard() {
                   </span>{" "}
                   · Goal {formatUsd(centsToDollars(w.keypadCents))}
                 </p>
-                <p className="mt-2 text-[#1e0403]/80">
+                <p className="mt-2 opacity-80">
                   About{" "}
                   <span className="font-semibold tabular-nums">
                     {formatUsd(futureBreakdown.perPaycheck)}
@@ -714,23 +686,19 @@ export function NewBucketWizard() {
                   {futureBreakdown.paychecksUntil === 1 ? "" : "s"} in ~{" "}
                   {futureBreakdown.daysUntil} days).
                 </p>
-                <p className="mt-3 text-xs text-[#1e0403]/65">
+                <p className="mt-3 text-xs text-budget-ink-soft">
                   Paycheck 1 &amp; Paycheck 2 (alternating): roughly{" "}
                   {formatUsd(futureBreakdown.perPaycheck)} each per deposit,
                   assuming equal set-aside each time.
                 </p>
-              </div>
+              </Card>
             ) : null}
             {finishError ? (
               <p className="mt-4 text-sm text-red-700">{finishError}</p>
             ) : null}
-            <button
-              type="button"
-              onClick={onFinishFuture}
-              className="mt-8 w-full rounded-2xl bg-[#1e1e1e] py-3.5 text-center text-base font-medium text-white transition-opacity active:opacity-90"
-            >
+            <Button variant="primary" size="cta" fullWidth className="mt-8" onClick={onFinishFuture}>
               Create bucket
-            </button>
+            </Button>
           </>
         ) : null}
       </WizardChrome>
@@ -743,7 +711,7 @@ export function NewBucketWizard() {
                 key={label}
                 type="button"
                 onClick={() => onBillPreset(label)}
-                className="rounded-xl border border-[#bbb] bg-white px-4 py-3 text-left text-sm font-medium text-[var(--budget-ink)] hover:bg-[var(--budget-page-bg)]"
+                className="min-h-[48px] rounded-card border border-budget-card-border bg-white px-4 py-3 text-left text-sm font-medium text-budget-ink hover:bg-budget-page"
               >
                 {label}
               </button>
@@ -757,25 +725,27 @@ export function NewBucketWizard() {
           title="Name this bucket"
           onClose={() => setModal(null)}
         >
-          <input
+          <Input
             type="text"
             value={customNameDraft}
             onChange={(e) => setCustomNameDraft(e.target.value)}
             placeholder="e.g. Pharmacy"
-            className="w-full rounded-md border border-[#bbb] bg-white px-3 py-2.5 text-base"
+            className="mt-0"
           />
-          <button
-            type="button"
+          <Button
+            variant="primary"
+            size="cta"
+            fullWidth
+            className="mt-4"
             disabled={!customNameDraft.trim()}
             onClick={() => {
               patchWizard({ subcategoryLabel: customNameDraft.trim() });
               setStep(3);
               setModal(null);
             }}
-            className="mt-4 w-full rounded-xl bg-[#1e1e1e] py-3 text-sm font-medium text-white disabled:opacity-40"
           >
             Continue
-          </button>
+          </Button>
         </WizardModal>
       ) : null}
 
@@ -784,25 +754,27 @@ export function NewBucketWizard() {
           title="Name this bucket"
           onClose={() => setModal(null)}
         >
-          <input
+          <Input
             type="text"
             value={customNameDraft}
             onChange={(e) => setCustomNameDraft(e.target.value)}
             placeholder="e.g. Concerts"
-            className="w-full rounded-md border border-[#bbb] bg-white px-3 py-2.5 text-base"
+            className="mt-0"
           />
-          <button
-            type="button"
+          <Button
+            variant="primary"
+            size="cta"
+            fullWidth
+            className="mt-4"
             disabled={!customNameDraft.trim()}
             onClick={() => {
               patchWizard({ subcategoryLabel: customNameDraft.trim() });
               setStep(3);
               setModal(null);
             }}
-            className="mt-4 w-full rounded-xl bg-[#1e1e1e] py-3 text-sm font-medium text-white disabled:opacity-40"
           >
             Continue
-          </button>
+          </Button>
         </WizardModal>
       ) : null}
     </>
