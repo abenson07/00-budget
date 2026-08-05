@@ -72,6 +72,7 @@ type BudgetState = {
   buckets: Bucket[];
   transactions: Transaction[];
   syncError: string | null;
+  nextPaycheckDate: string | null;
 };
 
 type BudgetActions = {
@@ -99,6 +100,8 @@ type BudgetActions = {
   updateBucketMetadata: (bucketId: string, input: BucketMetadataInput) => void;
 
   reorderDiscretionaryBucket: (bucketId: string, direction: "up" | "down") => void;
+
+  setNextPaycheckDate: (date: string) => void;
 
   createBucketFromCategory: (category: NewBucketCategoryId) => string;
 
@@ -133,6 +136,7 @@ export const useBudgetStore = create<BudgetState & BudgetActions>()(
   buckets: fallbackInitial.buckets,
   transactions: fallbackInitial.transactions,
   syncError: null,
+  nextPaycheckDate: null,
 
   getBucketById: (id) => getBucketById(get().buckets, id),
 
@@ -304,6 +308,8 @@ export const useBudgetStore = create<BudgetState & BudgetActions>()(
     })();
   },
 
+  setNextPaycheckDate: (date) => set({ nextPaycheckDate: date }),
+
   createBucketFromCategory: (category) => {
     const { account, buckets } = get();
     const order = nextBucketSortOrder(buckets);
@@ -372,7 +378,12 @@ export const useBudgetStore = create<BudgetState & BudgetActions>()(
     }),
     {
       name: "budget-data",
-      partialize: (s) => ({ account: s.account, buckets: s.buckets, transactions: s.transactions }),
+      partialize: (s) => ({
+        account: s.account,
+        buckets: s.buckets,
+        transactions: s.transactions,
+        nextPaycheckDate: s.nextPaycheckDate,
+      }),
     },
   ),
 );
