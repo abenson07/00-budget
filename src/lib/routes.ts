@@ -15,6 +15,9 @@ export const appRoutes = {
     `/transaction/${encodeURIComponent(id)}`,
   transactionSplit: (id: string) =>
     `/transaction/${encodeURIComponent(id)}/split`,
+  onboardingConnect: "/onboarding/connect",
+  onboardingImporting: "/onboarding/importing",
+  onboardingReview: "/onboarding/review",
 } as const;
 
 /** Links used by transaction detail + split editor (mirrors app vs `/test` tree). */

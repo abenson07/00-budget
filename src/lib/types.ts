@@ -70,3 +70,12 @@ export type MockDataset = {
   buckets: Bucket[];
   transactions: Transaction[];
 };
+
+export type ConnectedAccountSummary = {
+  id: string;
+  institutionName: string;
+  accountName: string;
+  accountType: "checking" | "savings";
+  mask: string;
+  balance: number;
+};

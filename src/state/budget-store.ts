@@ -100,6 +100,8 @@ type BudgetActions = {
 
   appendBucket: (bucket: Bucket) => void;
 
+  simulatePaycheckDeposit: (amount: number) => void;
+
   /** Load from Supabase; seeds demo if `accounts` is empty. No-op if env missing. */
   syncFromSupabase: () => Promise<void>;
 };
@@ -302,6 +304,11 @@ export const useBudgetStore = create<BudgetState & BudgetActions>((set, get) => 
         console.error("appendBucket persist failed", e);
       }
     })();
+  },
+
+  simulatePaycheckDeposit: (amount) => {
+    // Stub only — real allocation math lands in BEN-1303's plan.
+    console.log("simulatePaycheckDeposit", amount);
   },
 
   syncFromSupabase: async () => {

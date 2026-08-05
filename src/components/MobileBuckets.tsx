@@ -10,6 +10,7 @@ import {
   TopCardHome,
 } from "@/components/figma-buckets";
 import { appRoutes } from "@/lib/routes";
+import type { DiscretionaryBucket } from "@/lib/types";
 import { isUnassignedBucket } from "@/lib/unassigned-bucket";
 import { useBudgetStore } from "@/state/budget-store";
 
@@ -25,7 +26,7 @@ export function MobileBuckets() {
   const discretionary = useMemo(
     () =>
       sortedBuckets.filter(
-        (b) => b.type === "discretionary" && !isUnassignedBucket(b),
+        (b): b is DiscretionaryBucket => b.type === "discretionary" && !isUnassignedBucket(b),
       ),
     [sortedBuckets],
   );
