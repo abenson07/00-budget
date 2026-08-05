@@ -61,7 +61,7 @@ export function BucketSpendingMoney({
         <div className="flex h-full min-w-0 flex-1 flex-row items-center self-stretch">
           <div className="flex h-full min-w-0 w-full flex-col items-start gap-1 leading-normal not-italic">
             <div className="flex w-full min-w-0 items-center gap-2">
-              <p className="relative min-w-0 flex-1 truncate text-xl font-bold text-budget-ink">
+              <p className="relative min-w-0 flex-1 truncate text-base font-semibold text-budget-ink">
                 {title}
               </p>
               {showLock ? (
@@ -78,7 +78,7 @@ export function BucketSpendingMoney({
           </div>
         </div>
         <div className="flex shrink-0 items-start justify-end gap-2">
-          <p className="relative shrink-0 whitespace-nowrap text-amount-lg tabular-nums text-budget-ink">
+          <p className="relative shrink-0 whitespace-nowrap text-xl font-bold tabular-nums text-budget-ink">
             {balanceLabel}
           </p>
           <FigmaPercentageTag inverse={false} variant={atRisk ? "atRisk" : "safe"}>

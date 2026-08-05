@@ -56,7 +56,7 @@ export function BucketBill({
       <div className="relative flex min-h-px min-w-px flex-1 items-center justify-between px-4 py-4">
         <div className="flex h-full min-w-0 flex-1 flex-row items-center self-stretch">
           <div className="flex h-full min-w-0 w-full flex-col items-start gap-1 leading-normal not-italic">
-            <p className="relative w-full truncate text-xl font-bold text-budget-ink">
+            <p className="relative w-full truncate text-base font-semibold text-budget-ink">
               {title}
             </p>
             <p className="relative shrink-0 text-label text-budget-forest opacity-50">
@@ -64,9 +64,9 @@ export function BucketBill({
             </p>
           </div>
         </div>
-        <div className="flex w-20 shrink-0 flex-col items-end justify-center gap-1">
-          <div className="flex w-full shrink-0 items-start justify-end gap-2">
-            <p className="relative shrink-0 whitespace-nowrap text-amount-lg tabular-nums text-budget-ink">
+        <div className="flex shrink-0 flex-col items-end justify-center gap-1">
+          <div className="flex shrink-0 items-start justify-end gap-2">
+            <p className="relative shrink-0 whitespace-nowrap text-xl font-bold tabular-nums text-budget-ink">
               {balanceLabel}
             </p>
             <FigmaPercentageTag inverse={false} variant={atRisk ? "atRisk" : "safe"}>

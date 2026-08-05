@@ -64,7 +64,7 @@ export function BucketTransaction({
       <div className="relative flex min-h-px min-w-px flex-1 items-center justify-between px-4 py-4">
         <div className="flex h-full min-w-0 flex-1 flex-row items-center self-stretch">
           <div className="flex h-full min-w-0 w-full flex-col items-start gap-1 leading-normal not-italic">
-            <p className="relative w-full truncate text-xl font-bold text-budget-ink">
+            <p className="relative w-full truncate text-base font-semibold text-budget-ink">
               {title}
             </p>
             {showSplit ? (
@@ -75,7 +75,7 @@ export function BucketTransaction({
           </div>
         </div>
         <div className="flex shrink-0 items-start justify-end">
-          <p className="relative shrink-0 whitespace-nowrap text-amount-lg tabular-nums text-budget-ink">
+          <p className="relative shrink-0 whitespace-nowrap text-xl font-bold tabular-nums text-budget-ink">
             {amountLabel}
           </p>
         </div>
