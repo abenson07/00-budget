@@ -15,6 +15,7 @@ function shouldShowMobileNav(pathname: string) {
   ) {
     return true;
   }
+  if (pathname.startsWith("/settings")) return true;
   return false;
 }
 

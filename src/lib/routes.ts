@@ -20,6 +20,7 @@ export const appRoutes = {
   onboardingPaycheck: "/onboarding/paycheck",
   onboardingDetected: "/onboarding/detected",
   onboardingReview: "/onboarding/review",
+  settings: "/settings",
   paySchedule: "/settings/pay-schedule",
   allocations: "/allocations",
   allocationRun: (id: string) => `/allocations/${encodeURIComponent(id)}`,

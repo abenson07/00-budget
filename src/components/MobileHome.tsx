@@ -219,6 +219,9 @@ export function MobileHome() {
         <Link href={appRoutes.allocations} className="text-center text-xs underline">
           View past paycheck allocations
         </Link>
+        <Link href={appRoutes.settings} className="text-center text-xs underline">
+          Settings
+        </Link>
       </div>
     </div>
   );

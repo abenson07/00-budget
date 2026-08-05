@@ -22,6 +22,7 @@ export function runPaycheckAllocation(
   incomeAmount: number,
   slot: Extract<PaycheckMode, "paycheck_1" | "paycheck_2">,
   now: Date,
+  surplusMode: "unassigned" | "goals_first" = "unassigned",
 ): { buckets: Bucket[]; lineItems: AllocationLineItem[] } {
   let pool = Math.max(0, incomeAmount);
   const lineItems: AllocationLineItem[] = [];
@@ -77,7 +78,15 @@ export function runPaycheckAllocation(
     credit(b.id, Math.min(remaining, pool), "topoff");
   }
 
-  // 5. Surplus → Unassigned.
+  // 5. Surplus: optionally top off savings goals first, then → Unassigned.
+  if (surplusMode === "goals_first") {
+    for (const b of goalBuckets) {
+      if (pool <= 0) break;
+      if (b.type !== "discretionary" || b.top_off == null) continue;
+      const remainingToGoal = Math.max(0, b.top_off - byId.get(b.id)!.amount);
+      credit(b.id, Math.min(remainingToGoal, pool), "surplus");
+    }
+  }
   const unassigned = buckets.find(isUnassignedBucket);
   if (unassigned && pool > 0) {
     credit(unassigned.id, pool, "surplus");

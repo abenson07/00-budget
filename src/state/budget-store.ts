@@ -15,6 +15,7 @@ import type { BucketMetadataInput } from "@/lib/bucket-metadata";
 import { applyBucketMetadata, validateBucketMetadata } from "@/lib/bucket-metadata";
 import { swapOrderWithNeighbor } from "@/lib/discretionary-priority";
 import { discretionaryRecoveryPlan, essentialRecoveryPlan } from "@/lib/overspend-recovery";
+import { useSettingsStore } from "@/state/settings-store";
 import {
   runPaycheckAllocation as runAllocationEngine,
   type AllocationLineItem,
@@ -351,7 +352,14 @@ export const useBudgetStore = create<BudgetState & BudgetActions>()(
       return null;
     }
     const { buckets } = get();
-    const { buckets: nextBuckets, lineItems } = runAllocationEngine(buckets, incomeAmount, slot, new Date());
+    const surplusMode = useSettingsStore.getState().surplusMode;
+    const { buckets: nextBuckets, lineItems } = runAllocationEngine(
+      buckets,
+      incomeAmount,
+      slot,
+      new Date(),
+      surplusMode,
+    );
     const run: AllocationRunSummary = {
       id: crypto.randomUUID(),
       date: new Date().toISOString(),

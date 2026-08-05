@@ -97,4 +97,33 @@ describe("runPaycheckAllocation", () => {
     expect(lineItems).toHaveLength(1);
     expect(lineItems[0]!.step).toBe("recovery");
   });
+
+  it("goals_first surplus mode tops off an under-funded goal bucket before Unassigned", () => {
+    const goal: DiscretionaryBucket = {
+      id: "goal1",
+      name: "Vacation",
+      order: 5,
+      amount: 0,
+      top_off: 1000,
+      percentage: null,
+      type: "discretionary",
+      goal_target_date: "2027-01-01",
+      locked: false,
+    };
+    const buckets = [goal, unassignedBucket({})];
+
+    const unassignedResult = runPaycheckAllocation(buckets, 500, "paycheck_1", new Date("2026-08-01"), "unassigned");
+    const goalUnassignedMode = unassignedResult.buckets.find((b) => b.id === "goal1")!;
+    const surplusToUnassigned = unassignedResult.buckets.find((b) => b.id === "unassigned1")!;
+
+    const goalsFirstResult = runPaycheckAllocation(buckets, 500, "paycheck_1", new Date("2026-08-01"), "goals_first");
+    const goalGoalsFirstMode = goalsFirstResult.buckets.find((b) => b.id === "goal1")!;
+    const surplusGoalsFirst = goalsFirstResult.buckets.find((b) => b.id === "unassigned1")!;
+
+    expect(goalGoalsFirstMode.amount).toBeGreaterThan(goalUnassignedMode.amount);
+    expect(surplusGoalsFirst.amount).toBeLessThan(surplusToUnassigned.amount);
+    expect(goalGoalsFirstMode.amount + surplusGoalsFirst.amount).toBe(
+      goalUnassignedMode.amount + surplusToUnassigned.amount,
+    );
+  });
 });

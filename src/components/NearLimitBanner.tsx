@@ -1,20 +1,23 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { percentageTagForBucket } from "@/lib/bucket-percentage-tag";
+import { remainingPercentFromBucket } from "@/lib/bucket-percentage-tag";
 import { useBudgetStore } from "@/state/budget-store";
+import { useSettingsStore } from "@/state/settings-store";
 
 /** Only proactive alert in the app: session-dismissible, resets on reload. */
 export function NearLimitBanner() {
   const buckets = useBudgetStore((s) => s.buckets);
+  const threshold = useSettingsStore((s) => s.nearLimitThresholdPct);
   const [dismissed, setDismissed] = useState(false);
-  const now = useMemo(() => new Date(), []);
   const atRisk = useMemo(
     () =>
-      buckets.filter(
-        (b) => b.type === "discretionary" && percentageTagForBucket(b, now)?.variant === "atRisk",
-      ),
-    [buckets, now],
+      buckets.filter((b) => {
+        if (b.type !== "discretionary") return false;
+        const pct = remainingPercentFromBucket(b);
+        return pct != null && pct < threshold;
+      }),
+    [buckets, threshold],
   );
 
   if (dismissed || atRisk.length === 0) return null;
